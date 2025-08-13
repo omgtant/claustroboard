@@ -7,7 +7,7 @@ HTTP GET (WS) `/new-game?nickname=$NICK`
 HTTP GET (WS) `/join/<code>?nickname=$NICK`
 	-> broadcast `playerlist-changed`: `["nickname1", "nickname2", ...]` 
 
-state: ```
+state:
 ```json
 {
 	palette: {
