@@ -18,6 +18,7 @@
     "build": "npm run build:html && npm run build:ts && npm run build:css",
     "dev": "concurrently -k -n html,ts,css \"npm:watch:html\" \"npm:watch:ts\" \"npm:watch:css\"",
     "serve": "go run .",
-    "dev:all": "concurrently -k -n assets,server \"npm:dev\" \"npm:serve\""
+    "godev": "wgo run -file=out/ -file=src/ .",
+    "dev:all": "concurrently -k -n assets,server \"npm:dev\" \"npm:godev\""
   }
 }

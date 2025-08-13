@@ -11,5 +11,5 @@ func main() {
 		panic(err)
 	}
 
-    cmd.Start()
+	cmd.Start()
 }

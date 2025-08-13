@@ -45,7 +45,7 @@ func Start() {
 
 	// http
 
-	r := web.GetRouter()
+	r := web.GetRouter(ProjectRoot)
 
 	s := &http.Server{
 		Addr:         addr,

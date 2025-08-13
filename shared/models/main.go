@@ -8,7 +8,7 @@ var (
 	db *gorm.DB
 )
 
-func Setup (_db *gorm.DB) {
+func Setup(_db *gorm.DB) {
 	db = _db
 	db.AutoMigrate(&Player{})
 }
