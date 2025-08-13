@@ -1,1 +1,1 @@
-obsidian obsidian://open?path=docs
+obsidian obsidian://open?path=docs > /dev/null &
