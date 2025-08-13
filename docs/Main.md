@@ -8,7 +8,7 @@ $P$ - the number of players. Usually $P = 2$, $P < N\cdot N$, $P \neq NP$
 
 ## Preparation
 
-$P$ small markers indicating player pawns are prepared.
+$P$ small markers representing players are prepared.
 
 A deck of $N\cdot N$ cards is prepared. Each card should have two visual features that make cards distinguishable. These features will be called **color** and **symbol**.
 
@@ -17,7 +17,7 @@ The **color** has to be one of five possible values, one of which is always colo
 
 The cards are shuffled and are laid face up in an $N \times N$ grid. They now represent game board tiles.
 
-The player pawns are placed randomly on the grid. No players may share a tile.
+The players are placed randomly on the grid. No players may share a tile.
 
 Player turn order is determined arbitrarily.
 
@@ -32,3 +32,21 @@ After the player moved $X$ steps, the tile they started the turn on is closed. I
 ## Determining the winner
 
 The order of winning is the reverse of the order of losing.
+
+# Algorithmic description
+
+1. Shuffle $N\cdot N$ cards, make an $N \times N$ grid, determine **valid** positions and order of turns for the $P$ players.
+2. Trigger the turn start event with turn=0.
+3. For each player in turn order:
+	- Trigger the tile player land hook
+4. Until $P-1$ players lost:
+	- For each card in arbitrary order:
+		- Trigger the tile global turn start hook
+	- For each active player in turn order:
+		- Trigger the tile player-occupied turn start hook
+		- If $P-1$ players already lost, mark the player as the winner. Break.
+		- If the player doesn't have a valid card to reach to, petrify the player. Continue.
+		- Let the player chose a valid card to move to. *The intermediate visits are determined programatically and are not controlled by the player*
+		- For the tile the player chose, trigger the tile player land hook
+		- Close the card the player started the turn on
+5. Congratulate the winners.
