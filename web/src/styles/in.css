@@ -1,4 +1,72 @@
 @import "tailwindcss";
 
-@source not "*"
-@source "web/src/**/*"
+@source not "*";
+@source "web/src/**/*";
+
+.tile1 {
+    background-image: url('../public/atlas.png');
+    background-position: -40px 0px;
+    width: 68px;
+    height: 68px;
+}
+
+.tile2 {
+    background-image: url('../public/atlas.png');
+    background-position: -112px 0px;
+    width: 68px;
+    height: 68px;
+}
+
+.tile-red {
+    filter: hue-rotate(-260deg);
+}
+
+.tile-yellow {
+    filter: brightness(110%) hue-rotate(-2000deg);
+}
+
+.tile-green {
+    filter: brightness(110%) saturate(50%) hue-rotate(-120deg);
+}
+
+.tile-blue {
+    filter: hue-rotate(0deg);
+}
+
+.tile-layout-1::after {
+    content: '';
+    display: block;
+    background-image: url('../public/atlas.png');
+    background-position: -40px -72px;
+    width: 68px;
+    height: 68px;
+}
+
+.tile-layout-2::after {
+    content: '';
+    display: block;
+    background-image: url('../public/atlas.png');
+    background-position: -112px -72px;
+    width: 68px;
+    height: 68px;
+}
+
+.tile-layout-3::after {
+    content: '';
+    display: block;
+    background-image: url('../public/atlas.png');
+    background-position: -184px -72px;
+    width: 68px;
+    height: 68px;
+}
+
+.tile-layout-4::after {
+    content: '';
+    display: block;
+    background-image: url('../public/atlas.png');
+    background-position: -256px -72px;
+    width: 68px;
+    height: 68px;
+}
+
+
