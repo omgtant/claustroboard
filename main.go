@@ -1,7 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"omgtant/claustroboard/cmd"
+	"omgtant/claustroboard/shared/config"
+)
 
 func main() {
-    fmt.Println("Hello, world.")
+	err := config.TryDetectConfig()
+	if err != nil {
+		panic(err)
+	}
+
+    cmd.Start()
 }
