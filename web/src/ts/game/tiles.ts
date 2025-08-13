@@ -21,7 +21,7 @@ export class LayoutTile extends Tile {
         return true;
     }
 
-    canStartOnMe(state: GameState, player: Player): boolean {
+    canStartOnMe(state: Tile[][]): boolean {
         return true;
     }
 

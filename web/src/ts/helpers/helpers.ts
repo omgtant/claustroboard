@@ -1,9 +1,9 @@
 import * as tiles from "../game/tiles";
-import { GameState, InitialState, Tile, TileSetup } from "../types/types";
+import { GameState, InitialPlayer, InitialState, Player, Tile, TileSetup } from "../types/types";
 import { Pos } from "../types/util";
 
 export function getMockInitialState(): InitialState {
-    return {
+    const obj = {
         palette: [{ 'LayoutTile': { script: 'LayoutTile' } }],
         board: shuffle2DArr([[
             { tile_type: 'LayoutTile', color: 1, data: { move_count: 1 } },
@@ -26,16 +26,25 @@ export function getMockInitialState(): InitialState {
             { tile_type: 'LayoutTile', color: 4, data: { move_count: 3 } },
             { tile_type: 'LayoutTile', color: 4, data: { move_count: 4 } }
         ]]),
-        players: [{ nickname: 'omga', position: { x: 0, y: 0 } }, { nickname: 'miltant', position: { x: 1, y: 1 } }]
+        players: [{ nickname: 'omga'}, { nickname: 'miltant' }] as InitialPlayer[]
     };
+    const board = readIntialBoardIntoGameBoard(obj.board);
+    const possiblePositions = board.flatMap(row => row.filter(tile => tile.canStartOnMe(board)).map(tile => tile.position));
+    if (obj.players.length > possiblePositions.length) {
+        throw new Error('Not enough starting positions for players');
+    }
+    possiblePositions.sort(() => Math.random() - 0.5); // Shuffle positions
+    obj.players = obj.players.map((player, index) => {
+        (player as InitialPlayer).position = possiblePositions[index];
+        return player as InitialPlayer;
+    });
+    return obj as InitialState;
 }
 
 export function readInitialStateIntoGameState(initialState: InitialState): GameState {
     const gameState: GameState = {
         board: {
-            tiles: initialState.board.map((row, y) =>
-                row.map((tileSetup, x) => bakeTile(tileSetup, { x, y }))
-            )
+            tiles: readIntialBoardIntoGameBoard(initialState.board)
         },
         turnNumber: 0,
         playerTurnIndex: 0,
@@ -46,6 +55,16 @@ export function readInitialStateIntoGameState(initialState: InitialState): GameS
         }))
     };
     return gameState;
+}
+
+function readIntialBoardIntoGameBoard(tileSetups: TileSetup[][]): Tile[][] {
+    return tileSetups.map((row, y) =>
+        row.map((tileSetup, x) => {
+            const tile = bakeTile(tileSetup, { x, y });
+            if (!tile) throw new Error(`Failed to create tile at position (${x}, ${y})`);
+            return tile;
+        })
+    );
 }
 
 export function bakeTile(tileSetup: TileSetup, pos: Pos): Tile {

@@ -36,7 +36,7 @@ export class Tile {
     onPlayerLanding(state: GameState, player: Player): void {throw new Error("Method not implemented.");};
 
     canLandOnMe(state: GameState, player: Player): boolean {throw new Error("Method not implemented.");};
-    canStartOnMe(state: GameState, player: Player): boolean {throw new Error("Method not implemented.");};
+    canStartOnMe(board: Tile[][]): boolean {throw new Error("Method not implemented.");};
 }
 
 export type Board = {
