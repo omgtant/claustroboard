@@ -1,1 +1,0 @@
-npx @tailwindcss/cli -i ./web/src/styles/in.css -o ./web/out/stylesheet.css --watch --minify
