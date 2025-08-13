@@ -60,7 +60,7 @@ func JoinGameWS(w http.ResponseWriter, r *http.Request) {
 	}
 	if !already {
 		if err := models.Join(code, nickname); err != nil {
-			http.Error(w, "cannot join", http.StatusConflict)
+			http.Error(w, err.Error(), http.StatusConflict)
 			return
 		}
 	}
