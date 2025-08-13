@@ -3,21 +3,16 @@
 @source not "*";
 @source "web/src/**/*";
 
-.tile1 {
-    background-image: url('../public/atlas.png');
-    background-position: -40px 0px;
-    width: 68px;
-    height: 68px;
-}
-
-.tile2 {
-    background-image: url('../public/atlas.png');
-    background-position: -112px 0px;
-    width: 68px;
-    height: 68px;
+@layer base {
+    body {
+        @apply bg-gray-900;
+    }
 }
 
 .tile {
+    background-image: url('../public/atlas.png');
+    width: 68px;
+    height: 68px;
     @apply transform-3d transition-transform duration-500 ease-in-out relative perspective-distant;
 
     &::before {
@@ -28,6 +23,9 @@
         height: 68px;
         @apply absolute block rotate-x-180 -translate-z-1 delay-[170ms];
         backface-visibility: hidden;
+    }
+    &::after {
+        @apply transition-[filter] duration-100;
     }
 }
 
@@ -48,22 +46,33 @@
 }
 
 .tile-parent:has(.tile-valid) {
-    @apply brightness-110 -translate-y-0.5;
+    @apply brightness-105 -translate-y-0.5;
+    > .tile-valid::after {
+        @apply drop-shadow-lg drop-shadow-blue-900;
+    }
 }
 
-.tile-red {
+.tile-type-1 {
+    background-position: -40px 0px;
+}
+
+.tile-type-2 {
+    background-position: -112px 0px;
+}
+
+.tile-RED {
     filter: hue-rotate(-260deg);
 }
 
-.tile-yellow {
+.tile-YELLOW {
     filter: brightness(110%) hue-rotate(-2000deg);
 }
 
-.tile-green {
+.tile-GREEN {
     filter: brightness(110%) saturate(50%) hue-rotate(-120deg);
 }
 
-.tile-blue {
+.tile-BLUE {
     filter: hue-rotate(0deg);
 }
 
