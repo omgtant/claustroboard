@@ -36,6 +36,7 @@ The order of winning is the reverse of the order of losing.
 # Algorithmic description
 
 1. Shuffle $N\cdot N$ cards, make an $N \times N$ grid, determine **valid** positions and order of turns for the $P$ players.
+	- *(valid positions determined via tiles' "can start on me?" method. panic if there are less valid cards than players)*
 2. For each card in arbitrary order:
 	- Trigger the tile global turn start hook, turn=0
 3. For each player in turn order:
@@ -73,6 +74,7 @@ Internally has access to the game state, possibly via injection.
 
 **Methods**
 - can land on me? (self, player, state) -> bool
+- can start on me? (self, state) -> bool
 ## Layout tile (inherits Abstract tile)
 
 **Properties**
@@ -83,4 +85,21 @@ Internally has access to the game state, possibly via injection.
 - on player-occupied turn start - traverse from this card via dfs with depth=0 only visiting open cards, return all cards that are reachable within (move number) moves.
 - on player landing - nothing
 - can land on me? - true
+- can start on me? - true
 
+## Teleport tile (inherits Abstract tile)
+
+**Implementations**
+- on player-occupied turn start - panic
+- on player landing - let the player choose any card such that (my.color == 0 || my.color == candidate.color) && can land on candidate
+- can land on me? - not if the player is standing on another teleport tile rn
+- can start on me? - false
+
+## Wall tile (inherits Abstract tile)
+
+**Implementations**
+- on turn start - if turn is 0, close
+- on player-occupied turn start - panic
+- on player landing - panic
+- can land on me? - false
+- can start on me? - false
