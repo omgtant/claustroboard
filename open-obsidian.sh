@@ -1,0 +1,1 @@
+obsidian obsidian://open?path=docs
