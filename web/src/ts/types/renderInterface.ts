@@ -8,9 +8,9 @@ export enum HighlightFlags {
 }
 
 export interface RenderInterface {
-    registerCallbacks(tryMoveTo: (pos: u.Pos) => void): void;
+    registerCallbacks(tryMoveTo: (pos: u.Pos) => void, jumpToHistory: (turnNumber:number) => void): void;
     renderState(state: t.GameState): void;
-    movePlayer(player: t.Player, to: u.Pos): void;
+    movePlayer(turnNumber:number, player: t.Player, to: u.Pos): void;
     /** May keep old highlighted tiles.
      */
     highlightTiles(tiles: u.Pos[], flags: HighlightFlags): void;
@@ -19,4 +19,5 @@ export interface RenderInterface {
     complain(message: string): void;
     closeTile(pos: u.Pos): void;
     renderWin(state: t.GameState, winner: t.Player): void;
+    gameStart(state: t.GameState): void;
 }

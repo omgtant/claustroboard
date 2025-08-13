@@ -11,7 +11,7 @@
 }
 
 @layer base {
-    * {
+    *, pre {
         font-family: 'Comic Mono', monospace;
     }
     body {
@@ -26,6 +26,13 @@
 
         &:has(.tile-valid,.tile-selected) .tile-parent:not(:has(.tile-valid)):not(:has(.tile-selected)) {
             @apply brightness-75;
+        }
+    }
+
+    .log {
+        @apply text-white block text-right;
+        span {
+            @apply block w-full text-sm bg-transparent hover:bg-white/10 transition-colors duration-75;
         }
     }
 

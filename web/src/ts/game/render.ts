@@ -7,13 +7,17 @@ import { LayoutTile } from "./tiles";
 const callbacks = {
     tryMoveTo: (pos: Pos) : void => {
         throw new Error("Callback not received yet");
+    },
+    jumpToHistory: (turnNumber: number) : void => {
+        throw new Error("Callback not received yet");
     }
 }
 
 
 export const renderInterface: RenderInterface = {
-    registerCallbacks: (tryMoveTo) => {
+    registerCallbacks: (tryMoveTo, jumpToHistory) => {
         callbacks.tryMoveTo = tryMoveTo;
+        callbacks.jumpToHistory = jumpToHistory;
     },
     renderState,
     clearHighlights,
@@ -22,10 +26,30 @@ export const renderInterface: RenderInterface = {
     complain,
     movePlayer,
     closeTile,
-    renderWin
+    renderWin,
+    gameStart
 }
 
 const board = document.getElementById('board');
+const log = document.getElementById('log');
+
+export function logTurn(turnNumber: number, player: Player, pos: Pos) {
+    const el = logMessage(`${turnNumber.toString().padStart(3,'.')}: Player ${player.nickname} moved to (${pos.x}, ${pos.y})`);
+    el.addEventListener('click', () => {
+        callbacks.jumpToHistory(turnNumber);
+    });
+}
+
+export function logMessage(message: string): HTMLSpanElement {
+    if (!log) throw new Error('Log element not found');
+
+    const logEntry = document.createElement('span');
+    logEntry.textContent = message;
+    log.appendChild(logEntry);
+    log.scrollTop = log.scrollHeight; // Scroll to the bottom
+
+    return logEntry;
+}
 
 function getElementByPos(pos: Pos) {
     if (!board) throw new Error('Board element not found');
@@ -94,7 +118,7 @@ function FLIPPlayerEnd(player: Player) {
     });
 }
 
-function movePlayer(player: Player, to: Pos) {
+function movePlayer(turnNumber:number, player: Player, to: Pos) {
     const playerElement = document.querySelector(`[data-player-nickname="${player.nickname}"]`);
 
     if (playerElement) {
@@ -104,6 +128,7 @@ function movePlayer(player: Player, to: Pos) {
             tileElement.parentElement.appendChild(playerElement);
             FLIPPlayerEnd(player);
         }
+        logTurn(turnNumber, player, to);
     }
 }
 
@@ -114,12 +139,17 @@ function closeTile(pos: Pos) {
     }
 }
 
+function gameStart(state: GameState) {
+    if (!board) throw new Error('Board element not found');
+    logMessage("Game started!");
+}
+
 function renderWin(state: GameState, winner: Player) {
     const winnerElement = document.querySelector(`[data-player-nickname="${winner.nickname}"]`);
     if (!winnerElement) throw new Error('Winner element not found');
 
     winnerElement.classList.add('player-won');
-    console.log(`Player ${winner.nickname} has won the game!`);
+    logMessage(`Player ${winner.nickname} has won the game!`);
     state.players.filter(p => p !== winner).forEach(loser => {
         const loserElement = document.querySelector(`[data-player-nickname="${loser.nickname}"]`);
         if (loserElement) {
