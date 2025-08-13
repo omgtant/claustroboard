@@ -28,6 +28,11 @@ go.work.sum
 .env
 
 # Editor/IDE
-# .idea/
-# .vscode/
+.idea/
+.vscode/
+
+# Node
 node_modules
+
+# Obsidian
+workspace.json
