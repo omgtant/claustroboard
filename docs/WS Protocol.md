@@ -10,17 +10,17 @@ HTTP GET (WS) `/join/<code>?nickname=$NICK`
 state:
 ```json
 {
-	palette: {
-		'layout': {script: ""}
+	"palette": {
+		"layout": {"script": ""}
 	},
-	board: [
-		[{tile_type: 'layout', color: number, data: {move_count: 2}}, ..., ...],
+	"board": [
+		[{"tile_type": "layout", "color": 0, "data": {"move_count": 2}}, ..., ...],
 		[..., ..., ...],
 		...
 		[..., ..., ...]
 	],
-	players: [
-		{nickname: 'name', position: {x: 1, y: 2}},
+	"players": [
+		{"nickname": "name", "position": {"x": 1, "y": 2}},
 		...
 	]
 }
