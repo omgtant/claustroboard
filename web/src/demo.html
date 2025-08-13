@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Claustroboard WS demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #log {
+            white-space: pre-wrap;
+            font-family: monospace;
+            border: 1px solid #ccc;
+            padding: 8px;
+            height: 300px;
+            overflow: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Start Game (creator)</h3>
+    <label>Creator Nickname: <input id="creatorNick" value="omga"></label>
+    <button onclick="startGame()">Start Game</button>
+    <div>Game Code: <span id="gameCode"></span></div>
+    <button onclick="sendStartGame()">Start Game Now</button>
+
+    <h3>Join Game (other player)</h3>
+    <label>Join Nickname: <input id="joinNick" value="alice"></label>
+    <label>Code: <input id="joinCode" placeholder="will auto-fill after start"></label>
+    <button onclick="joinGame()">Join Game</button>
+
+    <h3>Log</h3>
+    <div id="log"></div>
+
+    <script>
+        let creatorWS;
+        let joinWS;
+
+        function log(...args) {
+            const el = document.getElementById('log');
+            el.textContent += args.map(a => typeof a === 'string' ? a : JSON.stringify(a)).join(' ') + "\n";
+            el.scrollTop = el.scrollHeight;
+        }
+
+        function sendStartGame() {
+            if (!creatorWS || creatorWS.readyState !== WebSocket.OPEN) {
+                log("No active creator connection");
+                return;
+            }
+            const msg = { type: "start" };
+            creatorWS.send(JSON.stringify(msg));
+            log("[creator] ->", msg);
+        }
+
+        function startGame() {
+            const nick = document.getElementById('creatorNick').value.trim();
+            if (!nick) { return; }
+            if (creatorWS) { creatorWS.close(); }
+            const url = `ws://localhost:8080/api/v1/start-game?nickname=${encodeURIComponent(nick)}`;
+            log("Connecting (start):", url);
+            creatorWS = new WebSocket(url);
+            creatorWS.onopen = () => log("[creator] open");
+            creatorWS.onclose = e => log("[creator] close", e.code, e.reason);
+            creatorWS.onerror = e => log("[creator] error", e);
+            creatorWS.onmessage = ev => {
+                try {
+                    const msg = JSON.parse(ev.data);
+                    log("[creator] <-", msg);
+                    switch (msg.type) {
+                        case "created":
+                            const code = msg.data.code;
+                            document.getElementById('gameCode').textContent = code;
+                            const joinCodeInput = document.getElementById('joinCode');
+                            if (!joinCodeInput.value) joinCodeInput.value = code;
+                            break;
+                        case "playerlist-changed":
+                            // msg.data is array of players
+                            break;
+                    }
+                } catch (err) {
+                    log("[creator] bad json:", ev.data);
+                }
+            };
+        }
+
+        function joinGame() {
+            const nick = document.getElementById('joinNick').value.trim();
+            const code = document.getElementById('joinCode').value.trim();
+            if (!nick || !code) { return; }
+            if (joinWS) { joinWS.close(); }
+            const url = `ws://localhost:8080/api/v1/join/${encodeURIComponent(code)}?nickname=${encodeURIComponent(nick)}`;
+            log("Connecting (join):", url);
+            joinWS = new WebSocket(url);
+            joinWS.onopen = () => log("[join] open");
+            joinWS.onclose = e => log("[join] close", e.code, e.reason);
+            joinWS.onerror = e => log("[join] error", e);
+            joinWS.onmessage = ev => {
+                try {
+                    const msg = JSON.parse(ev.data);
+                    log("[join] <-", msg);
+                    switch (msg.type) {
+                        case "joined":
+                            // acknowledgement
+                            break;
+                        case "playerlist-changed":
+                            // update UI if desired
+                            break;
+                    }
+                } catch (err) {
+                    log("[join] bad json:", ev.data);
+                }
+            };
+        }
+    </script>
+</body>
+
+</html>

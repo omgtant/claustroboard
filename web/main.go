@@ -20,8 +20,9 @@ func GetRouter(projectRoot string) *http.ServeMux {
 
 	// API routes
 	apiMux := http.NewServeMux()
-	apiMux.HandleFunc("POST /start-game", routers.StartGame)
-	apiMux.HandleFunc("POST /join/{id}", routers.JoinGame)
+	// Upgraded to websocket (GET)
+	apiMux.HandleFunc("GET /start-game", routers.StartGameWS)
+	apiMux.HandleFunc("GET /join/{id}", routers.JoinGameWS)
 
 	mux.Handle("/api/v1/", middlewares.LoggingMiddleware(http.StripPrefix("/api/v1", apiMux)))
 

@@ -2,9 +2,19 @@ package models
 
 import (
 	"fmt"
+	"maps"
 	"math/rand"
 	"omgtant/claustroboard/shared/enums"
+	"slices"
+	"sync"
 	"time"
+)
+
+type BoardPhase string
+
+const (
+	PhaseLobby   BoardPhase = "lobby"
+	PhaseStarted BoardPhase = "started"
 )
 
 type Board struct {
@@ -15,17 +25,20 @@ type Board struct {
 	Players   []string
 	Turn      uint16
 	StartPos  []uint32
+	Phase     BoardPhase
 }
 
-type GameCode uint64
-
-var gameBoards = make(map[GameCode]*Board)
+var (
+	gameBoardsMu sync.RWMutex
+	gameBoards   = make(map[GameCode]*Board)
+)
 
 func NewGameBoard(players []string, palette []enums.TileKind, width uint16, height uint16) (GameCode, error) {
 	board := Board{
 		CreatedAt: time.Now(),
 		Width:     width,
 		Height:    height,
+		Phase:     PhaseLobby,
 	}
 
 	for x := uint16(0); x < width; x++ {
@@ -45,7 +58,11 @@ func NewGameBoard(players []string, palette []enums.TileKind, width uint16, heig
 	if attempts == 10 {
 		return 0, fmt.Errorf("failed to generate unique board ID after 10 attempts")
 	}
+
+	gameBoardsMu.Lock()
 	gameBoards[id] = &board
+	gameBoardsMu.Unlock()
+
 	for _, p := range players {
 		err := Join(id, p)
 		if err != nil {
@@ -55,21 +72,89 @@ func NewGameBoard(players []string, palette []enums.TileKind, width uint16, heig
 	return id, nil
 }
 
+func NewDefaultGameBoard(nickname string) (GameCode, *Board, error) {
+	code, err := NewGameBoard([]string{nickname}, slices.Collect(maps.Keys(enums.TileKindNames)), 6, 6)
+	if err != nil {
+		return 0, nil, err
+	}
+	board, _ := GetBoard(code)
+	return code, board, nil
+}
+
 func Join(id GameCode, p string) error {
 	board, err := GetBoard(id)
 	if err != nil {
 		return err
 	}
 	board.Players = append(board.Players, p)
-
+	gameBoardsMu.Lock()
 	gameBoards[id] = board
-	return err
+	gameBoardsMu.Unlock()
+	return nil
+}
+
+func Leave(id GameCode, p string) error {
+	board, err := GetBoard(id)
+	if err != nil {
+		return err
+	}
+
+	for i, player := range board.Players {
+		if player == p {
+			board.Players = append(board.Players[:i], board.Players[i+1:]...)
+			break
+		}
+	}
+
+	gameBoardsMu.Lock()
+	gameBoards[id] = board
+	gameBoardsMu.Unlock()
+
+	return nil
 }
 
 func GetBoard(code GameCode) (*Board, error) {
-	if board, exists := gameBoards[code]; exists {
+	gameBoardsMu.RLock()
+	board, exists := gameBoards[code]
+	gameBoardsMu.RUnlock()
+
+	if exists {
 		return board, nil
 	}
+
 	fmt.Printf("Available boards: %v\n", gameBoards)
 	return nil, fmt.Errorf("board with ID %d not found", code)
+}
+
+func StartGame(code GameCode) (*Board, error) {
+	board, err := GetBoard(code)
+	if err != nil {
+		return nil, err
+	}
+	if board.Phase == PhaseStarted {
+		return board, nil
+	}
+	total := int(board.Width) * int(board.Height)
+	if len(board.Players) > total {
+		return nil, fmt.Errorf("not enough tiles for players")
+	}
+
+	used := make(map[uint32]struct{}, len(board.Players))
+	board.StartPos = board.StartPos[:0]
+	for range board.Players {
+		for {
+			idx := uint32(rand.Intn(total))
+			if _, ok := used[idx]; ok {
+				continue
+			}
+			used[idx] = struct{}{}
+			board.StartPos = append(board.StartPos, idx)
+			break
+		}
+	}
+	board.Phase = PhaseStarted
+	gameBoardsMu.Lock()
+	gameBoards[code] = board
+	gameBoardsMu.Unlock()
+	return board, nil
 }
