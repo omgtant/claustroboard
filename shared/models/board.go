@@ -86,6 +86,10 @@ func Join(id GameCode, p string) error {
 	if err != nil {
 		return err
 	}
+	if board.Phase != PhaseLobby {
+		return fmt.Errorf("cannot join game that has already started")
+	}
+
 	board.Players = append(board.Players, p)
 	gameBoardsMu.Lock()
 	gameBoards[id] = board
@@ -122,7 +126,6 @@ func GetBoard(code GameCode) (*Board, error) {
 		return board, nil
 	}
 
-	fmt.Printf("Available boards: %v\n", gameBoards)
 	return nil, fmt.Errorf("board with ID %d not found", code)
 }
 
