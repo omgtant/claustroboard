@@ -36,7 +36,8 @@ The order of winning is the reverse of the order of losing.
 # Algorithmic description
 
 1. Shuffle $N\cdot N$ cards, make an $N \times N$ grid, determine **valid** positions and order of turns for the $P$ players.
-2. Trigger the turn start event with turn=0.
+2. For each card in arbitrary order:
+	- Trigger the tile global turn start hook, turn=0
 3. For each player in turn order:
 	- Trigger the tile player land hook
 4. Until $P-1$ players lost:
@@ -50,3 +51,4 @@ The order of winning is the reverse of the order of losing.
 		- For the tile the player chose, trigger the tile player land hook
 		- Close the card the player started the turn on
 5. Congratulate the winners.
+
