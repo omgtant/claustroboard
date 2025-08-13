@@ -17,6 +17,40 @@
     height: 68px;
 }
 
+.tile {
+    @apply transform-3d transition-transform duration-500 ease-in-out relative perspective-distant;
+
+    &::before {
+        content: '';
+        background-image: url('../public/atlas.png');
+        background-position: -184px 0px;
+        width: 68px;
+        height: 68px;
+        @apply absolute block rotate-x-180 -translate-z-1 delay-[170ms];
+        backface-visibility: hidden;
+    }
+}
+
+.tile-closed {
+    @apply rotate-x-180;
+
+    &::before {
+        @apply rotate-x-0;
+    }
+}
+
+.tile-parent {
+    @apply transition-[filter,translate] duration-100;
+}
+
+.tile-parent:has(.tile-selected) {
+    @apply brightness-125 -translate-y-1;
+}
+
+.tile-parent:has(.tile-valid) {
+    @apply brightness-110 -translate-y-0.5;
+}
+
 .tile-red {
     filter: hue-rotate(-260deg);
 }
