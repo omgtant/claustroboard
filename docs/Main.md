@@ -84,7 +84,7 @@ Internally has access to the game state, possibly via injection.
 
 **Methods**
 - can land on me? (self, player, state) -> bool
-- can start on me? (self, state) -> bool
+- can start on me? (self, gameboard) -> bool
 ## Layout tile (inherits Abstract tile)
 
 **Properties**
