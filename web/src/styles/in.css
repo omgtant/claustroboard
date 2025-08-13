@@ -3,7 +3,17 @@
 @source not "*";
 @source "web/src/**/*";
 
+@font-face {
+    font-family: 'Comic Mono';
+    src: url('../public/fonts/ComicMono.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
 @layer base {
+    * {
+        font-family: 'Comic Mono', monospace;
+    }
     body {
         image-rendering: pixelated;
         @apply bg-gray-900;
