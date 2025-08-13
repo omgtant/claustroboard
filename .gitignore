@@ -42,3 +42,6 @@ workspace.json
 
 # out
 web/out
+
+# krita cache
+*~
