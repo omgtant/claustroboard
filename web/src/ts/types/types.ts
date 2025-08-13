@@ -1,3 +1,4 @@
+import { RenderInterface } from "./renderInterface";
 import { Pos, TileColor } from "./util";
 
 export type InitialState = {
@@ -6,7 +7,7 @@ export type InitialState = {
     players: InitialPlayer[];
 }
 
-export type TileSetup = {tile_type: string, color:number, data: any}
+export type TileSetup = {tile_type: string, color:number, data?: any}
 
 export type GameState = {
     board: Board;
@@ -15,6 +16,7 @@ export type GameState = {
     players: Player[];
     history: Pos[];
     initialState: InitialState;
+    someRenderInterface?: RenderInterface;
 }
 
 export type InitialPlayer = {

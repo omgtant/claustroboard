@@ -2,7 +2,7 @@ import { rnd } from "../helpers/helpers";
 import { HighlightFlags, RenderInterface } from "../types/renderInterface.ts";
 import type { GameState, Player, Tile } from "../types/types.d.ts";
 import { Pos, TileColor } from "../types/util.ts";
-import { LayoutTile } from "./tiles";
+import { LayoutTile, WildcardTile } from "./tiles";
 
 const callbacks = {
     tryMoveTo: (pos: Pos) : void => {
@@ -25,7 +25,7 @@ export const renderInterface: RenderInterface = {
     complainInvalidMove,
     complain,
     movePlayer,
-    closeTile,
+    refreshTile,
     renderWin,
     gameStart
 }
@@ -137,10 +137,24 @@ function movePlayer(turnNumber:number, player: Player, to: Pos) {
     }
 }
 
-function closeTile(pos: Pos) {
-    const tileElement = getElementByPos(pos);
-    if (tileElement) {
+function refreshTile(tile: Tile) {
+    console.log(`Refreshing tile at position (${tile.position.x}, ${tile.position.y})`);
+    const tileElement = getElementByPos(tile.position);
+    if (!tileElement) throw new Error('Tile element not found');
+
+    tileElement.className = `
+        tile tile-type-${rnd(1,2,undefined,tile)} tile-${TileColor[tile.color]}`;
+    
+    if (!tile.isOpen) {
         tileElement.classList.add('tile-closed');
+    }
+    
+    if (tile instanceof LayoutTile) {
+        tileElement.classList.add(`tile-layout-${tile.moveCount}`);
+    }
+
+    if (tile instanceof WildcardTile) {
+        tileElement.classList.add(`tile-wildcard`);
     }
 }
 
@@ -191,18 +205,12 @@ function _createTile(tile: Tile) {
     tileParent.classList.add('tile-parent');
     
     const tileElement = document.createElement('div');
-    tileElement.className = `tile tile-type-${rnd(1,2,undefined,tile)} tile-${TileColor[tile.color]}`;
-
-    if (!tile.isOpen) tileElement.classList.add('tile-closed');
 
     tileElement.dataset.tileId = `${tile.position.x}-${tile.position.y}`;
 
-
-    if (tile instanceof LayoutTile) {
-        tileElement.classList.add(`tile-layout-${tile.moveCount}`);
-    } 
+    
     tileParent.appendChild(tileElement);
-
+    
     tileParent.addEventListener('click', () => {
         callbacks.tryMoveTo(tile.position);
     });
@@ -233,6 +241,7 @@ function renderState(state: GameState) {
     state.board.tiles.forEach(row => {
         row.forEach(tile => {
             board.appendChild(_createTile(tile));
+            refreshTile(tile);
         });
     });
 

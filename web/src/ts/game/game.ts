@@ -18,6 +18,7 @@ export function start(someGameState: t.GameState = gameState, someRenderInterfac
     someRenderInterface?.registerCallbacks(playMove, jumpToHistory);
     someRenderInterface?.renderState(someGameState);
     someRenderInterface?.gameStart(someGameState);
+    someGameState.someRenderInterface = someRenderInterface;
     suggestMoving(someGameState, someRenderInterface);
 }
 
@@ -45,6 +46,12 @@ function suggestMoving(someGameState: t.GameState = gameState, someRenderInterfa
     if (someGameState.players.filter(p => p.is_active).length === 1) {
         someRenderInterface?.renderWin(someGameState, _getCurrentPlayer(someGameState));
     }
+
+    someGameState.board.tiles.forEach(row => {
+        row.forEach(tile => {
+            tile.onTurnStart(someGameState);
+        });
+    });
 
     const moves = getAvailableMoves(someGameState);
     if (moves.length === 0) {
@@ -80,7 +87,7 @@ function playMove(pos: Pos, someGameState: t.GameState = gameState, someRenderIn
     someRenderInterface?.movePlayer(someGameState.turnNumber, currentPlayer, pos);
     _tile(pos, someGameState).onPlayerLanding(someGameState, currentPlayer);
     _tile(oldPos,someGameState).isOpen = false;
-    someRenderInterface?.closeTile(oldPos);
+    someRenderInterface?.refreshTile(_tile(oldPos, someGameState));
 
     someGameState.history.push({...pos});
 

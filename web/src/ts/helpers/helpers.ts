@@ -9,22 +9,32 @@ export function getMockInitialState(): InitialState {
             { tile_type: 'LayoutTile', color: 1, data: { move_count: 1 } },
             { tile_type: 'LayoutTile', color: 1, data: { move_count: 2 } },
             { tile_type: 'LayoutTile', color: 1, data: { move_count: 3 } },
-            { tile_type: 'LayoutTile', color: 1, data: { move_count: 4 } }
+            { tile_type: 'LayoutTile', color: 1, data: { move_count: 4 } },
+            { tile_type: 'WallTile', color: 1 }
         ], [
             { tile_type: 'LayoutTile', color: 2, data: { move_count: 1 } },
             { tile_type: 'LayoutTile', color: 2, data: { move_count: 2 } },
             { tile_type: 'LayoutTile', color: 2, data: { move_count: 3 } },
-            { tile_type: 'LayoutTile', color: 2, data: { move_count: 4 } }
+            { tile_type: 'LayoutTile', color: 2, data: { move_count: 4 } },
+            { tile_type: 'WallTile', color: 2 }
         ], [
             { tile_type: 'LayoutTile', color: 3, data: { move_count: 1 } },
             { tile_type: 'LayoutTile', color: 3, data: { move_count: 2 } },
             { tile_type: 'LayoutTile', color: 3, data: { move_count: 3 } },
-            { tile_type: 'LayoutTile', color: 3, data: { move_count: 4 } }
+            { tile_type: 'LayoutTile', color: 3, data: { move_count: 4 } },
+            { tile_type: 'WallTile', color: 3 }
         ], [
             { tile_type: 'LayoutTile', color: 4, data: { move_count: 1 } },
             { tile_type: 'LayoutTile', color: 4, data: { move_count: 2 } },
             { tile_type: 'LayoutTile', color: 4, data: { move_count: 3 } },
-            { tile_type: 'LayoutTile', color: 4, data: { move_count: 4 } }
+            { tile_type: 'LayoutTile', color: 4, data: { move_count: 4 } },
+            { tile_type: 'WallTile', color: 4 }
+        ], [
+            { tile_type: 'WildcardTile', color: 0 },
+            { tile_type: 'WildcardTile', color: 0 },
+            { tile_type: 'WildcardTile', color: 0 },
+            { tile_type: 'WildcardTile', color: 0 },
+            { tile_type: 'WallTile', color: 0 }
         ]]),
         players: [{ nickname: 'omga'}, { nickname: 'miltant' }] as InitialPlayer[]
     };
@@ -54,7 +64,7 @@ export function readInitialStateIntoGameState(initialState: InitialState): GameS
             is_active: true
         })),
         history: [],
-        initialState: { ...initialState }
+        initialState: { ...initialState },
     };
     return gameState;
 }
@@ -77,6 +87,18 @@ export function bakeTile(tileSetup: TileSetup, pos: Pos): Tile {
         tile.position = pos;
         tile.isOpen = true;
         tile.moveCount = tileSetup.data.move_count;
+        return tile;
+    } else if (tileSetup.tile_type === 'WallTile') {
+        const tile: tiles.WallTile = new tiles.WallTile();
+        tile.color = tileSetup.color;
+        tile.position = pos;
+        tile.isOpen = true;
+        return tile;
+    } else if (tileSetup.tile_type === 'WildcardTile') {
+        const tile: tiles.WildcardTile = new tiles.WildcardTile();
+        tile.color = tileSetup.color;
+        tile.position = pos;
+        tile.isOpen = true;
         return tile;
     }
     throw Error(`Unknown tile type: ${tileSetup.tile_type}`);

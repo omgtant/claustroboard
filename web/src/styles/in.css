@@ -22,7 +22,7 @@
 
 @layer components {
     .board {
-        @apply relative grid grid-cols-4 w-fit *:-ml-1 *:-mt-1;
+        @apply relative grid grid-cols-5 w-fit *:-ml-1 *:-mt-1;
 
         &:has(.tile-valid,.tile-selected) .tile-parent:not(:has(.tile-valid)):not(:has(.tile-selected)) {
             @apply brightness-75;
@@ -103,6 +103,10 @@
                 filter: hue-rotate(0deg);
             }
 
+            &.tile-COLORLESS {
+                filter: saturate(50%) brightness(100%);
+            }
+
             &.tile-layout-1::after {
                 content: '';
                 display: block;
@@ -137,6 +141,19 @@
                 background-position: -256px -72px;
                 width: 68px;
                 height: 68px;
+            }
+
+            &.tile-wildcard::after {
+                content: '';
+                display: block;
+                background-image: url('../public/atlas.png');
+                background-position: -40px -144px;
+                width: 68px;
+                height: 68px;
+            }
+
+            &.tile-wall::after {
+
             }
 
         }

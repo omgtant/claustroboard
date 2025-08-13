@@ -17,7 +17,7 @@ export interface RenderInterface {
     clearHighlights(): void;
     complainInvalidMove(): void;
     complain(message: string): void;
-    closeTile(pos: u.Pos): void;
+    refreshTile(tile: t.Tile): void;
     renderWin(state: t.GameState, winner: t.Player): void;
     gameStart(state: t.GameState): void;
 }
