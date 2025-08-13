@@ -45,6 +45,7 @@ function suggestMoving(someGameState: t.GameState = gameState, someRenderInterfa
     }
     if (someGameState.players.filter(p => p.is_active).length === 1) {
         someRenderInterface?.renderWin(someGameState, _getCurrentPlayer(someGameState));
+        return;
     }
 
     someGameState.board.tiles.forEach(row => {
@@ -77,6 +78,8 @@ function jumpToHistory(turnNumber: number, someGameState: t.GameState = gameStat
 }
 
 function playMove(pos: Pos, someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface) {
+    if (someGameState.players.filter(p => p.is_active).length <= 1) return;
+    
     const currentPlayer = _getCurrentPlayer(someGameState);
     const oldPos = currentPlayer.position;
     const possibleMoves = _tile(oldPos, someGameState).availableMoves(someGameState, currentPlayer);
