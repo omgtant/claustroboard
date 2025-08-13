@@ -13,6 +13,8 @@ export type GameState = {
     turnNumber: number;
     playerTurnIndex: number;
     players: Player[];
+    history: Pos[];
+    initialState: InitialState;
 }
 
 export type InitialPlayer = {

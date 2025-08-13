@@ -52,7 +52,9 @@ export function readInitialStateIntoGameState(initialState: InitialState): GameS
             ...player,
             position: { ...player.position },
             is_active: true
-        }))
+        })),
+        history: [],
+        initialState: { ...initialState }
     };
     return gameState;
 }

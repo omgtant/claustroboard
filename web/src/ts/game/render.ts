@@ -33,14 +33,14 @@ export const renderInterface: RenderInterface = {
 const board = document.getElementById('board');
 const log = document.getElementById('log');
 
-export function logTurn(turnNumber: number, player: Player, pos: Pos) {
+function logTurn(turnNumber: number, player: Player, pos: Pos) {
     const el = logMessage(`${turnNumber.toString().padStart(3,'.')}: Player ${player.nickname} moved to (${pos.x}, ${pos.y})`);
     el.addEventListener('click', () => {
         callbacks.jumpToHistory(turnNumber);
     });
 }
 
-export function logMessage(message: string): HTMLSpanElement {
+function logMessage(message: string): HTMLSpanElement {
     if (!log) throw new Error('Log element not found');
 
     const logEntry = document.createElement('span');
@@ -49,6 +49,11 @@ export function logMessage(message: string): HTMLSpanElement {
     log.scrollTop = log.scrollHeight; // Scroll to the bottom
 
     return logEntry;
+}
+
+function clearLog() {
+    if (!log) throw new Error('Log element not found');
+    log.innerHTML = '';
 }
 
 function getElementByPos(pos: Pos) {
@@ -141,6 +146,7 @@ function closeTile(pos: Pos) {
 
 function gameStart(state: GameState) {
     if (!board) throw new Error('Board element not found');
+    clearLog();
     logMessage("Game started!");
 }
 

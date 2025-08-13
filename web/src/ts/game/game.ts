@@ -1,74 +1,101 @@
-import { getMockInitialState, readInitialStateIntoGameState } from "../helpers/helpers";
-import { HighlightFlags } from "../types/renderInterface";
+import { getMockInitialState, posEq, readInitialStateIntoGameState } from "../helpers/helpers";
+import { HighlightFlags, RenderInterface } from "../types/renderInterface";
 import * as t from "../types/types";
 import { Pos } from "../types/util";
 import { renderInterface } from "./render";
 
 export let gameState: t.GameState = readInitialStateIntoGameState(getMockInitialState());
 
-function _getCurrentPlayer() {
-    return gameState.players[gameState.playerTurnIndex];
+function _getCurrentPlayer(someGameState: t.GameState = gameState): t.Player {
+    return someGameState.players[someGameState.playerTurnIndex];
 }
 
-function _tile(pos: Pos) {
-    return gameState.board.tiles[pos.y][pos.x];
+function _tile(pos: Pos, someGameState: t.GameState = gameState): t.Tile {
+    return someGameState.board.tiles[pos.y][pos.x];
 }
 
-export function start() {
-    renderInterface.registerCallbacks(playMove);
-    renderInterface.renderState(gameState);
-    suggestMoving();
+export function start(someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface) {
+    someRenderInterface?.registerCallbacks(playMove, jumpToHistory);
+    someRenderInterface?.renderState(someGameState);
+    someRenderInterface?.gameStart(someGameState);
+    suggestMoving(someGameState, someRenderInterface);
 }
 
-function getAvailableMoves() {
-    const currentPlayer = _getCurrentPlayer();
-    return _tile(currentPlayer.position).availableMoves(gameState, currentPlayer);
+function getAvailableMoves(someGameState: t.GameState = gameState): Pos[] {
+    const currentPlayer = _getCurrentPlayer(someGameState);
+    return _tile(currentPlayer.position, someGameState).availableMoves(someGameState, currentPlayer);
 }
 
-function highlight(positions: Pos[]) {
-    renderInterface.highlightTiles(positions, HighlightFlags.VALID);
+function highlight(positions: Pos[], someRenderInterface: RenderInterface | undefined = renderInterface) {
+    someRenderInterface?.highlightTiles(positions, HighlightFlags.VALID);
 }
 
-function advanceMove() {
-    gameState.turnNumber++;
-    gameState.playerTurnIndex = (gameState.playerTurnIndex + 1) % gameState.players.length;
+function advanceMove(someGameState: t.GameState = gameState) {
+    someGameState.turnNumber++;
+    someGameState.playerTurnIndex = (someGameState.playerTurnIndex + 1) % someGameState.players.length;
 }
 
-function suggestMoving() {
-    if (gameState.players.length === 0) throw new Error("No players in the game");
-    if (_getCurrentPlayer().is_active === false) {
-        advanceMove();
-        suggestMoving();
+function suggestMoving(someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface) {
+    if (someGameState.players.length === 0) throw new Error("No players in the game");
+    if (_getCurrentPlayer(someGameState).is_active === false) {
+        advanceMove(someGameState);
+        suggestMoving(someGameState, someRenderInterface);
         return;
     }
-    if (gameState.players.filter(p => p.is_active).length === 1) {
-        renderInterface.renderWin(gameState, _getCurrentPlayer());
+    if (someGameState.players.filter(p => p.is_active).length === 1) {
+        someRenderInterface?.renderWin(someGameState, _getCurrentPlayer(someGameState));
     }
 
-    const moves = getAvailableMoves();
+    const moves = getAvailableMoves(someGameState);
     if (moves.length === 0) {
-        _getCurrentPlayer().is_active = false;
-        advanceMove();
-        suggestMoving();
+        _getCurrentPlayer(someGameState).is_active = false;
+        advanceMove(someGameState);
+        suggestMoving(someGameState, someRenderInterface);
     }
-    highlight(moves);
+    highlight(moves, someRenderInterface);
 }
 
-function playMove(pos: Pos) {
-    const currentPlayer = _getCurrentPlayer();
-    const oldPos = currentPlayer.position;
-    const possibleMoves = _tile(oldPos).availableMoves(gameState, currentPlayer);
-
-    if (!possibleMoves.includes(pos)) {
-        renderInterface.complainInvalidMove();
+function jumpToHistory(turnNumber: number, someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface) {
+    if (turnNumber < 0) {
+        someRenderInterface.complain("Invalid turn number");
         return;
     }
 
+    gameState = simulateGame(someGameState.initialState, someGameState.history.slice(0, turnNumber + 1));
+
+    console.log(`Jumped to turn ${turnNumber}`);
+    suggestMoving(gameState, someRenderInterface);
+}
+
+function playMove(pos: Pos, someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface) {
+    const currentPlayer = _getCurrentPlayer(someGameState);
+    const oldPos = currentPlayer.position;
+    const possibleMoves = _tile(oldPos, someGameState).availableMoves(someGameState, currentPlayer);
+
+    if (possibleMoves.some(p => posEq(p, pos)) === false) {
+        someRenderInterface?.complainInvalidMove();
+        return;
+    }
     currentPlayer.position = pos;
-    renderInterface.movePlayer(currentPlayer, pos);
-    _tile(pos).onPlayerLanding(gameState, currentPlayer);
-    _tile(oldPos).isOpen = false;
-    renderInterface.closeTile(oldPos);
-    advanceMove();
-    suggestMoving();
+    someRenderInterface?.movePlayer(someGameState.turnNumber, currentPlayer, pos);
+    _tile(pos, someGameState).onPlayerLanding(someGameState, currentPlayer);
+    _tile(oldPos,someGameState).isOpen = false;
+    someRenderInterface?.closeTile(oldPos);
+
+    someGameState.history.push({...pos});
+
+    console.log(someGameState);
+    advanceMove(someGameState);
+    suggestMoving(someGameState, someRenderInterface);
+}
+
+
+
+function simulateGame(initial_state: t.InitialState, history: Pos[]): t.GameState {
+    const newGameState = readInitialStateIntoGameState(initial_state);
+    start(newGameState);
+    history.forEach((pos, turnNumber) => {
+        playMove(pos, newGameState);
+    });
+    return newGameState;
 }
