@@ -3,6 +3,7 @@ package web
 import (
 	"embed"
 	"net/http"
+	"omgtant/claustroboard/web/middlewares"
 	"omgtant/claustroboard/web/routers"
 )
 
@@ -18,11 +19,11 @@ func GetRouter(projectRoot string) *http.ServeMux {
 	mux.Handle("/", routers.CreateFileServer(projectRoot, StaticFiles))
 
 	// API routes
-	// apiMux := http.NewServeMux()
-	mux.HandleFunc("POST /start-game", routers.StartGame)
-	mux.HandleFunc("POST /join/{id}", routers.JoinGame)
+	apiMux := http.NewServeMux()
+	apiMux.HandleFunc("POST /start-game", routers.StartGame)
+	apiMux.HandleFunc("POST /join/{id}", routers.JoinGame)
 
-	// mux.Handle("/api/v1/", middlewares.LoggingMiddleware(http.StripPrefix("/api/v1/", apiMux)))
+	mux.Handle("/api/v1/", middlewares.LoggingMiddleware(http.StripPrefix("/api/v1", apiMux)))
 
 	return mux
 }
