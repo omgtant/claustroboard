@@ -8,7 +8,7 @@ state: ```
 		'layout': {script: ""}
 	},
 	board: [
-		[{tile_type: 'layout', data: {move_count: 2}}, ..., ...],
+		[{tile_type: 'layout', color: number, data: {move_count: 2}}, ..., ...],
 		[..., ..., ...],
 		...
 		[..., ..., ...]
