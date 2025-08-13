@@ -17,6 +17,13 @@
             height: 300px;
             overflow: auto;
         }
+
+        .message-sender {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
     </style>
 </head>
 
@@ -25,12 +32,26 @@
     <label>Creator Nickname: <input id="creatorNick" value="omga"></label>
     <button onclick="startGame()">Start Game</button>
     <div>Game Code: <span id="gameCode"></span></div>
-    <button onclick="sendStartGame()">Start Game Now</button>
 
     <h3>Join Game (other player)</h3>
     <label>Join Nickname: <input id="joinNick" value="alice"></label>
     <label>Code: <input id="joinCode" placeholder="will auto-fill after start"></label>
     <button onclick="joinGame()">Join Game</button>
+
+    <h3>Send Messages</h3>
+    <div class="message-sender">
+        <h4>Creator Connection</h4>
+        <label>Type: <input id="creatorMsgType" value="start" placeholder="message type"></label><br>
+        <label>Data: <input id="creatorMsgData" placeholder="JSON data (optional)"></label><br>
+        <button onclick="sendCreatorMessage()">Send to Creator WS</button>
+    </div>
+
+    <div class="message-sender">
+        <h4>Join Connection</h4>
+        <label>Type: <input id="joinMsgType" value="ping" placeholder="message type"></label><br>
+        <label>Data: <input id="joinMsgData" placeholder="JSON data (optional)"></label><br>
+        <button onclick="sendJoinMessage()">Send to Join WS</button>
+    </div>
 
     <h3>Log</h3>
     <div id="log"></div>
@@ -45,14 +66,48 @@
             el.scrollTop = el.scrollHeight;
         }
 
-        function sendStartGame() {
+        function sendCreatorMessage() {
             if (!creatorWS || creatorWS.readyState !== WebSocket.OPEN) {
                 log("No active creator connection");
                 return;
             }
-            const msg = { type: "start" };
+            const type = document.getElementById('creatorMsgType').value.trim();
+            const dataStr = document.getElementById('creatorMsgData').value.trim();
+            if (!type) return;
+
+            const msg = { type };
+            if (dataStr) {
+                try {
+                    msg.data = JSON.parse(dataStr);
+                } catch (e) {
+                    msg.data = dataStr; // treat as string if not valid JSON
+                }
+            }
+
             creatorWS.send(JSON.stringify(msg));
             log("[creator] ->", msg);
+        }
+
+        function sendJoinMessage() {
+            if (!joinWS || joinWS.readyState !== WebSocket.OPEN) {
+                log("No active join connection");
+                return;
+            }
+            const type = document.getElementById('joinMsgType').value.trim();
+            const dataStr = document.getElementById('joinMsgData').value.trim();
+            if (!type) return;
+
+            const msg = { type };
+            if (dataStr) {
+                try {
+                    msg.data = JSON.parse(dataStr);
+                } catch (e) {
+                    msg.data = dataStr; // treat as string if not valid JSON
+                }
+            }
+
+            joinWS.send(JSON.stringify(msg));
+            log("[join] ->", msg);
         }
 
         function startGame() {
