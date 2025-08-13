@@ -9,6 +9,12 @@
     }
 }
 
+@layer components {
+    .board {
+        @apply grid grid-cols-4 w-fit *:-ml-1 *:-mt-1;
+    }
+}
+
 .tile {
     background-image: url('../public/atlas.png');
     width: 68px;
@@ -45,10 +51,15 @@
     @apply brightness-125 -translate-y-1;
 }
 
+
+.board:has(.tile-valid,.tile-selected) .tile-parent:not(:has(.tile-valid)):not(:has(.tile-selected)) {
+    @apply brightness-75;
+}
+
 .tile-parent:has(.tile-valid) {
     @apply brightness-105 -translate-y-0.5;
     > .tile-valid::after {
-        @apply drop-shadow-lg drop-shadow-blue-900;
+        @apply drop-shadow-lg drop-shadow-blue-200;
     }
 }
 
