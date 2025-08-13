@@ -20,4 +20,5 @@ export interface RenderInterface {
     refreshTile(tile: t.Tile): void;
     renderWin(state: t.GameState, winner: t.Player): void;
     gameStart(state: t.GameState): void;
+    highlightPlayer(player: t.Player): void;
 }

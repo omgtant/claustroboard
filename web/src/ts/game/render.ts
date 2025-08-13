@@ -27,7 +27,8 @@ export const renderInterface: RenderInterface = {
     movePlayer,
     refreshTile,
     renderWin,
-    gameStart
+    gameStart,
+    highlightPlayer,
 }
 
 const board = document.getElementById('board');
@@ -73,7 +74,7 @@ function clearHighlights() {
 
 function highlightTiles(tiles: Pos[], flags: HighlightFlags) {
     if (!board) throw new Error('Board element not found');
-    clearHighlights();
+    // clearHighlights();
 
     tiles.forEach(tile => {
         const tileElement = getElementByPos(tile);
@@ -128,9 +129,9 @@ function movePlayer(turnNumber:number, player: Player, to: Pos) {
 
     if (playerElement) {
         const tileElement = getElementByPos(to);
-        if (tileElement?.parentElement) {
+        if (tileElement?.parentElement?.parentElement) {
             FLIPPlayerBegin(player);
-            tileElement.parentElement.appendChild(playerElement);
+            tileElement.parentElement.parentElement.appendChild(playerElement);
             FLIPPlayerEnd(player);
         }
         logTurn(turnNumber, player, to);
@@ -201,6 +202,9 @@ function complain(message: string) {
 }
 
 function _createTile(tile: Tile) {
+    const tileGrandparent = document.createElement('div');
+    tileGrandparent.classList.add('tile-grandparent');
+
     const tileParent = document.createElement('div');
     tileParent.classList.add('tile-parent');
     
@@ -210,12 +214,13 @@ function _createTile(tile: Tile) {
 
     
     tileParent.appendChild(tileElement);
+    tileGrandparent.appendChild(tileParent);
     
     tileParent.addEventListener('click', () => {
         callbacks.tryMoveTo(tile.position);
     });
 
-    return tileParent;
+    return tileGrandparent;
 }
 
 function _createPlayerElement(player: Player, index: number): HTMLElement {
@@ -248,7 +253,20 @@ function renderState(state: GameState) {
     state.players.forEach((player, index) => {
         const el = getElementByPos(player.position);
         if (!el) throw new Error('Player position tile not found');
-        el.parentElement?.appendChild(_createPlayerElement(player, index));
+        el.parentElement?.parentElement?.appendChild(_createPlayerElement(player, index));
     });
 }
 
+function highlightPlayer(player: Player) {
+    const playerElement = document.querySelector(`[data-player-nickname="${player.nickname}"]`);
+    if (!playerElement) throw new Error('Player element not found');
+
+    const otherPlayers = document.querySelectorAll('.player-parent');
+    otherPlayers.forEach(el => {
+        if (el !== playerElement) {
+            el.classList.remove('player-highlight');
+        }
+    });
+
+    playerElement.classList.add('player-highlight');
+}

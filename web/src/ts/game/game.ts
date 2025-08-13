@@ -60,6 +60,8 @@ function suggestMoving(someGameState: t.GameState = gameState, someRenderInterfa
         suggestMoving(someGameState, someRenderInterface);
     }
     highlight(moves, someRenderInterface);
+    someRenderInterface?.highlightTiles([_getCurrentPlayer(someGameState).position], HighlightFlags.SELECTION);
+    someRenderInterface?.highlightPlayer(_getCurrentPlayer(someGameState));
 }
 
 function jumpToHistory(turnNumber: number, someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface) {
@@ -84,6 +86,7 @@ function playMove(pos: Pos, someGameState: t.GameState = gameState, someRenderIn
         return;
     }
     currentPlayer.position = pos;
+    someRenderInterface?.clearHighlights();
     someRenderInterface?.movePlayer(someGameState.turnNumber, currentPlayer, pos);
     _tile(pos, someGameState).onPlayerLanding(someGameState, currentPlayer);
     _tile(oldPos,someGameState).isOpen = false;
