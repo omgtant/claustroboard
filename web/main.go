@@ -7,14 +7,14 @@ import (
 )
 
 var (
-	//go:embed public
+	//go:embed out
 	StaticFiles embed.FS
 )
 
 func GetRouter() *http.ServeMux {
 	mux := http.NewServeMux()
 
-	staticFS, err := fs.Sub(StaticFiles, "public")
+	staticFS, err := fs.Sub(StaticFiles, "out")
 	if err == nil {
 		fs := http.FileServer(http.FS(staticFS))
 		mux.Handle("/", fs)
