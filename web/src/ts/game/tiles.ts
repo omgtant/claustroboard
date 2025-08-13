@@ -1,4 +1,4 @@
-import { getNeighbors } from "../helpers/helpers";
+import { getNeighbors, posEq } from "../helpers/helpers";
 import { Tile, GameState, Player } from "../types/types";
 import { Pos } from "../types/util";
 
@@ -31,7 +31,7 @@ export class LayoutTile extends Tile {
         visited.add(tile);
         const result = new Set<Tile>();
         getNeighbors(state, tile).forEach(neighbor => {
-            if (visited.has(neighbor) || !neighbor.canLandOnMe(state, player) || !neighbor.isOpen) return;
+            if (visited.has(neighbor) || !neighbor.canLandOnMe(state, player) || !neighbor.isOpen || state.players.some(p => posEq(p.position, neighbor.position))) return;
             this.dfs(state, player, cur_depth+1, target_depth, neighbor, visited).forEach(n => {
                 result.add(n);
             });

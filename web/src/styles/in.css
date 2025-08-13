@@ -5,122 +5,148 @@
 
 @layer base {
     body {
+        image-rendering: pixelated;
         @apply bg-gray-900;
     }
 }
 
 @layer components {
     .board {
-        @apply grid grid-cols-4 w-fit *:-ml-1 *:-mt-1;
+        @apply relative grid grid-cols-4 w-fit *:-ml-1 *:-mt-1;
+
+        &:has(.tile-valid,.tile-selected) .tile-parent:not(:has(.tile-valid)):not(:has(.tile-selected)) {
+            @apply brightness-75;
+        }
+    }
+
+
+    .tile-parent {
+        @apply transition-[filter,translate] duration-100 relative;
+
+        &:has(.tile-selected) {
+            @apply brightness-125 -translate-y-1;
+        }
+        &:has(.tile-valid) {
+            @apply brightness-105 -translate-y-0.5;
+            > .tile-valid::after {
+                @apply drop-shadow-lg drop-shadow-blue-200;
+            }
+        }
+
+
+        .tile {
+            background-image: url('../public/atlas.png');
+            width: 68px;
+            height: 68px;
+            @apply transform-3d transition-transform duration-500 ease-in-out relative perspective-distant;
+
+            &::before {
+                content: '';
+                background-image: url('../public/atlas.png');
+                background-position: -184px 0px;
+                width: 68px;
+                height: 68px;
+                @apply absolute block rotate-x-180 -translate-z-1 delay-[170ms];
+                backface-visibility: hidden;
+            }
+            &::after {
+                @apply transition-[filter] duration-100;
+            }
+
+            &.tile-closed {
+                @apply rotate-x-180;
+
+                &::before {
+                    @apply rotate-x-0;
+                }
+            }
+
+
+            &.tile-type-1 {
+                background-position: -40px 0px;
+            }
+
+            &.tile-type-2 {
+                background-position: -112px 0px;
+            }
+
+            &.tile-RED {
+                filter: hue-rotate(-260deg);
+            }
+
+            &.tile-YELLOW {
+                filter: brightness(110%) hue-rotate(-2000deg);
+            }
+
+            &.tile-GREEN {
+                filter: brightness(110%) saturate(50%) hue-rotate(-120deg);
+            }
+
+            &.tile-BLUE {
+                filter: hue-rotate(0deg);
+            }
+
+            &.tile-layout-1::after {
+                content: '';
+                display: block;
+                background-image: url('../public/atlas.png');
+                background-position: -40px -72px;
+                width: 68px;
+                height: 68px;
+            }
+
+            &.tile-layout-2::after {
+                content: '';
+                display: block;
+                background-image: url('../public/atlas.png');
+                background-position: -112px -72px;
+                width: 68px;
+                height: 68px;
+            }
+
+            &.tile-layout-3::after {
+                content: '';
+                display: block;
+                background-image: url('../public/atlas.png');
+                background-position: -184px -72px;
+                width: 68px;
+                height: 68px;
+            }
+
+            &.tile-layout-4::after {
+                content: '';
+                display: block;
+                background-image: url('../public/atlas.png');
+                background-position: -256px -72px;
+                width: 68px;
+                height: 68px;
+            }
+
+        }
+    }
+
+
+    .player-parent {
+        @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
+        .player {
+            @apply drop-shadow-xl drop-shadow-black;
+            background-image: url('../public/atlas.png');
+            width: 20px;
+            height: 20px;
+            &.player-1 {
+                background-position: 0px 0px;
+            }
+            &.player-2 {
+                background-position: -20px 0px;
+            }
+        }
+
+        &.player-lost {
+            @apply saturate-0;
+        }
+
+        &.player-won {
+            @apply saturate-200 brightness-125;
+        }
     }
 }
-
-.tile {
-    background-image: url('../public/atlas.png');
-    width: 68px;
-    height: 68px;
-    @apply transform-3d transition-transform duration-500 ease-in-out relative perspective-distant;
-
-    &::before {
-        content: '';
-        background-image: url('../public/atlas.png');
-        background-position: -184px 0px;
-        width: 68px;
-        height: 68px;
-        @apply absolute block rotate-x-180 -translate-z-1 delay-[170ms];
-        backface-visibility: hidden;
-    }
-    &::after {
-        @apply transition-[filter] duration-100;
-    }
-}
-
-.tile-closed {
-    @apply rotate-x-180;
-
-    &::before {
-        @apply rotate-x-0;
-    }
-}
-
-.tile-parent {
-    @apply transition-[filter,translate] duration-100;
-}
-
-.tile-parent:has(.tile-selected) {
-    @apply brightness-125 -translate-y-1;
-}
-
-
-.board:has(.tile-valid,.tile-selected) .tile-parent:not(:has(.tile-valid)):not(:has(.tile-selected)) {
-    @apply brightness-75;
-}
-
-.tile-parent:has(.tile-valid) {
-    @apply brightness-105 -translate-y-0.5;
-    > .tile-valid::after {
-        @apply drop-shadow-lg drop-shadow-blue-200;
-    }
-}
-
-.tile-type-1 {
-    background-position: -40px 0px;
-}
-
-.tile-type-2 {
-    background-position: -112px 0px;
-}
-
-.tile-RED {
-    filter: hue-rotate(-260deg);
-}
-
-.tile-YELLOW {
-    filter: brightness(110%) hue-rotate(-2000deg);
-}
-
-.tile-GREEN {
-    filter: brightness(110%) saturate(50%) hue-rotate(-120deg);
-}
-
-.tile-BLUE {
-    filter: hue-rotate(0deg);
-}
-
-.tile-layout-1::after {
-    content: '';
-    display: block;
-    background-image: url('../public/atlas.png');
-    background-position: -40px -72px;
-    width: 68px;
-    height: 68px;
-}
-
-.tile-layout-2::after {
-    content: '';
-    display: block;
-    background-image: url('../public/atlas.png');
-    background-position: -112px -72px;
-    width: 68px;
-    height: 68px;
-}
-
-.tile-layout-3::after {
-    content: '';
-    display: block;
-    background-image: url('../public/atlas.png');
-    background-position: -184px -72px;
-    width: 68px;
-    height: 68px;
-}
-
-.tile-layout-4::after {
-    content: '';
-    display: block;
-    background-image: url('../public/atlas.png');
-    background-position: -256px -72px;
-    width: 68px;
-    height: 68px;
-}
-
-

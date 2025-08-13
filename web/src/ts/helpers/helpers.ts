@@ -41,7 +41,8 @@ export function readInitialStateIntoGameState(initialState: InitialState) : Game
         playerTurnIndex: 0,
         players: initialState.players.map(player => ({
             ...player,
-            position: { ...player.position }
+            position: { ...player.position },
+            is_active: true
         }))
     };
     return gameState;
@@ -114,4 +115,8 @@ export function shuffle2DArr<T>(arr: T[][]): T[][] {
     }
 
     return copied;
+}
+
+export function posEq(a: Pos, b: Pos): boolean {
+    return a.x === b.x && a.y === b.y;
 }

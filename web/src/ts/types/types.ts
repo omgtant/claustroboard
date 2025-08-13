@@ -3,7 +3,7 @@ import { Pos, TileColor } from "./util";
 export type InitialState = {
     palette: Record<string, {script: string}>[];
     board: TileSetup[][];
-    players: Player[];
+    players: InitialPlayer[];
 }
 
 export type TileSetup = {tile_type: string, color:number, data: any}
@@ -15,9 +15,13 @@ export type GameState = {
     players: Player[];
 }
 
-export type Player = {
+export type InitialPlayer = {
     nickname: string;
     position: Pos;
+}
+
+export type Player = InitialPlayer & {
+    is_active: boolean;
 }
 
 export class Tile {
