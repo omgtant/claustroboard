@@ -15,11 +15,15 @@ var (
 func GetRouter(projectRoot string) *http.ServeMux {
 	mux := http.NewServeMux()
 
-	// routers
-	fileServer := routers.CreateFileServer(projectRoot, StaticFiles)
+	// static files
+	mux.Handle("/", routers.CreateFileServer(projectRoot, StaticFiles))
 
-	// middlewares
-	mux.Handle("/", middlewares.LoggingMiddleware(fileServer))
+	// API routes
+	apiMux := http.NewServeMux()
+	apiMux.HandleFunc("POST /start-game", routers.StartGame)
+	apiMux.HandleFunc("POST /join/{id}", routers.JoinGame)
+
+	mux.Handle("/api/v1/", middlewares.LoggingMiddleware(http.StripPrefix("/api/v1", apiMux)))
 
 	return mux
 }

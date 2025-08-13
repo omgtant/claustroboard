@@ -11,11 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
-
 	"omgtant/claustroboard/shared/config"
-	"omgtant/claustroboard/shared/models"
 	"omgtant/claustroboard/web"
 )
 
@@ -35,13 +31,6 @@ func Start() {
 	if addr == "" {
 		panic("APP_ADDRESS environment variable is not set")
 	}
-
-	// db
-	db, err := gorm.Open(sqlite.Open(db_addr), &gorm.Config{})
-	if err != nil {
-		panic(err)
-	}
-	models.Setup(db)
 
 	// http
 
