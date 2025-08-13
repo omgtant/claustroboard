@@ -82,7 +82,7 @@ Internally has access to the game state, possibly via injection.
 
 **Implementations**
 - on turn start - nothing
-- on player-occupied turn start - traverse from this card via dfs with depth=0 only visiting open cards, return all cards that are reachable within (move number) moves.
+- on player-occupied turn start - traverse from this card via dfs only visiting open cards, return all cards that are reachable within (move number) moves.
 - on player landing - nothing
 - can land on me? - true
 - can start on me? - true
@@ -103,3 +103,15 @@ Internally has access to the game state, possibly via injection.
 - on player landing - panic
 - can land on me? - false
 - can start on me? - false
+
+## Wildcard tile (inherits Abstract tile)
+
+the color is always 0
+
+**Implementations**
+- on turn start - nothing
+- on player-occupied turn start - dfs, return all cards reachable with 4 moves or less
+- on player landing - nothing
+- can land on me? - true
+- can start on me? - true
+
