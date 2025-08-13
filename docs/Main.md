@@ -82,7 +82,7 @@ Internally has access to the game state, possibly via injection.
 
 **Implementations**
 - on turn start - nothing
-- on player-occupied turn start - traverse from this card via dfs only visiting open cards, return all cards that are reachable within (move number) moves.
+- on player-occupied turn start - traverse from this card via dfs only visiting open cards, return all cards that are reachable within `move number` moves.
 - on player landing - nothing
 - can land on me? - true
 - can start on me? - true
@@ -91,7 +91,7 @@ Internally has access to the game state, possibly via injection.
 
 **Implementations**
 - on player-occupied turn start - panic
-- on player landing - let the player choose any card such that (my.color == 0 || my.color == candidate.color) && can land on candidate
+- on player landing - let the player choose any card such that `(my.color == 0 || my.color == candidate.color) && can land on candidate`. teleport the player to that tile, and trigger the `on player landing` of that tile
 - can land on me? - not if the player is standing on another teleport tile rn
 - can start on me? - false
 
@@ -114,4 +114,14 @@ the color is always 0
 - on player landing - nothing
 - can land on me? - true
 - can start on me? - true
+
+## Zero tile (inherits Abstract tile)
+
+**Implementations**
+- on turn start - nothing
+- on player-occupied turn start - panic
+- on player landing - swap all players **positions** in turn order, while preserving the turn order itself (so the next player still moves next). for the player that ends up on this tile, copy the player's old tile and replace this tile with that.
+- can land on me? - true
+- can start on me? - false *?*
+
 
