@@ -15,8 +15,10 @@
     "watch:ts": "esbuild web/src/ts/**/*.ts --bundle --outdir=web/out --sourcemap --format=esm --splitting --watch",
     "build:html": "cpx \"web/src/**/*.html\" web/out",
     "watch:html": "cpx \"web/src/**/*.html\" web/out --watch --verbose",
+    "build:assets": "cpx \"web/src/public/**/*\" web/out/public",
+    "watch:assets": "cpx \"web/src/public/**/*\" web/out/public --watch --verbose",
     "build": "npm run build:html && npm run build:ts && npm run build:css",
-    "dev": "concurrently -k -n html,ts,css \"npm:watch:html\" \"npm:watch:ts\" \"npm:watch:css\"",
+    "dev": "concurrently -k -n html,ts,css \"npm:watch:html\" \"npm:watch:ts\" \"npm:watch:css\" \"npm:watch:assets\"",
     "serve": "go run .",
     "godev": "wgo run -file=out/ -file=src/ .",
     "dev:all": "concurrently -k -n assets,server \"npm:dev\" \"npm:godev\""
