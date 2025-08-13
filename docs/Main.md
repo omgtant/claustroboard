@@ -44,11 +44,43 @@ The order of winning is the reverse of the order of losing.
 	- For each card in arbitrary order:
 		- Trigger the tile global turn start hook
 	- For each active player in turn order:
-		- Trigger the tile player-occupied turn start hook
+		- Trigger the tile player-occupied turn start hook.
+			- The returned valid move candidates are then filtered through candidate.(can land on me?)
 		- If $P-1$ players already lost, mark the player as the winner. Break.
 		- If the player doesn't have a valid card to reach to, petrify the player. Continue.
 		- Let the player chose a valid card to move to. *The intermediate visits are determined programatically and are not controlled by the player*
 		- For the tile the player chose, trigger the tile player land hook
 		- Close the card the player started the turn on
 5. Congratulate the winners.
+
+# Tile types
+
+## Abstract tile
+
+Internally has access to the game state, possibly via injection.
+
+**Properties**
+- position
+	- x ($0$ to $N-1$)
+	- y ($0$ to $N-1$)
+- is open (true, false)
+- color (0,1,2,3,4)
+
+**Hooks**
+- on turn start (self, turn number, state) -> void *(turn number can already be fetched from the state tho, not sure)*
+- on player-occupied turn start (self, player, turn number, state) -> valid moves list
+- on player landing (self, player, state) -> void
+
+**Methods**
+- can land on me? (self, player, state) -> bool
+## Layout tile (inherits Abstract tile)
+
+**Properties**
+- move number (1, 2, 3, 4 (5?))
+
+**Implementations**
+- on turn start - nothing
+- on player-occupied turn start - traverse from this card via dfs with depth=0 only visiting open cards, return all cards that are reachable within (move number) moves.
+- on player landing - nothing
+- can land on me? - true
 
