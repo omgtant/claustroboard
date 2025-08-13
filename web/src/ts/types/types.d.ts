@@ -2,7 +2,7 @@ import { Pos, TileColor } from "./util";
 
 export class GameState {
     palette: Record<string, {script: string}>[];
-    board: {tile_type: string, data: any}[][];
+    board: {tile_type: string, color:number, data: any}[][];
     players: Player[];
 }
 
