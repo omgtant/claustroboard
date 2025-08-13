@@ -1,4 +1,4 @@
-**version:** v1.2
+ **version:** v1.2
 
 http post `/new-game` (my nickname) -> game code (i.e. `ABC123`), WS
 http post `/join/<code>` (my nickname) -> player list, WS

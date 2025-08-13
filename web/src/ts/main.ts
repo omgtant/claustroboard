@@ -1,4 +1,3 @@
-import { gameState } from './game/game'
-import { renderBoard } from './game/render'
+import { start } from './game/game'
 
-renderBoard(gameState);
+start();

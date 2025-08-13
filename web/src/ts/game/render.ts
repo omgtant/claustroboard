@@ -1,11 +1,29 @@
 import { rnd } from "../helpers/helpers";
-import type { GameState, Tile } from "../types/types.d.ts";
+import { HighlightFlags, RenderInterface } from "../types/renderInterface.ts";
+import type { GameState, Player, Tile } from "../types/types.d.ts";
 import { Pos, TileColor } from "../types/util.ts";
 import { LayoutTile } from "./tiles";
 
+const callbacks = {
+    tryMoveTo: (pos: Pos) : void => {
+        throw new Error("Callback not received yet");
+    }
+}
+
+
+export const renderInterface: RenderInterface = {
+    registerCallbacks: (tryMoveTo) => {
+        callbacks.tryMoveTo = tryMoveTo;
+    },
+    renderState,
+    clearHighlights,
+    highlightTiles,
+    complainInvalidMove,
+    complain,
+    movePlayer
+}
+
 const board = document.getElementById('board');
-
-
 
 function getElementByPos(pos: Pos) {
     if (!board) throw new Error('Board element not found');
@@ -14,11 +32,51 @@ function getElementByPos(pos: Pos) {
     return board.querySelector(`[data-tile-id="${tileId}"]`);
 }
 
+function clearHighlights() {
+    if (!board) throw new Error('Board element not found');
+    const highlightedTiles = board.querySelectorAll('.tile-valid, .tile-selected');
+    highlightedTiles.forEach(tile => {
+        tile.classList.remove('tile-valid', 'tile-selected');
+    });
+}
 
+function highlightTiles(tiles: Pos[], flags: HighlightFlags) {
+    if (!board) throw new Error('Board element not found');
+    clearHighlights();
 
-export function renderBoard(state: GameState) {
+    tiles.forEach(tile => {
+        const tileElement = getElementByPos(tile);
+        if (tileElement) {
+            if (flags === 0) {
+                tileElement.classList.remove('tile-valid', 'tile-selected');
+            }
+            if (flags & HighlightFlags.SELECTION) {
+                tileElement.classList.add('tile-selected');
+            }
+            if (flags & HighlightFlags.VALID) {
+                tileElement.classList.add('tile-valid');
+            }
+        }
+    });
+}
+
+function movePlayer(player: Player, to: Pos) {
+
+}
+
+function complainInvalidMove() {
+    alert("sex");
+}
+
+function complain(message: string) {
+    alert(message + ". <br>");
+}
+
+function renderState(state: GameState) {
     if (!board) throw new Error('Board element not found');
     board.innerHTML = '';
+
+    console.log("AAAAB");
 
     state.board.tiles.forEach(row => {
         row.forEach(tile => {
@@ -29,20 +87,28 @@ export function renderBoard(state: GameState) {
             tileElement.className = `tile tile-type-${rnd(1,2,undefined,tile)} tile-${TileColor[tile.color]}`;
             if (tile instanceof LayoutTile) {
                 tileElement.classList.add(`tile-layout-${tile.moveCount}`);
-            }
+            } 
             if (!tile.isOpen) tileElement.classList.add('tile-closed');
             tileElement.addEventListener('click', () => {
+                const isValid = tileElement.classList.contains('tile-valid');
+                console.log(`Tile clicked: ${tile.position.x}, ${tile.position.y}, valid: ${isValid}`);
+                if (isValid) {
+                    clearHighlights();
+                    movePlayer(state.players[state.playerTurnIndex], tile.position);
+                    return;
+                }
+
                 const isSelected = tileElement.classList.contains('tile-selected');
                 if (!isSelected) {
                     if (!tile.isOpen) return; // Ignore clicks on closed tiles
-                    deselectTiles();
+                    clearHighlights();
                     tileElement.classList.add('tile-selected');
                     const validMoves = tile.availableMoves(state, state.players[state.playerTurnIndex]);
                     validMoves.forEach(pos => {
                         getElementByPos(pos)?.classList.add('tile-valid');
                     });
                 } else {
-                    deselectTiles();
+                    clearHighlights();
                 }
             });
             tileElement.dataset.tileId = `${tile.position.x}-${tile.position.y}`;
@@ -61,11 +127,3 @@ export function renderBoard(state: GameState) {
     });
 }
 
-
-function deselectTiles() {
-    if (!board) throw new Error('Board element not found');
-    const selectedTiles = board.querySelectorAll('.tile-selected, .tile-valid');
-    selectedTiles.forEach(tile => {
-        tile.classList.remove('tile-selected', 'tile-valid');
-    });
-}

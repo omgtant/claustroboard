@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "@tailwindcss/cli": "^4.1.11",
-    "tailwindcss": "^4.1.11"
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.9.2"
   },
   "devDependencies": {
     "concurrently": "^9.2.0",
