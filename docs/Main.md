@@ -54,6 +54,16 @@ The order of winning is the reverse of the order of losing.
 		- Close the card the player started the turn on
 5. Congratulate the winners.
 
+
+# Board
+
+**Properties**
+size of the board - 2+ int
+tiles - [[#Tile types]] 2D arr
+players - Player arr - preservers turn order
+turn count - 0+ int
+turn index - 0 - len(players)-1
+
 # Tile types
 
 ## Abstract tile
