@@ -39,3 +39,6 @@ workspace.json
 
 # DB
 *.sqlite
+
+# out
+web/out
