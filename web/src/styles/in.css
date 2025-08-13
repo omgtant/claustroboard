@@ -146,7 +146,7 @@
         }
 
         &.player-won {
-            @apply saturate-200 brightness-125;
+            @apply animate-bounce;
         }
     }
 }
