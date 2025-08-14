@@ -21,21 +21,21 @@ func GetRouter(projectRoot string) *http.ServeMux {
 	// static files
 	mux.Handle("/", routers.CreateFileServer(projectRoot, StaticFiles))
 
-	// debug
-	if config.Get().ENVIRONMENT == "development" {
-		mux.HandleFunc("/api/v1/get-pid", func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Content-Type", "text/plain")
-			w.Write([]byte(fmt.Sprintf("%d", os.Getpid())))
-		})
-	}
-
 	// API routes
 	apiMux := http.NewServeMux()
-	// Upgraded to websocket (GET)
+	// websocket routes
 	apiMux.HandleFunc("GET /start-game", routers.StartGameWS)
 	apiMux.HandleFunc("GET /join/{id}", routers.JoinGameWS)
-
+	// debug routes
+	if config.Get().ENVIRONMENT == "development" {
+		apiMux.HandleFunc("GET /get-pid", getPID)
+	}
 	mux.Handle("/api/v1/", middlewares.LoggingMiddleware(http.StripPrefix("/api/v1", apiMux)))
 
 	return mux
+}
+
+func getPID(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write([]byte(fmt.Sprintf("%d", os.Getpid())))
 }
