@@ -37,3 +37,8 @@ Action `my-move` (delta) -> error, yes: the player makes a move
 Action `come-again` -> \[delta\]
 
 Upon ending the game, the server broadcasts `close`.
+
+If the environment variable `ENVIRONMENT` is set to `"development"`, the following actions and events are also made available:
+
+Action `broadcast` (payload)
+	-> broadcast `broadcast`: (payload)
