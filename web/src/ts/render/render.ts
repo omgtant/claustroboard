@@ -1,5 +1,5 @@
 import { rnd } from "../helpers/helpers.ts";
-import { HighlightFlags, RenderInterface } from "../types/renderInterface.ts";
+import { TileHighlightFlags, RenderInterface, PlayerHighlightFlags } from "../types/renderInterface.ts";
 import type { GameState, Player, Tile, ValidMove } from "../types/types.ts";
 import { Pos, TileColor } from "../types/util.ts";
 import { LayoutTile, WildcardTile } from "../game/tiles.ts";
@@ -29,7 +29,8 @@ export const renderInterface: RenderInterface = {
     renderWin,
     gameStart,
     highlightPlayer,
-    suggestMoves
+    suggestMoves,
+    playerLost,
 }
 
 const board = document.getElementById('board');
@@ -73,7 +74,7 @@ function clearHighlights() {
     });
 }
 
-function highlightTiles(tiles: Pos[], flags: HighlightFlags) {
+function highlightTiles(tiles: Pos[], flags: TileHighlightFlags) {
     if (!board) throw new Error('Board element not found');
     // clearHighlights();
 
@@ -83,10 +84,10 @@ function highlightTiles(tiles: Pos[], flags: HighlightFlags) {
             if (flags === 0) {
                 tileElement.classList.remove('tile-valid', 'tile-selected');
             }
-            if (flags & HighlightFlags.SELECTION) {
+            if (flags & TileHighlightFlags.SELECTION) {
                 tileElement.classList.add('tile-selected');
             }
-            if (flags & HighlightFlags.VALID) {
+            if (flags & TileHighlightFlags.VALID) {
                 tileElement.classList.add('tile-valid');
             }
         }
@@ -105,9 +106,9 @@ function suggestMoves(moves: ValidMove[], player: Player) {
     }
     highlightPlayer(player);
     
-    highlightTiles([player.position], HighlightFlags.SELECTION);
+    highlightTiles([player.position], TileHighlightFlags.SELECTION);
     
-    highlightTiles(moves.map(move => move.to), HighlightFlags.VALID);
+    highlightTiles(moves.map(move => move.to), TileHighlightFlags.VALID);
     const tileElements = moves.map(move => getElementByPos(move.to));
     moves.forEach(arrowOnHover);
 }
@@ -186,6 +187,8 @@ function gameStart(state: GameState) {
 }
 
 function renderWin(state: GameState, winner: Player) {
+    clearAllArrows();
+
     const winnerElement = document.querySelector(`[data-player-nickname="${winner.nickname}"]`);
     if (!winnerElement) throw new Error('Winner element not found');
 
@@ -277,7 +280,7 @@ function renderState(state: GameState) {
     });
 }
 
-function highlightPlayer(player: Player) {
+function highlightPlayer(player: Player, flags: PlayerHighlightFlags = PlayerHighlightFlags.NONE) {
     const playerElement = document.querySelector(`[data-player-nickname="${player.nickname}"]`);
     if (!playerElement) throw new Error('Player element not found');
 
@@ -291,22 +294,21 @@ function highlightPlayer(player: Player) {
     playerElement.classList.add('player-highlight');
 }
 
+function playerLost(player: Player) {
+    const playerElement = document.querySelector(`[data-player-nickname="${player.nickname}"]`);
+    if (!playerElement) throw new Error('Player element not found');
+
+    playerElement.classList.add('player-lost');
+    playerElement.classList.remove('player-highlight');
+    logMessage(`Player ${player.nickname} has lost the game!`);
+}
+
 function clearAllArrows() {
+    console.log('b');
     const arrows = document.querySelectorAll('.move-arrow');
     arrows.forEach(arrow => {
         arrow.remove();
     });
-}
-
-function getCenterOfTileElementPx(pos: Pos): {xPx: number, yPx: number} {
-    const tileElement = getElementByPos(pos);
-    if (!tileElement) throw new Error('Tile element not found');
-    
-    const rect = tileElement.getBoundingClientRect();
-    return {
-        xPx: rect.left + rect.width / 2,
-        yPx: rect.top + rect.height / 2
-    };
 }
 
 function getCenterOfTileElementPercentRelToBoard(pos: Pos): {xPercent: number, yPercent: number} {
@@ -324,39 +326,13 @@ function getCenterOfTileElementPercentRelToBoard(pos: Pos): {xPercent: number, y
 }
 
 function arrowOnHover(move: ValidMove) {
+    console.log('a');
+
     if (!move.path || move.path.length < 2) return;
 
     const tileElement = getElementByPos(move.to);
     if (!tileElement) throw new Error('Tile element not found');
 
-    // Approach 1: Using SVG for the arrow DIDN'T WORK
-    /*
-    const cont = document.createElement('svg');
-    cont.classList.add('move-arrow');
-    cont.setAttribute('width', '100%');
-    cont.setAttribute('height', '100%');
-    cont.setAttribute('viewBox', '0 0 1920 1080');
-    cont.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-
-    const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-
-    move.path.forEach((pos, index) => {
-        const {xPx, yPx} = getCenterOfTileElement(pos);
-        if (index === 0) {
-            polygon.setAttribute('points', `${xPx},${yPx} `);
-        } else {
-            polygon.setAttribute('points', polygon.getAttribute('points') + `${xPx},${yPx} `);
-        }
-    });
-
-    console.log(cont);
-
-    document.body.appendChild(cont);
-    cont.appendChild(polygon);
-    */
-    // tileElement.addEventListener('mouseover', () => {});
-
-    // Approach 2: clip path on board's absolute child
     const arrowElement = document.createElement('div');
     arrowElement.classList.add('move-arrow');
     board?.appendChild(arrowElement);

@@ -1,10 +1,16 @@
 import * as t from './types';
 import * as u from './util';
 
-export enum HighlightFlags {
+export enum TileHighlightFlags {
     NONE = 0,
     SELECTION = 1,
     VALID = 2,
+}
+
+export enum PlayerHighlightFlags {
+    NONE = 0,
+    WINNER = 1,
+    LOSER = 2,
 }
 
 export interface RenderInterface {
@@ -14,12 +20,13 @@ export interface RenderInterface {
     suggestMoves(moves: t.ValidMove[], player: t.Player): void;
     /** May keep old highlighted tiles.
      */
-    highlightTiles(tiles: u.Pos[], flags: HighlightFlags): void;
+    highlightTiles(tiles: u.Pos[], flags: TileHighlightFlags): void;
     clearHighlights(): void;
     complainInvalidMove(): void;
     complain(message: string): void;
     refreshTile(tile: t.Tile): void;
     renderWin(state: t.GameState, winner: t.Player): void;
     gameStart(state: t.GameState): void;
-    highlightPlayer(player: t.Player): void;
+    highlightPlayer(player: t.Player, flags: PlayerHighlightFlags): void;
+    playerLost(player: t.Player): void;
 }

@@ -1,5 +1,5 @@
 import { getMockInitialState, posEq, readInitialStateIntoGameState, toValidMovesOnly } from "../helpers/helpers";
-import { HighlightFlags, RenderInterface } from "../types/renderInterface";
+import { TileHighlightFlags, RenderInterface, PlayerHighlightFlags } from "../types/renderInterface";
 import * as t from "../types/types";
 import { Pos } from "../types/util";
 import { renderInterface } from "../render/render";
@@ -33,11 +33,11 @@ function advanceMove(someGameState: t.GameState = gameState) {
     someGameState.playerTurnIndex = (someGameState.playerTurnIndex + 1) % someGameState.players.length;
 }
 
-function suggestMoving(someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface) {
+function suggestMoving(someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface, lastTurnWasSkipped: boolean = false) {
     if (someGameState.players.length === 0) throw new Error("No players in the game");
     if (_getCurrentPlayer(someGameState).is_active === false) {
         advanceMove(someGameState);
-        suggestMoving(someGameState, someRenderInterface);
+        suggestMoving(someGameState, someRenderInterface, true);
         return;
     }
     if (someGameState.players.filter(p => p.is_active).length === 1) {
@@ -45,17 +45,21 @@ function suggestMoving(someGameState: t.GameState = gameState, someRenderInterfa
         return;
     }
 
-    someGameState.board.tiles.forEach(row => {
-        row.forEach(tile => {
-            tile.onTurnStart(someGameState);
+    if (!lastTurnWasSkipped) {
+        someGameState.board.tiles.forEach(row => {
+            row.forEach(tile => {
+                tile.onTurnStart(someGameState);
+            });
         });
-    });
+    }
 
     const moves = getAvailableMoves(someGameState);
     if (moves.length === 0) {
         _getCurrentPlayer(someGameState).is_active = false;
+        someRenderInterface?.playerLost(_getCurrentPlayer(someGameState));
         advanceMove(someGameState);
-        suggestMoving(someGameState, someRenderInterface);
+        suggestMoving(someGameState, someRenderInterface, true);
+        return;
     }
     someRenderInterface?.suggestMoves(moves, _getCurrentPlayer(someGameState));
 }
