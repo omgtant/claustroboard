@@ -45,7 +45,7 @@
                 @apply brightness-125 -translate-y-1;
             }
             &:has(.tile-valid) {
-                @apply brightness-105 -translate-y-0.5;
+                @apply brightness-105;
                 > .tile-valid::after {
                     @apply drop-shadow-lg drop-shadow-blue-200;
                 }
