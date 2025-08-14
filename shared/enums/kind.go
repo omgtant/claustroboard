@@ -16,16 +16,26 @@ const (
 	Zero
 )
 
-var TileKindNames = map[TileKind]string{
-	Layout:   "Layout",
-	Teleport: "Teleport",
-	Wall:     "Wall",
-	Wildcard: "Wildcard",
-	Zero:     "Zero",
+type TileKindName string
+
+const (
+	kindLayout   TileKindName = "Layout"
+	kindTeleport              = "Teleport"
+	kindWall                  = "Wall"
+	kindWildcard              = "Wildcard"
+	kindZero                  = "Zero"
+)
+
+var TileKindNames = map[TileKind]TileKindName{
+	Layout:   kindLayout,
+	Teleport: kindTeleport,
+	Wall:     kindWall,
+	Wildcard: kindWildcard,
+	Zero:     kindZero,
 }
 
 func (ss TileKind) String() string {
-	return TileKindNames[ss]
+	return string(TileKindNames[ss])
 }
 
 func RandomKind() TileKind {

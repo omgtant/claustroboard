@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"maps"
 	"math/rand"
+	"omgtant/claustroboard/shared/dtos"
 	"omgtant/claustroboard/shared/enums"
+	"omgtant/claustroboard/shared/valueobjects"
 	"slices"
 	"sync"
-	"time"
 )
 
 type BoardPhase string
@@ -18,14 +19,13 @@ const (
 )
 
 type Board struct {
-	CreatedAt time.Time
-	Width     uint16
-	Height    uint16
-	Tiles     []Tile
-	Players   []string
-	Turn      uint16
-	StartPos  []uint32
-	Phase     BoardPhase
+	Width   uint16
+	Height  uint16
+	Tiles   []Tile
+	Players []string
+	Turn    uint16
+	Pos     []valueobjects.Point
+	Phase   BoardPhase
 }
 
 var (
@@ -35,10 +35,9 @@ var (
 
 func NewGameBoard(players []string, palette []enums.TileKind, width uint16, height uint16) (GameCode, error) {
 	board := Board{
-		CreatedAt: time.Now(),
-		Width:     width,
-		Height:    height,
-		Phase:     PhaseLobby,
+		Width:  width,
+		Height: height,
+		Phase:  PhaseLobby,
 	}
 
 	for x := uint16(0); x < width; x++ {
@@ -142,16 +141,19 @@ func StartGame(code GameCode) (*Board, error) {
 		return nil, fmt.Errorf("not enough tiles for players")
 	}
 
-	used := make(map[uint32]struct{}, len(board.Players))
-	board.StartPos = board.StartPos[:0]
+	used := make(map[valueobjects.Point]struct{}, len(board.Players))
+	board.Pos = board.Pos[:0]
 	for range board.Players {
 		for {
-			idx := uint32(rand.Intn(total))
+			idx := valueobjects.Point{
+				X: uint16(rand.Intn(int(board.Width))),
+				Y: uint16(rand.Intn(int(board.Height))),
+			}
 			if _, ok := used[idx]; ok {
 				continue
 			}
 			used[idx] = struct{}{}
-			board.StartPos = append(board.StartPos, idx)
+			board.Pos = append(board.Pos, idx)
 			break
 		}
 	}
@@ -160,4 +162,38 @@ func StartGame(code GameCode) (*Board, error) {
 	gameBoards[code] = board
 	gameBoardsMu.Unlock()
 	return board, nil
+}
+
+func Snapshot(code GameCode) (*dtos.Board, error) {
+	b, err := GetBoard(code)
+	if err != nil {
+		return nil, err
+	}
+	cpPlayers := make([]dtos.Player, len(b.Players))
+	for i, playerName := range b.Players {
+		cpPlayers[i] = dtos.Player{
+			Name: playerName,
+			Pos:  b.Pos[i],
+		}
+	}
+
+	palette := make(dtos.Palette)
+	for _, kind := range enums.TileKindNames {
+		palette[kind] = dtos.PaletteTile{}
+	}
+	dtsTiles := make([]dtos.BoardTile, len(b.Tiles))
+	for i, tile := range b.Tiles {
+		dtsTiles[i] = dtos.BoardTile{
+			Name:  enums.TileKindName(tile.Kind.String()),
+			Color: tile.Color,
+		}
+	}
+
+	return &dtos.Board{
+		Palette: palette,
+		Width:   b.Width,
+		Height:  b.Height,
+		Players: cpPlayers,
+		Tiles:   dtsTiles,
+	}, nil
 }

@@ -2,15 +2,15 @@ package models
 
 import (
 	"omgtant/claustroboard/shared/enums"
+	"omgtant/claustroboard/shared/valueobjects"
 
 	"math/rand"
 )
 
 type Tile struct {
-	PosX    uint16 `gorm:"primarykey"`
-	PosY    uint16 `gorm:"primarykey"`
-	BoardID uint   `gorm:"primarykey"`
-	Board   Board  `gorm:"foreignKey:BoardID"`
+	Pos     valueobjects.Point `json:"coordinates"`
+	BoardID uint               `json:"primarykey"`
+	Board   Board              `json:"foreignKey:BoardID"`
 	Open    bool
 	Color   enums.TileColor
 	Energy  int16
@@ -19,8 +19,7 @@ type Tile struct {
 
 func RandomizeTileKind(board Board, tk enums.TileKind, x, y uint16) *Tile {
 	tile := &Tile{
-		PosX:   x,
-		PosY:   y,
+		Pos:    valueobjects.Point{X: x, Y: y},
 		Board:  board,
 		Open:   true,
 		Kind:   tk,
