@@ -3,6 +3,7 @@ import { TileHighlightFlags, RenderInterface, PlayerHighlightFlags } from "../ty
 import type { GameState, Player, Tile, ValidMove } from "../types/types.ts";
 import { Pos, TileColor } from "../types/util.ts";
 import { LayoutTile, WildcardTile } from "../game/tiles.ts";
+import { transform } from "typescript";
 
 const callbacks = {
     tryMoveTo: (pos: Pos) : void => {
@@ -59,7 +60,7 @@ function clearLog() {
     log.innerHTML = '';
 }
 
-function getElementByPos(pos: Pos) {
+function getElementByPos(pos: Pos): HTMLElement | null {
     if (!board) throw new Error('Board element not found');
 
     const tileId = `${pos.x}-${pos.y}`;
@@ -145,18 +146,56 @@ function FLIPPlayerEnd(player: Player) {
     });
 }
 
-function movePlayer(turnNumber:number, player: Player, to: Pos) {
-    const playerElement = document.querySelector(`[data-player-nickname="${player.nickname}"]`);
+/**
+ * Takes a move and drags the player along the path of the move.
+ */
+function FLIPMove(player: Player, move: ValidMove) {
+    if (!board) throw new Error('Board element not found');
+    
+    const playerElement:HTMLElement | null = document.querySelector(`[data-player-nickname="${player.nickname}"]`);
+    if (!playerElement) throw new Error('Player element not found');
 
-    if (playerElement) {
-        const tileElement = getElementByPos(to);
-        if (tileElement?.parentElement?.parentElement) {
-            FLIPPlayerBegin(player);
-            tileElement.parentElement.parentElement.appendChild(playerElement);
-            FLIPPlayerEnd(player);
-        }
-        logTurn(turnNumber, player, to);
+    const playerRect = playerElement.getBoundingClientRect();
+
+    if (!move.path) throw new Error('Move path is undefined');
+
+    const tileEls = move.path?.map(getElementByPos);
+    const positions = tileEls.map(el => {
+        if (!el) throw new Error('Tile element not found');
+        const rect = el.getBoundingClientRect();
+        return {
+            x: rect.x + rect.width / 2 - playerRect.width / 2,
+            y: rect.y + rect.height / 2 - playerRect.height / 2
+        };
+    });
+
+    const animations = positions.map((pos, index) => {
+        const dX = playerRect.x - pos.x;
+        const dY = playerRect.y - pos.y;
+        return {transform: `translate(${-dX}px, ${-dY}px)`};
+    });
+    
+    // playerElement.classList.remove('player-highlight');
+    playerElement.animate(animations, {
+        duration: 300 * positions.length,
+        easing: 'ease-in-out',
+        fill: 'forwards',
+        composite: 'accumulate'
+    });
+}
+
+function movePlayer(turnNumber:number, player: Player, move: ValidMove) {
+    const playerElement = document.querySelector(`[data-player-nickname="${player.nickname}"]`);
+    if (!playerElement) throw new Error('Player element not found');
+    
+    const tileElement = getElementByPos(move.to);
+    if (tileElement?.parentElement?.parentElement) {
+        if (!move.path) FLIPPlayerBegin(player);
+        tileElement.parentElement.parentElement.appendChild(playerElement);
+        if (!move.path) FLIPPlayerEnd(player);
+        if (move.path) FLIPMove(player, move);
     }
+    logTurn(turnNumber, player, move.to);
 }
 
 function refreshTile(tile: Tile) {

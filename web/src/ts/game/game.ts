@@ -83,13 +83,16 @@ function playMove(pos: Pos, someGameState: t.GameState = gameState, someRenderIn
     const oldPos = currentPlayer.position;
     const possibleMoves = toValidMovesOnly(_tile(oldPos, someGameState).availableMoves(someGameState, currentPlayer));
 
-    if (!possibleMoves.some(p => posEq(p.to, pos))) {
+    const move = possibleMoves.find(p => posEq(p.to, pos));
+
+    if (!move) {
         someRenderInterface?.complainInvalidMove();
         return;
     }
+    
     currentPlayer.position = pos;
     someRenderInterface?.clearHighlights();
-    someRenderInterface?.movePlayer(someGameState.turnNumber, currentPlayer, pos);
+    someRenderInterface?.movePlayer(someGameState.turnNumber, currentPlayer, move);
     _tile(pos, someGameState).onPlayerLanding(someGameState, currentPlayer);
     _tile(oldPos,someGameState).isOpen = false;
     someRenderInterface?.refreshTile(_tile(oldPos, someGameState));

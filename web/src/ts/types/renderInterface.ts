@@ -16,7 +16,7 @@ export enum PlayerHighlightFlags {
 export interface RenderInterface {
     registerCallbacks(tryMoveTo: (pos: u.Pos) => void, jumpToHistory: (turnNumber:number) => void): void;
     renderState(state: t.GameState): void;
-    movePlayer(turnNumber:number, player: t.Player, to: u.Pos): void;
+    movePlayer(turnNumber:number, player: t.Player, valid_move: t.ValidMove): void;
     suggestMoves(moves: t.ValidMove[], player: t.Player): void;
     /** May keep old highlighted tiles.
      */
