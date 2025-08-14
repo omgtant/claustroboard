@@ -177,7 +177,7 @@ function FLIPMove(player: Player, move: ValidMove) {
     
     // playerElement.classList.remove('player-highlight');
     playerElement.animate(animations, {
-        duration: 300 * positions.length,
+        duration: 200 * positions.length,
         easing: 'ease-in-out',
         fill: 'forwards',
         composite: 'accumulate'
