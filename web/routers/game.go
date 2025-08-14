@@ -3,12 +3,14 @@ package routers
 import (
 	"encoding/json"
 
+	"omgtant/claustroboard/shared/config"
 	"omgtant/claustroboard/shared/models"
 )
 
 var (
 	inboundHandlers = map[string]func(*wsClient, json.RawMessage){
-		"start": handleStartGame,
+		"start":     handleStartGame,
+		"broadcast": handleBroadcast,
 	}
 )
 
@@ -38,5 +40,15 @@ func handleStartGame(c *wsClient, _ json.RawMessage) {
 	broadcastEvent(c.gameCode, event{
 		Type: "started",
 		Data: snap,
+	})
+}
+
+func handleBroadcast(c *wsClient, data json.RawMessage) {
+	if config.Get().ENVIRONMENT != "development" {
+		return
+	}
+	broadcastEvent(c.gameCode, event{
+		Type: "broadcast",
+		Data: data,
 	})
 }

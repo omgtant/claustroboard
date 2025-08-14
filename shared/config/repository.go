@@ -4,7 +4,7 @@ import "errors"
 
 type config struct {
 	APP_ADDRESS                string
-	ENVIROMENT                 string
+	ENVIRONMENT                string
 	DATABASE_CONNECTION_STRING string
 }
 

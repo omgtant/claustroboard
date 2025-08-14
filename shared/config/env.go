@@ -23,7 +23,7 @@ func (e *EnvLoader) Load(c *config) error {
 	}
 
 	c.APP_ADDRESS = envFile["APP_ADDRESS"]
-	c.ENVIROMENT = envFile["ENVIROMENT"]
+	c.ENVIRONMENT = envFile["ENVIROMENT"]
 	c.DATABASE_CONNECTION_STRING = envFile["DATABASE_CONNECTION_STRING"]
 
 	return nil

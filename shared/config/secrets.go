@@ -59,7 +59,7 @@ func (sl *SecretLoader) Load(c *config) error {
 	// }
 
 	c.APP_ADDRESS = getSecret("app_address")
-	c.ENVIROMENT = getSecret("environment")
+	c.ENVIRONMENT = getSecret("environment")
 	c.DATABASE_CONNECTION_STRING = getSecret("database_connection_string")
 
 	return loadErr
