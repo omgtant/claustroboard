@@ -1,8 +1,8 @@
-import { rnd } from "../helpers/helpers";
+import { rnd } from "../helpers/helpers.ts";
 import { HighlightFlags, RenderInterface } from "../types/renderInterface.ts";
-import type { GameState, Player, Tile } from "../types/types.d.ts";
+import type { GameState, Player, Tile, ValidMove } from "../types/types.ts";
 import { Pos, TileColor } from "../types/util.ts";
-import { LayoutTile, WildcardTile } from "./tiles";
+import { LayoutTile, WildcardTile } from "../game/tiles.ts";
 
 const callbacks = {
     tryMoveTo: (pos: Pos) : void => {
@@ -29,6 +29,7 @@ export const renderInterface: RenderInterface = {
     renderWin,
     gameStart,
     highlightPlayer,
+    suggestMoves
 }
 
 const board = document.getElementById('board');
@@ -90,6 +91,25 @@ function highlightTiles(tiles: Pos[], flags: HighlightFlags) {
             }
         }
     });
+}
+
+function suggestMoves(moves: ValidMove[], player: Player) {
+    if (!board) throw new Error('Board element not found');
+
+    clearHighlights();
+    clearAllArrows();
+
+    if (moves.length === 0) {
+        console.warn("No valid moves available for player", player.nickname);
+        return;
+    }
+    highlightPlayer(player);
+    
+    highlightTiles([player.position], HighlightFlags.SELECTION);
+    
+    highlightTiles(moves.map(move => move.to), HighlightFlags.VALID);
+    const tileElements = moves.map(move => getElementByPos(move.to));
+    moves.forEach(arrowOnHover);
 }
 
 function FLIPPlayerBegin(player: Player) {
@@ -269,4 +289,141 @@ function highlightPlayer(player: Player) {
     });
 
     playerElement.classList.add('player-highlight');
+}
+
+function clearAllArrows() {
+    const arrows = document.querySelectorAll('.move-arrow');
+    arrows.forEach(arrow => {
+        arrow.remove();
+    });
+}
+
+function getCenterOfTileElementPx(pos: Pos): {xPx: number, yPx: number} {
+    const tileElement = getElementByPos(pos);
+    if (!tileElement) throw new Error('Tile element not found');
+    
+    const rect = tileElement.getBoundingClientRect();
+    return {
+        xPx: rect.left + rect.width / 2,
+        yPx: rect.top + rect.height / 2
+    };
+}
+
+function getCenterOfTileElementPercentRelToBoard(pos: Pos): {xPercent: number, yPercent: number} {
+    const tileElement = getElementByPos(pos);
+    if (!tileElement) throw new Error('Tile element not found');
+    
+    const rect = tileElement.getBoundingClientRect();
+    const boardRect = board?.getBoundingClientRect();
+    if (!boardRect) throw new Error('Board element not found');
+
+    return {
+        xPercent: ((rect.left - boardRect.left) + rect.width / 2) / boardRect.width * 100,
+        yPercent: ((rect.top - boardRect.top) + rect.height / 2) / boardRect.height * 100
+    };
+}
+
+function arrowOnHover(move: ValidMove) {
+    if (!move.path || move.path.length < 2) return;
+
+    const tileElement = getElementByPos(move.to);
+    if (!tileElement) throw new Error('Tile element not found');
+
+    // Approach 1: Using SVG for the arrow DIDN'T WORK
+    /*
+    const cont = document.createElement('svg');
+    cont.classList.add('move-arrow');
+    cont.setAttribute('width', '100%');
+    cont.setAttribute('height', '100%');
+    cont.setAttribute('viewBox', '0 0 1920 1080');
+    cont.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
+    const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+
+    move.path.forEach((pos, index) => {
+        const {xPx, yPx} = getCenterOfTileElement(pos);
+        if (index === 0) {
+            polygon.setAttribute('points', `${xPx},${yPx} `);
+        } else {
+            polygon.setAttribute('points', polygon.getAttribute('points') + `${xPx},${yPx} `);
+        }
+    });
+
+    console.log(cont);
+
+    document.body.appendChild(cont);
+    cont.appendChild(polygon);
+    */
+    // tileElement.addEventListener('mouseover', () => {});
+
+    // Approach 2: clip path on board's absolute child
+    const arrowElement = document.createElement('div');
+    arrowElement.classList.add('move-arrow');
+    board?.appendChild(arrowElement);
+    const pathPoints = move.path.map(pos => {
+        const {xPercent, yPercent} = getCenterOfTileElementPercentRelToBoard(pos);
+        return {x: xPercent, y: yPercent};
+    });
+
+    const lineWidth = 2; // percentage width of the line
+    const polygonPoints: string[] = [];
+
+    // Create perpendicular offsets for each segment
+    for (let i = 0; i < pathPoints.length; i++) {
+        const current = pathPoints[i];
+        let direction = {x: 0, y: 0};
+
+        if (i === 0 && pathPoints.length > 1) {
+            // First point: use direction to next point
+            const next = pathPoints[i + 1];
+            direction = {x: next.x - current.x, y: next.y - current.y};
+        } else if (i === pathPoints.length - 1) {
+            // Last point: use direction from previous point
+            const prev = pathPoints[i - 1];
+            direction = {x: current.x - prev.x, y: current.y - prev.y};
+        } else {
+            // Middle points: average direction of adjacent segments
+            const prev = pathPoints[i - 1];
+            const next = pathPoints[i + 1];
+            const dirToPrev = {x: current.x - prev.x, y: current.y - prev.y};
+            const dirToNext = {x: next.x - current.x, y: next.y - current.y};
+            direction = {
+                x: (dirToPrev.x + dirToNext.x) / 2,
+                y: (dirToPrev.y + dirToNext.y) / 2
+            };
+        }
+
+        // Normalize direction and create perpendicular
+        const length = Math.sqrt(direction.x * direction.x + direction.y * direction.y);
+        if (length > 0) {
+            direction.x /= length;
+            direction.y /= length;
+        }
+
+        // Perpendicular vector (rotate 90 degrees)
+        const perpendicular = {x: -direction.y * lineWidth / 2, y: direction.x * lineWidth / 2};
+
+        // Add points for both sides of the line
+        const leftPoint = {x: current.x + perpendicular.x, y: current.y + perpendicular.y};
+        const rightPoint = {x: current.x - perpendicular.x, y: current.y - perpendicular.y};
+
+        if (i === 0) {
+            polygonPoints.push(`${leftPoint.x}% ${leftPoint.y}%`);
+            polygonPoints.unshift(`${rightPoint.x}% ${rightPoint.y}%`);
+        } else {
+            polygonPoints.unshift(`${rightPoint.x}% ${rightPoint.y}%`);
+            polygonPoints.push(`${leftPoint.x}% ${leftPoint.y}%`);
+        }
+    }
+
+    const points = polygonPoints.join(', ');
+
+    arrowElement.style.clipPath = `polygon(${points})`;
+
+    tileElement.addEventListener('mouseover', () => {
+        arrowElement.classList.add('move-arrow-hover');
+    });
+    tileElement.addEventListener('mouseout', () => {
+        arrowElement.classList.remove('move-arrow-hover');
+    });
 }

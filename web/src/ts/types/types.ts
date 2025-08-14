@@ -36,7 +36,7 @@ export class Tile {
 
     // Hooks
     onTurnStart(state: GameState): void {throw new Error("Method not implemented.");};
-    availableMoves(state: GameState, player: Player): Pos[] {throw new Error("Method not implemented.");};
+    availableMoves(state: GameState, player: Player): Pos[] | ValidMove[] {throw new Error("Method not implemented.");};
     onPlayerLanding(state: GameState, player: Player): void {throw new Error("Method not implemented.");};
 
     canLandOnMe(state: GameState, player: Player): boolean {throw new Error("Method not implemented.");};
@@ -45,4 +45,12 @@ export class Tile {
 
 export type Board = {
     tiles: Tile[][];
+}
+
+/**
+ * Wrapper for a move position with path data for enhanced visuals
+ */
+export type ValidMove = {
+    to: Pos;
+    path?: Pos[];
 }

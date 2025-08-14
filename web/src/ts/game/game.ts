@@ -1,8 +1,8 @@
-import { getMockInitialState, posEq, readInitialStateIntoGameState } from "../helpers/helpers";
+import { getMockInitialState, posEq, readInitialStateIntoGameState, toValidMovesOnly } from "../helpers/helpers";
 import { HighlightFlags, RenderInterface } from "../types/renderInterface";
 import * as t from "../types/types";
 import { Pos } from "../types/util";
-import { renderInterface } from "./render";
+import { renderInterface } from "../render/render";
 
 export let gameState: t.GameState = readInitialStateIntoGameState(getMockInitialState());
 
@@ -22,9 +22,10 @@ export function start(someGameState: t.GameState = gameState, someRenderInterfac
     suggestMoving(someGameState, someRenderInterface);
 }
 
-function getAvailableMoves(someGameState: t.GameState = gameState): Pos[] {
+function getAvailableMoves(someGameState: t.GameState = gameState): t.ValidMove[] {
     const currentPlayer = _getCurrentPlayer(someGameState);
-    return _tile(currentPlayer.position, someGameState).availableMoves(someGameState, currentPlayer);
+    const moves = _tile(currentPlayer.position, someGameState).availableMoves(someGameState, currentPlayer);
+    return toValidMovesOnly(moves);
 }
 
 function highlight(positions: Pos[], someRenderInterface: RenderInterface | undefined = renderInterface) {
@@ -60,9 +61,7 @@ function suggestMoving(someGameState: t.GameState = gameState, someRenderInterfa
         advanceMove(someGameState);
         suggestMoving(someGameState, someRenderInterface);
     }
-    highlight(moves, someRenderInterface);
-    someRenderInterface?.highlightTiles([_getCurrentPlayer(someGameState).position], HighlightFlags.SELECTION);
-    someRenderInterface?.highlightPlayer(_getCurrentPlayer(someGameState));
+    someRenderInterface?.suggestMoves(moves, _getCurrentPlayer(someGameState));
 }
 
 function jumpToHistory(turnNumber: number, someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface) {
@@ -82,9 +81,9 @@ function playMove(pos: Pos, someGameState: t.GameState = gameState, someRenderIn
     
     const currentPlayer = _getCurrentPlayer(someGameState);
     const oldPos = currentPlayer.position;
-    const possibleMoves = _tile(oldPos, someGameState).availableMoves(someGameState, currentPlayer);
+    const possibleMoves = toValidMovesOnly(_tile(oldPos, someGameState).availableMoves(someGameState, currentPlayer));
 
-    if (possibleMoves.some(p => posEq(p, pos)) === false) {
+    if (!possibleMoves.some(p => posEq(p.to, pos))) {
         someRenderInterface?.complainInvalidMove();
         return;
     }

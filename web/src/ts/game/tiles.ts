@@ -1,5 +1,5 @@
 import { getNeighbors, posEq } from "../helpers/helpers";
-import { Tile, GameState, Player } from "../types/types";
+import { Tile, GameState, Player, ValidMove } from "../types/types";
 import { Pos } from "../types/util";
 
 export class LayoutTile extends Tile {
@@ -9,8 +9,8 @@ export class LayoutTile extends Tile {
         return;
     }
 
-    availableMoves(state: GameState, player: Player): Pos[] {
-        return Array.from(this.dfs(state, player, 0, this.moveCount, this, new Set())).map(tile => tile.position);
+    availableMoves(state: GameState, player: Player): ValidMove[] {
+        return Array.from(this.dfs(state, player, 0, this.moveCount, this, new Set(), []));
     }
 
     onPlayerLanding(state: GameState, player: Player): void {
@@ -25,18 +25,20 @@ export class LayoutTile extends Tile {
         return true;
     }
 
-    dfs(state: GameState, player:Player, cur_depth:number, target_depth:number, tile: Tile, visited: Set<Tile>): Set<Tile> {
+    dfs(state: GameState, player:Player, cur_depth:number, target_depth:number, tile: Tile, visited: Set<Tile>, path: Pos[]): Set<ValidMove> {
         if (cur_depth > target_depth) return new Set();
-        if (cur_depth === target_depth) return new Set([tile]);
+        if (cur_depth === target_depth) return new Set([{to: tile.position, path: [...path, tile.position]}]);
         visited.add(tile);
-        const result = new Set<Tile>();
+        path.push(tile.position);
+        const result = new Set<ValidMove>();
         getNeighbors(state, tile).forEach(neighbor => {
             if (visited.has(neighbor) || !neighbor.canLandOnMe(state, player) || !neighbor.isOpen || state.players.some(p => posEq(p.position, neighbor.position))) return;
-            this.dfs(state, player, cur_depth+1, target_depth, neighbor, visited).forEach(n => {
+            this.dfs(state, player, cur_depth+1, target_depth, neighbor, visited,[...path]).forEach(n => {
                 result.add(n);
             });
         });
         visited.delete(tile);
+        path.pop();
         return result;
     }
 }
@@ -71,23 +73,25 @@ export class WildcardTile extends Tile {
         return;
     }
 
-    availableMoves(state: GameState, player: Player): Pos[] {
-        return Array.from(this.dfs(state, player, 0, 4, this, new Set())).map(tile => tile.position);
+    availableMoves(state: GameState, player: Player): ValidMove[] {
+        return Array.from(this.dfs(state, player, 0, 4, this, new Set(), []));
     }
 
-    dfs(state: GameState, player:Player, cur_depth:number, target_depth:number, tile: Tile, visited: Set<Tile>): Set<Tile> {
+    dfs(state: GameState, player:Player, cur_depth:number, target_depth:number, tile: Tile, visited: Set<Tile>, path: Pos[]): Set<ValidMove> {
         if (cur_depth > target_depth) return new Set();
-        if (cur_depth === target_depth) return new Set([tile]);
+        if (cur_depth === target_depth) return new Set([{to: tile.position, path: [...path, tile.position]}]);
         visited.add(tile);
-        const result = new Set<Tile>();
+        path.push(tile.position);
+        const result = new Set<ValidMove>();
         getNeighbors(state, tile).forEach(neighbor => {
             if (visited.has(neighbor) || !neighbor.canLandOnMe(state, player) || !neighbor.isOpen || state.players.some(p => posEq(p.position, neighbor.position))) return;
-            this.dfs(state, player, cur_depth+1, target_depth, neighbor, visited).forEach(n => {
+            this.dfs(state, player, cur_depth+1, target_depth, neighbor, visited, path).forEach(n => {
                 result.add(n);
             });
         });
-        if (cur_depth !== 0) result.add(tile); // Include the current tile as a valid move
         visited.delete(tile);
+        if (cur_depth !== 0) result.add({to: tile.position, path: path.slice()}); // Include the current tile as a valid move
+        path.pop();
         return result;
     }
 

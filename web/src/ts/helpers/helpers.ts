@@ -1,5 +1,5 @@
 import * as tiles from "../game/tiles";
-import { GameState, InitialPlayer, InitialState, Player, Tile, TileSetup } from "../types/types";
+import { GameState, InitialPlayer, InitialState, Player, Tile, TileSetup, ValidMove } from "../types/types";
 import { Pos } from "../types/util";
 
 export function getMockInitialState(): InitialState {
@@ -167,4 +167,21 @@ export function shuffle2DArr<T>(arr: T[][]): T[][] {
 
 export function posEq(a: Pos, b: Pos): boolean {
     return a.x === b.x && a.y === b.y;
+}
+
+/**
+ * Turns all Pos objects in the array into ValidMove objects.
+ * Additionally, filters out repeated positions.
+ * @param moves Array of positions or ValidMove objects.
+ */
+export function toValidMovesOnly(moves: Pos[] | ValidMove[]): ValidMove[] {
+    return moves.map(move => {
+        if (move instanceof Object && 'to' in move && 'path' in move) {
+            return move;
+        } else if (move instanceof Object && 'x' in move && 'y' in move) {
+            return { to: move as Pos, path: [move as Pos] };
+        }
+    }).filter((move, index, self) =>
+        index === self.findIndex(m => posEq(m.to, move.to))
+    ) as ValidMove[];
 }

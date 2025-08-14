@@ -161,6 +161,13 @@
         }
     }
 
+    .move-arrow {
+        @apply bg-blue-500 absolute top-0 left-0 w-full h-full pointer-events-none;
+        @apply hidden;
+    }
+    .move-arrow-hover {
+        @apply block;
+    }
 
     .player-parent {
         @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
