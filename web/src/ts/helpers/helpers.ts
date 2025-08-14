@@ -175,13 +175,15 @@ export function posEq(a: Pos, b: Pos): boolean {
  * @param moves Array of positions or ValidMove objects.
  */
 export function toValidMovesOnly(moves: Pos[] | ValidMove[]): ValidMove[] {
-    return moves.map(move => {
+    return moves.map((move: Pos | ValidMove) => {
         if (move instanceof Object && 'to' in move && 'path' in move) {
-            return move;
+            move.path = move.path || [];
+            return move as ValidMove & {path: Pos[]};
         } else if (move instanceof Object && 'x' in move && 'y' in move) {
-            return { to: move as Pos, path: [move as Pos] };
+            return { to: move as Pos, path: [move as Pos] } as ValidMove & {path: Pos[]};
         }
-    }).filter((move, index, self) =>
+        throw new Error('Invalid move type');
+    }).sort((a, b) =>  a.path.length - b.path.length).filter((move, index, self) =>
         index === self.findIndex(m => posEq(m.to, move.to))
     ) as ValidMove[];
 }
