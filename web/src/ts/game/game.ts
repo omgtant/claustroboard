@@ -28,10 +28,6 @@ function getAvailableMoves(someGameState: t.GameState = gameState): t.ValidMove[
     return toValidMovesOnly(moves);
 }
 
-function highlight(positions: Pos[], someRenderInterface: RenderInterface | undefined = renderInterface) {
-    someRenderInterface?.highlightTiles(positions, HighlightFlags.VALID);
-}
-
 function advanceMove(someGameState: t.GameState = gameState) {
     someGameState.turnNumber++;
     someGameState.playerTurnIndex = (someGameState.playerTurnIndex + 1) % someGameState.players.length;
