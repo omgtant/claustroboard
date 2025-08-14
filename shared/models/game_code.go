@@ -24,7 +24,7 @@ func (gc GameCode) String() string {
 	return gc.Base62()
 }
 
-// Parses a base62 string into a GameCode.
+// parses a base62 string into a GameCode.
 func ParseGameCode(str string) (GameCode, error) {
 	var result uint64
 	var base uint64 = 1

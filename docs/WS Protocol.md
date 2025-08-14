@@ -5,7 +5,7 @@ HTTP GET (WS) `/new-game?nickname=$NICK`
 	-> event `created` `{"code": "game code (i.e. ABC123)"}`
 	-> broadcast `playerlist-changed`: `["nickname"]`
 HTTP GET (WS) `/join/<code>?nickname=$NICK`
-	-> broadcast `playerlist-changed`: `["nickname1", "nickname2", ...]` 
+	-> broadcast `playerlist-changed`: `["nickname1", "nickname2", ...]`
 
 state:
 ```json
@@ -13,6 +13,8 @@ state:
 	"palette": {
 		"layout": {"script": ""}
 	},
+	"width": 6,
+	"height": 6,
 	"board": [
 		[{"tile_type": "layout", "color": 0, "data": {"move_count": 2}}, ..., ...],
 		[..., ..., ...],
