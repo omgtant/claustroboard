@@ -5,56 +5,281 @@
     <meta charset="utf-8" />
     <title>Claustroboard WS demo</title>
     <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --bg-input: #475569;
+            --bg-button: #3b82f6;
+            --bg-button-hover: #2563eb;
+
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-accent: #60a5fa;
+
+            --border-primary: #334155;
+            --border-secondary: #475569;
+            --border-tertiary: #64748b;
+
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        h3 {
+            color: var(--text-accent);
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            flex: 1;
+            min-width: 120px;
+
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        :is(input, textarea) {
+            flex: 1;
+            border: 1px solid var(--border-secondary);
+            border-radius: 6px;
+            padding: 8px 12px;
+
+            background-color: var(--bg-input);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        :is(input, textarea):focus {
+            outline: none;
+            border-color: var(--bg-button);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        button {
+            background-color: var(--bg-button);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: var(--bg-button-hover);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        #gameCode {
+            color: var(--text-accent);
+            font-weight: 600;
+            font-family: monospace;
+            font-size: 16px;
         }
 
         #log {
-            white-space: pre-wrap;
-            font-family: monospace;
-            border: 1px solid #ccc;
-            padding: 8px;
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            margin-top: 16px;
             height: 300px;
             overflow: auto;
+            background-color: var(--bg-tertiary);
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 13px;
         }
 
-        .message-sender {
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
+        .log-entry {
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--border-primary);
+            color: var(--text-secondary);
+            line-height: 1.4;
+            transition: background-color 0.2s;
+            word-wrap: break-word;
+        }
+
+        .log-entry:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .log-entry:nth-child(odd) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .log-entry:hover {
+            background-color: rgba(96, 165, 250, 0.1);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        fieldset {
+            margin: 0;
+            padding: 20px;
+            border: 1px solid var(--border-secondary);
+            border-radius: 12px;
+            background-color: var(--bg-secondary);
+            box-shadow: var(--shadow);
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .fieldset-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        fieldset legend {
+            padding: 8px 16px;
+            font-weight: 600;
+            color: var(--text-accent);
+            background-color: var(--bg-primary);
+            border-radius: 6px;
+            border: 1px solid var(--border-secondary);
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+
+        .game-code-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .fmt-strings {
+            color: #10b981;
+        }
+
+        .fmt-numbers {
+            color: #f59e0b;
+        }
+
+        .fmt-keywords {
+            color: #8b5cf6;
+        }
+
+        .fmt-braces {
+            color: #ef4444;
+        }
+
+        .fmt-brackets {
+            color: #3b82f6;
+        }
+
+        .fmt-punctuation {
+            color: #6b7280;
         }
     </style>
 </head>
 
 <body>
-    <h3>Start Game (creator)</h3>
-    <label>Creator Nickname: <input id="creatorNick" value="omga"></label>
-    <button onclick="startGame()">Start Game</button>
-    <div>Game Code: <span id="gameCode"></span></div>
-
-    <h3>Join Game (other player)</h3>
-    <label>Join Nickname: <input id="joinNick" value="alice"></label>
-    <label>Code: <input id="joinCode" placeholder="will auto-fill after start"></label>
-    <button onclick="joinGame()">Join Game</button>
-
-    <h3>Send Messages</h3>
-    <div class="message-sender">
-        <h4>Creator Connection</h4>
-        <label>Type: <input id="creatorMsgType" value="start" placeholder="message type"></label><br>
-        <label>Data: <input id="creatorMsgData" placeholder="JSON data (optional)"></label><br>
-        <button onclick="sendCreatorMessage()">Send to Creator WS</button>
+    <div class="section">
+        <h3>Game creation</h3>
+        <div class="fieldset-container">
+            <fieldset>
+                <legend>Start Game (creator)</legend>
+                <div class="form-row">
+                    <label>Creator Nickname: <input id="creatorNick" value="omga"></label>
+                    <button onclick="startGame()">Start Game</button>
+                </div>
+                <div class="form-row game-code-display">
+                    <span>Game Code:</span>
+                    <span id="gameCode"></span>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Join Game (other player)</legend>
+                <div class="form-row">
+                    <label>Join Nickname: <input id="joinNick" value="alice"></label>
+                </div>
+                <div class="form-row">
+                    <label>Code: <input id="joinCode" placeholder="will auto-fill after start"></label>
+                    <button onclick="joinGame()">Join Game</button>
+                </div>
+            </fieldset>
+        </div>
     </div>
 
-    <div class="message-sender">
-        <h4>Join Connection</h4>
-        <label>Type: <input id="joinMsgType" value="ping" placeholder="message type"></label><br>
-        <label>Data: <input id="joinMsgData" placeholder="JSON data (optional)"></label><br>
-        <button onclick="sendJoinMessage()">Send to Join WS</button>
+    <div class="section">
+        <h3>Send Messages</h3>
+        <div class="fieldset-container">
+            <fieldset>
+                <legend>Creator Connection</legend>
+                <div class="form-row">
+                    <label>Type: <input id="creatorMsgType" value="start" placeholder="message type"></label>
+                </div>
+                <div class="form-row">
+                    <label>Data: <textarea id="creatorMsgData" placeholder="JSON data (optional)"
+                            rows="3"></textarea></label>
+                </div>
+                <div class="button-row">
+                    <button onclick="sendCreatorMessage()">Send to Creator WS</button>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Join Connection</legend>
+                <div class="form-row">
+                    <label>Type: <input id="joinMsgType" value="ping" placeholder="message type"></label>
+                </div>
+                <div class="form-row">
+                    <label>Data: <textarea id="joinMsgData" placeholder="JSON data (optional)"
+                            rows="3"></textarea></label>
+                </div>
+                <div class="button-row">
+                    <button onclick="sendJoinMessage()">Send to Join WS</button>
+                </div>
+            </fieldset>
+        </div>
     </div>
 
-    <h3>Log</h3>
-    <div id="log"></div>
+    <div class="section">
+        <h3>Log</h3>
+        <div id="log"></div>
+    </div>
 
     <script>
         let creatorWS;
@@ -62,8 +287,63 @@
 
         function log(...args) {
             const el = document.getElementById('log');
-            el.textContent += args.map(a => typeof a === 'string' ? a : JSON.stringify(a)).join(' ') + "\n";
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.tabIndex = 0;
+
+            const formatted = args.map(arg => {
+                if (typeof arg === 'string') {
+                    return arg;
+                } else if (typeof arg === 'object' && arg !== null) {
+                    return formatJson(JSON.stringify(arg, null, 2));
+                } else {
+                    return String(arg);
+                }
+            }).join(' ');
+
+            const highlighted = formatted.replace(/^(\[[^\]]+\])( (<-|->))?/,
+                '<span class="fmt-keywords">$1</span><span class="fmt-punctuation">$2</span>');
+
+            const compactVersion = highlighted;
+            const expandedVersion = args.map(arg => {
+                if (typeof arg === 'string') {
+                    return arg;
+                } else if (typeof arg === 'object' && arg !== null) {
+                    return formatJson(JSON.stringify(arg, null, 2));
+                } else {
+                    return String(arg);
+                }
+            }).join(' ').replace(/^(\[[^\]]+\])( (<-|->))?/,
+                '<span class="fmt-keywords">$1</span><span class="fmt-punctuation">$2</span>');
+
+            entry.innerHTML = compactVersion;
+
+            entry.addEventListener('focus', () => {
+                entry.innerHTML = expandedVersion;
+                entry.style.whiteSpace = 'pre-wrap';
+            });
+
+            entry.addEventListener('blur', () => {
+                entry.innerHTML = compactVersion;
+                entry.style.whiteSpace = 'normal';
+            });
+
+            entry.addEventListener('click', () => {
+                entry.focus();
+            });
+
+            el.appendChild(entry);
             el.scrollTop = el.scrollHeight;
+        }
+
+        function formatJson(jsonStr) {
+            return jsonStr
+                .replace(/(".*?")/g, '<span class="fmt-strings">$1</span>')
+                .replace(/(\b\d+\.?\d*\b)/g, '<span class="fmt-numbers">$1</span>')
+                .replace(/(\btrue\b|\bfalse\b|\bnull\b)/g, '<span class="fmt-keywords">$1</span>')
+                .replace(/([{}])/g, '<span class="fmt-braces">$1</span>')
+                .replace(/([[\]])/g, '<span class="fmt-brackets">$1</span>')
+                .replace(/([:,])/g, '<span class="fmt-punctuation">$1</span>');
         }
 
         function sendCreatorMessage() {
@@ -80,7 +360,7 @@
                 try {
                     msg.data = JSON.parse(dataStr);
                 } catch (e) {
-                    msg.data = dataStr; // treat as string if not valid JSON
+                    msg.data = dataStr;
                 }
             }
 
@@ -102,7 +382,7 @@
                 try {
                     msg.data = JSON.parse(dataStr);
                 } catch (e) {
-                    msg.data = dataStr; // treat as string if not valid JSON
+                    msg.data = dataStr;
                 }
             }
 
@@ -129,7 +409,7 @@
                             const code = msg.data.code;
                             document.getElementById('gameCode').textContent = code;
                             const joinCodeInput = document.getElementById('joinCode');
-                            if (!joinCodeInput.value) joinCodeInput.value = code;
+                            joinCodeInput.value = code;
                             break;
                         case "playerlist-changed":
                             // msg.data is array of players
