@@ -290,31 +290,18 @@
             const entry = document.createElement('div');
             entry.className = 'log-entry';
             entry.tabIndex = 0;
+            const formatArg = (arg) => {
+                if (typeof arg === 'string') return arg;
+                if (typeof arg === 'object' && arg !== null) return formatJson(JSON.stringify(arg, null, 2));
+                return String(arg);
+            };
 
-            const formatted = args.map(arg => {
-                if (typeof arg === 'string') {
-                    return arg;
-                } else if (typeof arg === 'object' && arg !== null) {
-                    return formatJson(JSON.stringify(arg, null, 2));
-                } else {
-                    return String(arg);
-                }
-            }).join(' ');
-
-            const highlighted = formatted.replace(/^(\[[^\]]+\])( (<-|->))?/,
+            const formatted = args.map(formatArg).join(' ');
+            const highlighted = formatted.replace(/^(\[[^\]]+\])( (<-|->))?/, 
                 '<span class="fmt-keywords">$1</span><span class="fmt-punctuation">$2</span>');
 
             const compactVersion = highlighted;
-            const expandedVersion = args.map(arg => {
-                if (typeof arg === 'string') {
-                    return arg;
-                } else if (typeof arg === 'object' && arg !== null) {
-                    return formatJson(JSON.stringify(arg, null, 2));
-                } else {
-                    return String(arg);
-                }
-            }).join(' ').replace(/^(\[[^\]]+\])( (<-|->))?/,
-                '<span class="fmt-keywords">$1</span><span class="fmt-punctuation">$2</span>');
+            const expandedVersion = highlighted;
 
             entry.innerHTML = compactVersion;
 
