@@ -26,7 +26,7 @@
     }
 
     .log {
-        @apply text-white block text-right;
+        @apply text-white block text-right overflow-y-scroll h-full bg-gray-800 p-2 rounded-lg;
         span {
             @apply block w-full text-sm bg-transparent hover:bg-white/10 transition-colors duration-75;
         }

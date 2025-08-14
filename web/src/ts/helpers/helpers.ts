@@ -10,31 +10,31 @@ export function getMockInitialState(): InitialState {
             { tile_type: 'LayoutTile', color: 1, data: { move_count: 2 } },
             { tile_type: 'LayoutTile', color: 1, data: { move_count: 3 } },
             { tile_type: 'LayoutTile', color: 1, data: { move_count: 4 } },
-            { tile_type: 'WallTile', color: 1 }
+            { tile_type: 'WildcardTile', color: 1 }
         ], [
             { tile_type: 'LayoutTile', color: 2, data: { move_count: 1 } },
             { tile_type: 'LayoutTile', color: 2, data: { move_count: 2 } },
             { tile_type: 'LayoutTile', color: 2, data: { move_count: 3 } },
             { tile_type: 'LayoutTile', color: 2, data: { move_count: 4 } },
-            { tile_type: 'WallTile', color: 2 }
+            { tile_type: 'WildcardTile', color: 2 }
         ], [
             { tile_type: 'LayoutTile', color: 3, data: { move_count: 1 } },
             { tile_type: 'LayoutTile', color: 3, data: { move_count: 2 } },
             { tile_type: 'LayoutTile', color: 3, data: { move_count: 3 } },
             { tile_type: 'LayoutTile', color: 3, data: { move_count: 4 } },
-            { tile_type: 'WallTile', color: 3 }
+            { tile_type: 'WildcardTile', color: 3 }
         ], [
             { tile_type: 'LayoutTile', color: 4, data: { move_count: 1 } },
             { tile_type: 'LayoutTile', color: 4, data: { move_count: 2 } },
             { tile_type: 'LayoutTile', color: 4, data: { move_count: 3 } },
             { tile_type: 'LayoutTile', color: 4, data: { move_count: 4 } },
-            { tile_type: 'WallTile', color: 4 }
+            { tile_type: 'WildcardTile', color: 4 }
         ], [
             { tile_type: 'WildcardTile', color: 0 },
             { tile_type: 'WildcardTile', color: 0 },
             { tile_type: 'WildcardTile', color: 0 },
             { tile_type: 'WildcardTile', color: 0 },
-            { tile_type: 'WallTile', color: 0 }
+            { tile_type: 'WildcardTile', color: 0 }
         ]]),
         players: [{ nickname: 'omga'}, { nickname: 'miltant' }] as InitialPlayer[]
     };
