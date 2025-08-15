@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"omgtant/claustroboard/shared/enums"
 	"omgtant/claustroboard/shared/valueobjects"
 
@@ -8,13 +9,14 @@ import (
 )
 
 type Tile struct {
-	Pos     valueobjects.Point `json:"coordinates"`
-	BoardID uint               `json:"primarykey"`
-	Board   Board              `json:"foreignKey:BoardID"`
+	Pos     valueobjects.Point
+	BoardID uint
+	Board   Board
 	Open    bool
 	Color   enums.TileColor
 	Energy  int16
 	Kind    enums.TileKind
+	Data    map[string]json.RawMessage
 }
 
 func RandomizeTileKind(board Board, tk enums.TileKind, x, y uint16) *Tile {
@@ -37,7 +39,9 @@ func RandomizeTileKind(board Board, tk enums.TileKind, x, y uint16) *Tile {
 		tile.Open = false
 	case enums.Wildcard:
 		tile.Energy = 4
+		tile.Color = enums.RandomColor()
 	case enums.Zero:
+		tile.Color = enums.RandomColor()
 	}
 
 	return tile
