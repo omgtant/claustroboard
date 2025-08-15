@@ -95,7 +95,8 @@ function highlightTiles(tiles: Pos[], flags: TileHighlightFlags) {
     });
 }
 
-function suggestMoves(moves: ValidMove[], player: Player) {
+let _choiceCallback: ((move: Pos) => void) | undefined;
+function suggestMoves(moves: ValidMove[], player: Player, choiceCallback?: (move: Pos) => void) {
     if (!board) throw new Error('Board element not found');
 
     clearHighlights();
@@ -112,6 +113,7 @@ function suggestMoves(moves: ValidMove[], player: Player) {
     highlightTiles(moves.map(move => move.to), TileHighlightFlags.VALID);
     const tileElements = moves.map(move => getElementByPos(move.to));
     moves.forEach(arrowOnHover);
+    _choiceCallback = choiceCallback;
 }
 
 function FLIPPlayerBegin(player: Player) {
@@ -279,6 +281,7 @@ function _createTile(tile: Tile) {
     tileGrandparent.appendChild(tileParent);
     
     tileParent.addEventListener('click', () => {
+        if (_choiceCallback) _choiceCallback(tile.position);
         callbacks.tryMoveTo(tile.position);
     });
 

@@ -1,6 +1,7 @@
-import { getNeighbors, posEq } from "../helpers/helpers";
+import { getNeighbors, posEq, isTileReasonableToLandOn } from "../helpers/helpers";
+import { renderInterface } from "../render/render";
 import { Tile, GameState, Player, ValidMove } from "../types/types";
-import { Pos } from "../types/util";
+import { Pos, TileColor } from "../types/util";
 
 export class LayoutTile extends Tile {
     moveCount: number;
@@ -108,3 +109,37 @@ export class WildcardTile extends Tile {
     }
 }
 
+export class TeleportTile extends Tile {
+    onTurnStart(state: GameState): void {
+    }
+
+    availableMoves(state: GameState, player: Player): ValidMove[] {
+        const result: ValidMove[] = []
+
+        state.board.tiles.forEach(row => {
+            row.forEach(tile => {
+                if (tile instanceof TeleportTile) return;
+                if (!isTileReasonableToLandOn(tile, state, player)) return;
+                if (tile.isOpen === false) return;
+                if (this.color !== TileColor.COLORLESS && this.color !== tile.color) return;
+
+                result.push({to: tile.position, path: [this.position, tile.position]});
+            })
+        })
+
+        return result;
+    }
+
+    onPlayerLanding(state: GameState, player: Player): void {
+        state.playerTurnIndex--;
+        if (state.playerTurnIndex === -1) state.playerTurnIndex = state.players.length - 1;
+    }
+
+    canLandOnMe(state: GameState, player: Player): boolean {
+        return !(state.board.tiles.flat().find(tile => posEq(tile.position, player.position)) instanceof TeleportTile);
+    }
+
+    canStartOnMe(board: Tile[][]): boolean {
+        return false;
+    }
+}

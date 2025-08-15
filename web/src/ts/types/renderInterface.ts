@@ -17,7 +17,7 @@ export interface RenderInterface {
     registerCallbacks(tryMoveTo: (pos: u.Pos) => void, jumpToHistory: (turnNumber:number) => void): void;
     renderState(state: t.GameState): void;
     movePlayer(turnNumber:number, player: t.Player, valid_move: t.ValidMove): void;
-    suggestMoves(moves: t.ValidMove[], player: t.Player): void;
+    suggestMoves(moves: t.ValidMove[], player: t.Player, choiceCallback?: (move: u.Pos) => void): void;
     /** May keep old highlighted tiles.
      */
     highlightTiles(tiles: u.Pos[], flags: TileHighlightFlags): void;
