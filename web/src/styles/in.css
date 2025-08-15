@@ -162,6 +162,14 @@
                     width: 68px;
                     height: 68px;
                 }
+                &.tile-zero::after {
+                    content: '';
+                    display: block;
+                    background-image: url('../public/atlas.png');
+                    background-position: -184px -144px;
+                    width: 68px;
+                    height: 68px;
+                }
 
                 &.tile-wall::after {
 

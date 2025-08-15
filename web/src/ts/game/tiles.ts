@@ -1,4 +1,4 @@
-import { getNeighbors, posEq, isTileReasonableToLandOn } from "../helpers/helpers";
+import { getNeighbors, posEq, isTileReasonableToLandOn, cloneTile } from "../helpers/helpers";
 import { renderInterface } from "../render/render";
 import { Tile, GameState, Player, ValidMove } from "../types/types";
 import { Pos, TileColor } from "../types/util";
@@ -137,6 +137,49 @@ export class TeleportTile extends Tile {
 
     canLandOnMe(state: GameState, player: Player): boolean {
         return !(state.board.tiles.flat().find(tile => posEq(tile.position, player.position)) instanceof TeleportTile);
+    }
+
+    canStartOnMe(board: Tile[][]): boolean {
+        return false;
+    }
+}
+
+export class ZeroTile extends Tile {
+    onTurnStart(state: GameState): void {
+    }
+
+    onPlayerLanding(state: GameState, player: Player): void {
+        const activePlayers = state.players.filter(pl => pl.is_active);
+        if (activePlayers.length <= 1) return;
+
+        const nextPlayerPos = activePlayers[
+            (activePlayers.findIndex(pl => pl.nickname === player.nickname)+1) % activePlayers.length].position;
+        const nextPlayerTile = state.board.tiles.flat().find(tile => posEq(tile.position, nextPlayerPos));
+        if (!nextPlayerTile) throw Error("No next player tile");
+        const thisPosition = {x: this.position.x, y: this.position.y};
+        const newTile = cloneTile(nextPlayerTile) as Tile;
+        state.board.tiles[this.position.y][this.position.x] = newTile;
+        newTile.position = thisPosition;
+        console.log(thisPosition, newTile);
+        renderInterface?.refreshTile(newTile);
+        let pos = activePlayers[0].position;
+
+        activePlayers.forEach((pl, index) => {
+            if (index === activePlayers.length-1) return;
+
+            pl.position = activePlayers[index+1].position;
+            renderInterface.movePlayer(-1, pl, {to: pl.position})
+        })
+        activePlayers[activePlayers.length-1].position = pos;
+        renderInterface.movePlayer(-1, activePlayers[activePlayers.length-1], {to: activePlayers[activePlayers.length-1].position}); 
+    }
+
+    availableMoves(state: GameState, player: Player): Pos[] {
+        throw Error("Can't be moving from this tile");
+    }
+
+    canLandOnMe(state: GameState, player: Player): boolean {
+        return true;
     }
 
     canStartOnMe(board: Tile[][]): boolean {

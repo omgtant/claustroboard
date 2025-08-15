@@ -10,31 +10,43 @@ export function getMockInitialState(): InitialState {
             { tile_type: 'LayoutTile', color: 1, data: { move_count: 2 } },
             { tile_type: 'LayoutTile', color: 1, data: { move_count: 3 } },
             { tile_type: 'LayoutTile', color: 1, data: { move_count: 4 } },
-            { tile_type: 'TeleportTile', color: 1 }
+            { tile_type: 'TeleportTile', color: 1 },
+            { tile_type: 'WallTile', color: 1}
         ], [
             { tile_type: 'LayoutTile', color: 2, data: { move_count: 1 } },
             { tile_type: 'LayoutTile', color: 2, data: { move_count: 2 } },
             { tile_type: 'LayoutTile', color: 2, data: { move_count: 3 } },
             { tile_type: 'LayoutTile', color: 2, data: { move_count: 4 } },
-            { tile_type: 'TeleportTile', color: 2 }
+            { tile_type: 'TeleportTile', color: 2 },
+            { tile_type: 'WallTile', color: 2}
         ], [
             { tile_type: 'LayoutTile', color: 3, data: { move_count: 1 } },
             { tile_type: 'LayoutTile', color: 3, data: { move_count: 2 } },
             { tile_type: 'LayoutTile', color: 3, data: { move_count: 3 } },
             { tile_type: 'LayoutTile', color: 3, data: { move_count: 4 } },
-            { tile_type: 'TeleportTile', color: 3 }
+            { tile_type: 'TeleportTile', color: 3 },
+            { tile_type: 'WallTile', color: 3}
         ], [
             { tile_type: 'LayoutTile', color: 4, data: { move_count: 1 } },
             { tile_type: 'LayoutTile', color: 4, data: { move_count: 2 } },
             { tile_type: 'LayoutTile', color: 4, data: { move_count: 3 } },
             { tile_type: 'LayoutTile', color: 4, data: { move_count: 4 } },
-            { tile_type: 'TeleportTile', color: 4 }
+            { tile_type: 'TeleportTile', color: 4 },
+            { tile_type: 'WallTile', color: 4}
         ], [
             { tile_type: 'WildcardTile', color: 0 },
             { tile_type: 'WildcardTile', color: 0 },
             { tile_type: 'WildcardTile', color: 0 },
             { tile_type: 'WildcardTile', color: 0 },
-            { tile_type: 'WildcardTile', color: 0 }
+            { tile_type: 'WildcardTile', color: 0 },
+            { tile_type: 'TeleportTile', color: 0 }
+        ], [
+            {tile_type: 'ZeroTile', color:1},
+            {tile_type: 'ZeroTile', color:2},
+            {tile_type: 'ZeroTile', color:3},
+            {tile_type: 'ZeroTile', color:4},
+            {tile_type: 'ZeroTile', color:4},
+            {tile_type: 'ZeroTile', color:4},
         ]]),
         players: [{ nickname: 'omga'}, { nickname: 'miltant' }] as InitialPlayer[]
     };
@@ -102,6 +114,12 @@ export function bakeTile(tileSetup: TileSetup, pos: Pos): Tile {
         return tile;
     } else if (tileSetup.tile_type === 'TeleportTile') {
         const tile: tiles.TeleportTile = new tiles.TeleportTile();
+        tile.color = tileSetup.color;
+        tile.position = pos;
+        tile.isOpen = true;
+        return tile;
+    } else if (tileSetup.tile_type === 'ZeroTile') {
+        const tile: tiles.ZeroTile = new tiles.ZeroTile();
         tile.color = tileSetup.color;
         tile.position = pos;
         tile.isOpen = true;
@@ -199,4 +217,10 @@ export function toValidMovesOnly(moves: Pos[] | ValidMove[]): ValidMove[] {
     }).sort((a, b) =>  a.path.length - b.path.length).filter((move, index, self) =>
         index === self.findIndex(m => posEq(m.to, move.to))
     ) as ValidMove[];
+}
+
+export function cloneTile(tile: Tile) {
+    let newTile: Tile = new tile.constructor;
+    Object.assign(newTile, tile);
+    return newTile;
 }

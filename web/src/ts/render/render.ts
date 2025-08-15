@@ -2,7 +2,7 @@ import { rnd } from "../helpers/helpers.ts";
 import { TileHighlightFlags, RenderInterface, PlayerHighlightFlags } from "../types/renderInterface.ts";
 import type { GameState, Player, Tile, ValidMove } from "../types/types.ts";
 import { Pos, TileColor } from "../types/util.ts";
-import { LayoutTile, TeleportTile, WildcardTile } from "../game/tiles.ts";
+import { LayoutTile, TeleportTile, WildcardTile, ZeroTile } from "../game/tiles.ts";
 import { transform } from "typescript";
 
 const callbacks = {
@@ -222,6 +222,10 @@ function refreshTile(tile: Tile) {
 
     if (tile instanceof TeleportTile) {
         tileElement.classList.add('tile-teleport');
+    }
+
+    if (tile instanceof ZeroTile) {
+        tileElement.classList.add('tile-zero');
     }
 }
 

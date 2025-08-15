@@ -99,7 +99,6 @@ function playMove(pos: Pos, someGameState: t.GameState = gameState, someRenderIn
 
     someGameState.history.push({...pos});
 
-    console.log(someGameState);
     advanceMove(someGameState);
     suggestMoving(someGameState, someRenderInterface);
 }
