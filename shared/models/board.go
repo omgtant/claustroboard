@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"maps"
 	"math/rand"
@@ -23,7 +24,7 @@ type Board struct {
 	Height  uint16
 	Tiles   []Tile
 	Players []string
-	Turn    uint16
+	Turn    uint32
 	Pos     []valueobjects.Point
 	Phase   BoardPhase
 }
@@ -42,7 +43,7 @@ func NewGameBoard(players []string, palette []enums.TileKind, width uint16, heig
 
 	for x := uint16(0); x < width; x++ {
 		for y := uint16(0); y < height; y++ {
-			board.Tiles = append(board.Tiles, *RandomizeTile(board, x, y))
+			board.Tiles = append(board.Tiles, *RandomizeTile(x, y))
 		}
 	}
 
@@ -186,6 +187,7 @@ func Snapshot(code GameCode) (*dtos.Board, error) {
 		dtsTiles[i] = dtos.BoardTile{
 			Name:  enums.TileKindName(tile.Kind.String()),
 			Color: tile.Color,
+			Data:  tile.Data,
 		}
 	}
 
@@ -196,4 +198,140 @@ func Snapshot(code GameCode) (*dtos.Board, error) {
 		Players: cpPlayers,
 		Tiles:   dtsTiles,
 	}, nil
+}
+
+func (b Board) getTileIndex(p valueobjects.Point) (i int, err error) {
+	i = int(p.X)*int(p.Y) + int(p.Y%b.Width)
+	if len(b.Tiles) < i {
+		return -1, errors.New("out of bound")
+	}
+	return
+}
+
+func (b Board) getTileAt(p valueobjects.Point) (t *Tile, internalError error) {
+	i, interinternalError := b.getTileIndex(p)
+	if interinternalError != nil {
+		return
+	}
+	t = &b.Tiles[i]
+	return
+}
+
+func (b Board) getCurrent() (t *Tile, index int, internalError error) {
+	index = int(b.Turn) % len(b.Pos)
+	player := b.Pos[index]
+	t, internalError = b.getTileAt(player)
+	return t, index, internalError
+}
+
+func (b Board) movePlayer() {
+
+}
+
+func (b Board) Move(moves []dtos.Move) (delta *dtos.Delta, err error) {
+	delta = &dtos.Delta{}
+
+	for _, m := range moves {
+		t, i, _ := b.getCurrent()
+		if t == nil {
+			continue
+		}
+		dest := m.GetPoint()
+		var destTile *Tile
+
+		switch t.Kind {
+		case enums.Layout:
+			var ok bool
+			destTile, ok = b.validateDist(*t, dest, int(t.Energy), true)
+			if !ok {
+				return nil, errors.New("invalid layout move")
+			}
+
+		case enums.Teleport:
+			destTile, err = b.getTileAt(dest)
+			if err != nil || destTile.Color != t.Color {
+				return nil, errors.New("invalid teleport move")
+			}
+
+		case enums.Wildcard:
+			var ok bool
+			destTile, ok = b.validateDist(*t, dest, int(t.Energy), false)
+			if !ok {
+				return nil, errors.New("invalid wildcard move")
+			}
+
+		default:
+			return nil, errors.New("invalid unknown move")
+		}
+
+		if destTile != nil {
+			t.Open = false
+			delta.Delta = append(delta.Delta, m)
+			b.Pos[i] = destTile.Pos
+
+			switch destTile.Kind {
+			case enums.Layout, enums.Wildcard:
+				b.Turn++
+			case enums.Zero:
+				b.Turn++
+
+				for i := 1; i < len(b.Pos); i++ {
+					b.Pos[i] = b.Pos[i-1]
+				}
+
+				latestLastPlayerTile, _ := b.getTileAt(b.Pos[len(b.Pos)-1])
+				newLastPlayerTile := latestLastPlayerTile.Copy()
+				newLastPlayerTile.Pos = destTile.Pos
+				b.Tiles[i] = newLastPlayerTile
+				b.Pos[0] = destTile.Pos
+			}
+		}
+	}
+
+	delta.Turn = b.Turn
+	return
+}
+
+func (b Board) validateDist(src Tile, dest valueobjects.Point, dist_target int, exact bool) (*Tile, bool) {
+	visited := []Tile{src}
+	queue := []Tile{src}
+	dist := 1
+
+	for dist <= dist_target {
+		queueCopy := []Tile{}
+		copy(queueCopy, queue)
+		queue := []Tile{}
+
+		for _, v := range queueCopy {
+			neighborsMatrix := []valueobjects.Point{
+				{X: v.Pos.X + 1, Y: v.Pos.Y},
+				{X: v.Pos.X - 1, Y: v.Pos.Y},
+				{X: v.Pos.X, Y: v.Pos.Y + 1},
+				{X: v.Pos.X, Y: v.Pos.Y - 1},
+			}
+
+		browse:
+			for _, p := range neighborsMatrix {
+				for _, v := range visited {
+					if p == v.Pos {
+						break browse
+					}
+				}
+				candidate, _ := b.getTileAt(p)
+				if candidate == nil || !candidate.Open {
+					continue
+				}
+
+				if dest == candidate.Pos && (!exact || dist == dist_target) {
+					return candidate, true
+				}
+
+				visited = append(visited, *candidate)
+				queue = append(queue, *candidate)
+			}
+		}
+		dist++
+	}
+
+	return nil, false
 }

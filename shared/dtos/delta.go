@@ -62,3 +62,14 @@ func (m *Move) UnmarshalJSON(data []byte) error {
 
 	return errors.New("unable to unmarshal Move: not a Point or int64")
 }
+
+func (m *Move) GetPoint() valueobjects.Point {
+	if m.tag == moveTypePoint {
+		if len(m.data) < 4 {
+			panic("not a point")
+		}
+
+		return *(*valueobjects.Point)(unsafe.Pointer(&m.data[0]))
+	}
+	panic("not a point")
+}

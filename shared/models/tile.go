@@ -9,20 +9,17 @@ import (
 )
 
 type Tile struct {
-	Pos     valueobjects.Point
-	BoardID uint
-	Board   Board
-	Open    bool
-	Color   enums.TileColor
-	Energy  int16
-	Kind    enums.TileKind
-	Data    map[string]json.RawMessage
+	Pos    valueobjects.Point
+	Open   bool
+	Color  enums.TileColor
+	Energy int16
+	Kind   enums.TileKind
+	Data   map[string]json.RawMessage
 }
 
-func RandomizeTileKind(board Board, tk enums.TileKind, x, y uint16) *Tile {
+func RandomizeTileKind(tk enums.TileKind, x, y uint16) *Tile {
 	tile := &Tile{
 		Pos:    valueobjects.Point{X: x, Y: y},
-		Board:  board,
 		Open:   true,
 		Kind:   tk,
 		Color:  enums.ColorLess,
@@ -47,6 +44,20 @@ func RandomizeTileKind(board Board, tk enums.TileKind, x, y uint16) *Tile {
 	return tile
 }
 
-func RandomizeTile(board Board, x, y uint16) *Tile {
-	return RandomizeTileKind(board, enums.RandomKind(), x, y)
+func RandomizeTile(x, y uint16) *Tile {
+	return RandomizeTileKind(enums.RandomKind(), x, y)
+}
+
+func (t1 Tile) Copy() (t2 Tile) {
+	t2.Pos = t1.Pos
+	t2.Open = t1.Open
+	t2.Color = t1.Color
+	t2.Energy = t1.Energy
+	t2.Kind = t1.Kind
+	t2.Data = map[string]json.RawMessage{}
+	for k, v := range t1.Data {
+		t2.Data[k] = v
+	}
+
+	return
 }
