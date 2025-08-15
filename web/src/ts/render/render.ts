@@ -2,7 +2,7 @@ import { rnd } from "../helpers/helpers.ts";
 import { TileHighlightFlags, RenderInterface, PlayerHighlightFlags } from "../types/renderInterface.ts";
 import type { GameState, Player, Tile, ValidMove } from "../types/types.ts";
 import { Pos, TileColor } from "../types/util.ts";
-import { LayoutTile, WildcardTile } from "../game/tiles.ts";
+import { LayoutTile, TeleportTile, WildcardTile } from "../game/tiles.ts";
 import { transform } from "typescript";
 
 const callbacks = {
@@ -218,6 +218,10 @@ function refreshTile(tile: Tile) {
 
     if (tile instanceof WildcardTile) {
         tileElement.classList.add(`tile-wildcard`);
+    }
+
+    if (tile instanceof TeleportTile) {
+        tileElement.classList.add('tile-teleport');
     }
 }
 

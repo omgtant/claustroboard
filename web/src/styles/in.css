@@ -22,7 +22,7 @@
 
 @layer components {
     .board {
-        @apply relative grid grid-cols-5 w-fit *:-ml-1 *:-mt-1;
+        @apply relative grid grid-cols-6 w-fit *:-ml-1 *:-mt-1;
     }
 
     .log {
@@ -151,6 +151,14 @@
                     display: block;
                     background-image: url('../public/atlas.png');
                     background-position: -40px -144px;
+                    width: 68px;
+                    height: 68px;
+                }
+                &.tile-teleport::after {
+                    content: '';
+                    display: block;
+                    background-image: url('../public/atlas.png');
+                    background-position: -112px -144px;
                     width: 68px;
                     height: 68px;
                 }
