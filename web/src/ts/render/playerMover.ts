@@ -4,7 +4,7 @@ import { board, getElementByPos } from "./render";
 function FLIPMove(player: Player, move: ValidMove) {
     if (!board) throw new Error('Board element not found');
     
-    const playerElement:HTMLElement | null = document.querySelector(`[data-player-nickname="${player.nickname}"]`);
+    const playerElement:HTMLElement | null = board.querySelector(`[data-player-nickname="${player.nickname}"]`);
     if (!playerElement) throw new Error('Player element not found');
     playerElement.getAnimations().forEach(anim => anim.cancel());
 
@@ -37,9 +37,17 @@ function FLIPMove(player: Player, move: ValidMove) {
     });
 }
 
+export function getPlayerElement(nickname: string): HTMLElement | null {
+    if (!board) throw new Error('Board element not found');
+    const playerElement = board.querySelector(`[data-player-nickname="${nickname}"]`);
+    if (!playerElement) {
+        console.warn(`Player element for ${nickname} not found`);
+    }
+    return playerElement as HTMLElement | null;
+}
 
 function FLIPPlayerBegin(player: Player) {
-    const playerElement:HTMLElement | null = document.querySelector(`[data-player-nickname="${player.nickname}"]`);
+    const playerElement:HTMLElement | null = getPlayerElement(player.nickname);
     if (!playerElement) throw new Error('Player element not found');
 
     const rect = playerElement.getBoundingClientRect();
@@ -48,7 +56,7 @@ function FLIPPlayerBegin(player: Player) {
 }
 
 function FLIPPlayerEnd(player: Player) {
-    const playerElement:HTMLElement | null = document.querySelector(`[data-player-nickname="${player.nickname}"]`);
+    const playerElement:HTMLElement | null = getPlayerElement(player.nickname);
     if (!playerElement) throw new Error('Player element not found');
 
     const newRect = playerElement.getBoundingClientRect();
@@ -69,7 +77,7 @@ function FLIPPlayerEnd(player: Player) {
 }
 
 export function _movePlayer(turnNumber:number, player: Player, move: ValidMove) {
-    const playerElement = document.querySelector(`[data-player-nickname="${player.nickname}"]`);
+    const playerElement = getPlayerElement(player.nickname);
     if (!playerElement) throw new Error('Player element not found');
     
     const tileElement = getElementByPos(move.to);

@@ -4,7 +4,7 @@ import type { GameState, Player, Tile, ValidMove } from "../types/types.ts";
 import { Pos, TileColor } from "../types/util.ts";
 import { LayoutTile, TeleportTile, WildcardTile, ZeroTile } from "../game/tiles.ts";
 import { transform } from "typescript";
-import { _movePlayer } from "./playerMover.ts";
+import { _movePlayer, getPlayerElement } from "./playerMover.ts";
 
 const callbacks = {
     tryMoveTo: (pos: Pos) : void => {
@@ -167,13 +167,13 @@ function gameStart(state: GameState) {
 function renderWin(state: GameState, winner: Player) {
     clearAllArrows();
 
-    const winnerElement = document.querySelector(`[data-player-nickname="${winner.nickname}"]`);
+    const winnerElement = getPlayerElement(winner.nickname);
     if (!winnerElement) throw new Error('Winner element not found');
 
     winnerElement.classList.add('player-won');
     logMessage(`Player ${winner.nickname} has won the game!`);
     state.players.filter(p => p !== winner).forEach(loser => {
-        const loserElement = document.querySelector(`[data-player-nickname="${loser.nickname}"]`);
+        const loserElement = getPlayerElement(loser.nickname);
         if (loserElement) {
             loserElement.classList.add('player-lost');
         }
@@ -260,10 +260,10 @@ function renderState(state: GameState) {
 }
 
 function highlightWinner(player: Player) {
-    const playerElement = document.querySelector(`[data-player-nickname="${player.nickname}"]`);
+    const playerElement = getPlayerElement(player.nickname);
     if (!playerElement) throw new Error('Player element not found');
 
-    const otherPlayers = document.querySelectorAll('.player-parent');
+    const otherPlayers = board!.querySelectorAll('.player-parent');
     otherPlayers.forEach(el => {
         if (el !== playerElement) {
             el.classList.remove('player-highlight');
@@ -274,10 +274,10 @@ function highlightWinner(player: Player) {
 }
 
 function highlightOtherActivePlayer(player: Player) {
-    const playerElement = document.querySelector(`[data-player-nickname="${player.nickname}"]`);
+    const playerElement = getPlayerElement(player.nickname);
     if (!playerElement) throw new Error('Player element not found');
 
-    const otherPlayers = document.querySelectorAll('.player-parent');
+    const otherPlayers = board!.querySelectorAll('.player-parent');
     otherPlayers.forEach(el => {
         if (el !== playerElement) {
             el.classList.remove('player-highlight');
@@ -288,7 +288,7 @@ function highlightOtherActivePlayer(player: Player) {
 }
 
 function playerLost(player: Player) {
-    const playerElement = document.querySelector(`[data-player-nickname="${player.nickname}"]`);
+    const playerElement = getPlayerElement(player.nickname);
     if (!playerElement) throw new Error('Player element not found');
 
     playerElement.classList.add('player-lost');
@@ -297,7 +297,7 @@ function playerLost(player: Player) {
 }
 
 function clearAllArrows() {
-    const arrows = document.querySelectorAll('.move-arrow');
+    const arrows = board!.querySelectorAll('.move-arrow');
     arrows.forEach(arrow => {
         arrow.remove();
     });
