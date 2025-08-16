@@ -114,9 +114,11 @@ func (from Tile) validateMove(b *Board, m dtos.Move) (destTile *Tile, err error)
 		err = errors.New("invalid unknown move")
 	}
 
-	fmt.Printf("Move validated: from %s (%s) to %s (%s)\n",
-		from.Pos.String(), from.Kind.String(),
-		destTile.Pos.String(), destTile.Kind.String())
+	if destTile != nil {
+		fmt.Printf("Move validated: from %s (%s) to %s (%s)\n",
+			from.Pos.String(), from.Kind.String(),
+			destTile.Pos.String(), destTile.Kind.String())
+	}
 	return
 }
 
