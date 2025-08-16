@@ -16,7 +16,7 @@ state:
 	"width": 6,
 	"height": 6,
 	"board": [
-		[{"tile_type": "layout", "color": 0, "data": {"move_count": 2}}, ..., ...],
+		[{"tile_type": "layout", "color": 0, "data": {"move_count": 2}}, ...],
 		[..., ..., ...],
 		...
 		[..., ..., ...]
