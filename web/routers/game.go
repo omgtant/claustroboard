@@ -81,9 +81,12 @@ func handleMove(c *wsClient, data json.RawMessage) {
 
 	println("turn", currentPlayer)
 
-	var moves []dtos.Move
-	json.Unmarshal(data, &moves)
-	delta, err := board.Move(moves)
+	var inputDelta dtos.Delta
+	if err := json.Unmarshal(data, &inputDelta); err != nil {
+		c.writeError(err)
+		return
+	}
+	delta, err := board.Move(inputDelta.Delta)
 
 	if err != nil {
 		c.writeError(err)
