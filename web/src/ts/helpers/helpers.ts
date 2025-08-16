@@ -220,7 +220,8 @@ export function toValidMovesOnly(moves: Pos[] | ValidMove[]): ValidMove[] {
 }
 
 export function cloneTile(tile: Tile) {
-    let newTile: Tile = new tile.constructor;
+    // @ts-ignore
+    let newTile: Tile = new tile.constructor; 
     Object.assign(newTile, tile);
     return newTile;
 }
