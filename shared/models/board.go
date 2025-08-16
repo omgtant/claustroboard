@@ -148,25 +148,29 @@ func StartGame(code GameCode) (*Board, error) {
 		return nil, errors.New("not enough tiles for players")
 	}
 
-	used := make(map[valueobjects.Point]struct{}, len(board.Players))
+	used := make(map[valueobjects.Point]bool, len(board.Players))
 	board.Pos = board.Pos[:0]
-	for range board.Players {
-		for {
-			idx := valueobjects.Point{
-				X: uint16(rand.Intn(int(board.Width))),
-				Y: uint16(rand.Intn(int(board.Height))),
-			}
-			if _, ok := used[idx]; ok {
-				continue
-			}
-
-			tile, err := board.getTileAt(idx)
-			if err == nil && tile.CanStart() {
-				used[idx] = struct{}{}
-				board.Pos = append(board.Pos, idx)
-				break
+	// Find valid starting positions
+	validPositions := []valueobjects.Point{}
+	for y := uint16(0); y < board.Height; y++ {
+		for x := uint16(0); x < board.Width; x++ {
+			pos := valueobjects.Point{X: x, Y: y}
+			if tile, err := board.getTileAt(pos); err == nil && tile.CanStart() {
+				validPositions = append(validPositions, pos)
 			}
 		}
+	}
+
+	if len(validPositions) < len(board.Players) {
+		return nil, errors.New("not enough valid starting positions")
+	}
+
+	// Randomly assign positions to players
+	for range board.Players {
+		idx := rand.Intn(len(validPositions))
+		board.Pos = append(board.Pos, validPositions[idx])
+		used[validPositions[idx]] = true
+		validPositions = append(validPositions[:idx], validPositions[idx+1:]...)
 	}
 	board.Phase = PhaseStarted
 	gameBoardsMu.Lock()
