@@ -142,7 +142,7 @@ function refreshTile(tile: Tile) {
     }
     
     if (tile instanceof LayoutTile) {
-        tileElement.classList.add(`tile-layout-${tile.moveCount}`);
+        tileElement.classList.add(`tile-layout-${tile.energy}`);
     }
 
     if (tile instanceof WildcardTile) {

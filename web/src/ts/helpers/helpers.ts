@@ -6,31 +6,31 @@ export function getMockInitialState(): InitialState {
     const obj = {
         palette: [{ 'Layout': { script: 'Layout' } }],
         board: shuffle2DArr([[
-            { tile_type: 'Layout', color: 1, data: { move_count: 1 } },
-            { tile_type: 'Layout', color: 1, data: { move_count: 2 } },
-            { tile_type: 'Layout', color: 1, data: { move_count: 3 } },
-            { tile_type: 'Layout', color: 1, data: { move_count: 4 } },
+            { tile_type: 'Layout', color: 1, data: { energy: 1 } },
+            { tile_type: 'Layout', color: 1, data: { energy: 2 } },
+            { tile_type: 'Layout', color: 1, data: { energy: 3 } },
+            { tile_type: 'Layout', color: 1, data: { energy: 4 } },
             { tile_type: 'Teleport', color: 1 },
             { tile_type: 'Wall', color: 1}
         ], [
-            { tile_type: 'Layout', color: 2, data: { move_count: 1 } },
-            { tile_type: 'Layout', color: 2, data: { move_count: 2 } },
-            { tile_type: 'Layout', color: 2, data: { move_count: 3 } },
-            { tile_type: 'Layout', color: 2, data: { move_count: 4 } },
+            { tile_type: 'Layout', color: 2, data: { energy: 1 } },
+            { tile_type: 'Layout', color: 2, data: { energy: 2 } },
+            { tile_type: 'Layout', color: 2, data: { energy: 3 } },
+            { tile_type: 'Layout', color: 2, data: { energy: 4 } },
             { tile_type: 'Teleport', color: 2 },
             { tile_type: 'Wall', color: 2}
         ], [
-            { tile_type: 'Layout', color: 3, data: { move_count: 1 } },
-            { tile_type: 'Layout', color: 3, data: { move_count: 2 } },
-            { tile_type: 'Layout', color: 3, data: { move_count: 3 } },
-            { tile_type: 'Layout', color: 3, data: { move_count: 4 } },
+            { tile_type: 'Layout', color: 3, data: { energy: 1 } },
+            { tile_type: 'Layout', color: 3, data: { energy: 2 } },
+            { tile_type: 'Layout', color: 3, data: { energy: 3 } },
+            { tile_type: 'Layout', color: 3, data: { energy: 4 } },
             { tile_type: 'Teleport', color: 3 },
             { tile_type: 'Wall', color: 3}
         ], [
-            { tile_type: 'Layout', color: 4, data: { move_count: 1 } },
-            { tile_type: 'Layout', color: 4, data: { move_count: 2 } },
-            { tile_type: 'Layout', color: 4, data: { move_count: 3 } },
-            { tile_type: 'Layout', color: 4, data: { move_count: 4 } },
+            { tile_type: 'Layout', color: 4, data: { energy: 1 } },
+            { tile_type: 'Layout', color: 4, data: { energy: 2 } },
+            { tile_type: 'Layout', color: 4, data: { energy: 3 } },
+            { tile_type: 'Layout', color: 4, data: { energy: 4 } },
             { tile_type: 'Teleport', color: 4 },
             { tile_type: 'Wall', color: 4}
         ], [
@@ -98,7 +98,7 @@ export function bakeTile(tileSetup: TileSetup, pos: Pos): Tile {
         tile.color = tileSetup.color;
         tile.position = pos;
         tile.isOpen = true;
-        tile.moveCount = +tileSetup.data.energy;
+        tile.energy = +tileSetup.data.energy;
         return tile;
     } else if (tileSetup.tile_type === 'Wall') {
         const tile: tiles.WallTile = new tiles.WallTile();

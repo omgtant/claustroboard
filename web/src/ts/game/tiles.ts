@@ -4,14 +4,14 @@ import { Tile, GameState, Player, ValidMove } from "../types/types";
 import { Pos, TileColor } from "../types/util";
 
 export class LayoutTile extends Tile {
-    moveCount: number;
+    energy: number;
 
     onTurnStart(state: GameState): void {
         return;
     }
 
     availableMoves(state: GameState, player: Player): ValidMove[] {
-        return Array.from(this.dfs(state, player, 0, this.moveCount, this, new Set(), []));
+        return Array.from(this.dfs(state, player, 0, this.energy, this, new Set(), []));
     }
 
     onPlayerLanding(state: GameState, player: Player): void {
