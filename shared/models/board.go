@@ -277,9 +277,9 @@ func (b Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, e
 	dist := 1
 
 	for dist <= distTarget {
-		queueCopy := []Tile{}
+		queueCopy := make([]Tile, len(queue))
 		copy(queueCopy, queue)
-		queue := []Tile{}
+		queue = []Tile{}
 
 		for _, v := range queueCopy {
 			neighborsMatrix := []valueobjects.Point{
