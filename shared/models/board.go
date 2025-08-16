@@ -22,7 +22,7 @@ const (
 type Board struct {
 	Width   uint16
 	Height  uint16
-	Tiles   []Tile
+	Tiles   [][]Tile
 	Players []string
 	Turn    uint32
 	Pos     []valueobjects.Point
@@ -41,9 +41,11 @@ func NewGameBoard(players []string, palette []enums.TileKind, width uint16, heig
 		Phase:  PhaseLobby,
 	}
 
+	board.Tiles = make([][]Tile, height)
 	for y := uint16(0); y < height; y++ {
+		board.Tiles[y] = make([]Tile, width)
 		for x := uint16(0); x < width; x++ {
-			board.Tiles = append(board.Tiles, *RandomizeTile(x, y))
+			board.Tiles[y][x] = *RandomizeTile(x, y)
 		}
 	}
 
@@ -186,12 +188,16 @@ func Snapshot(code GameCode) (*dtos.Board, error) {
 	for _, kind := range enums.TileKindNames {
 		palette[kind] = dtos.PaletteTile{}
 	}
-	dtsTiles := make([]dtos.BoardTile, len(b.Tiles))
-	for i, tile := range b.Tiles {
-		dtsTiles[i] = dtos.BoardTile{
-			Name:  enums.TileKindName(tile.Kind.String()),
-			Color: tile.Color,
-			Data:  tile.Data,
+	dtsTiles := make([][]dtos.BoardTile, b.Height)
+	for y := uint16(0); y < b.Height; y++ {
+		dtsTiles[y] = make([]dtos.BoardTile, b.Width)
+		for x := uint16(0); x < b.Width; x++ {
+			tile := b.Tiles[y][x]
+			dtsTiles[y][x] = dtos.BoardTile{
+				Name:  enums.TileKindName(tile.Kind.String()),
+				Color: tile.Color,
+				Data:  tile.Data,
+			}
 		}
 	}
 
@@ -204,20 +210,11 @@ func Snapshot(code GameCode) (*dtos.Board, error) {
 	}, nil
 }
 
-func (b Board) getTileIndex(p valueobjects.Point) (i int, err error) {
-	i = int(b.Width)*int(p.Y) + int(p.X)
-	if len(b.Tiles) < i {
-		return -1, errors.New("out of bound")
-	}
-	return
-}
-
 func (b Board) getTileAt(p valueobjects.Point) (t *Tile, internalError error) {
-	i, interinternalError := b.getTileIndex(p)
-	if interinternalError != nil {
-		return
+	if p.Y >= b.Height || p.X >= b.Width {
+		return nil, errors.New("point out of bounds")
 	}
-	t = &b.Tiles[i]
+	t = &b.Tiles[p.Y][p.X]
 	return
 }
 

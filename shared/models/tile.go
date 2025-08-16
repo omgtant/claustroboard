@@ -121,8 +121,7 @@ func (t Tile) validateMove(b *Board, m dtos.Move) (destTile *Tile, err error) {
 func (destTile Tile) applyMove(b *Board, from *Tile) (land bool) {
 	from.Open = false
 
-	i, _ := b.getTileIndex(from.Pos)
-	b.Pos[i] = destTile.Pos
+	b.Pos[int(b.Turn)%len(b.Pos)] = destTile.Pos
 
 	if destTile.CanLand() {
 		land = true
@@ -136,7 +135,7 @@ func (destTile Tile) applyMove(b *Board, from *Tile) (land bool) {
 		latestLastPlayerTile, _ := b.getTileAt(b.Pos[len(b.Pos)-1])
 		newLastPlayerTile := latestLastPlayerTile.Copy()
 		newLastPlayerTile.Pos = destTile.Pos
-		b.Tiles[i] = newLastPlayerTile
+		b.Tiles[destTile.Pos.X][destTile.Pos.Y] = newLastPlayerTile
 		b.Pos[0] = destTile.Pos
 	}
 
