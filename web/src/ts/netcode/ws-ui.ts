@@ -10,7 +10,7 @@ export let netcode: Netcode = {
     gameCode: '',
     myNickname: '',
     players: [] as string[],
-    ws: new WebSocketManager<EventMap>({heartbeatInterval: 10000, connectionTimeout: 60000})
+    ws: new WebSocketManager<EventMap>({heartbeatInterval: 10000, connectionTimeout: 60000, enableLogging: true})
 };
 
 function getNickname() {
