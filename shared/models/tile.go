@@ -148,7 +148,6 @@ func (from *Tile) applyMove(b *Board, dest *Tile) (land bool) {
 		b.Tiles[dest.Pos.Y][dest.Pos.X] = nextPlayerTile.CopyFor(dest.Pos)
 
 		playerPos := b.Pos[activePlayers[0]]
-		fmt.Printf("First step, playerPos: %s\n", playerPos.String());
 		for i, cur := range activePlayers {
 			if i == len(activePlayers)-1 {
 				continue
