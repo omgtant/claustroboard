@@ -1,12 +1,29 @@
 import { Player, ValidMove } from "../types/types";
 import { board, getElementByPos } from "./render";
 
+let animationsFromNicknames: Record<string, Animation[]> = {};
+
+function cancelAnimationsForPlayer(nickname: string) {
+    const animations = animationsFromNicknames[nickname];
+    if (animations) {
+        animations.forEach(anim => anim.cancel());
+        delete animationsFromNicknames[nickname];
+    }
+}
+
+function addAnimationForPlayer(nickname: string, animation: Animation) {
+    if (!animationsFromNicknames[nickname]) {
+        animationsFromNicknames[nickname] = [];
+    }
+    animationsFromNicknames[nickname].push(animation);
+}
+
 function FLIPMove(player: Player, move: ValidMove) {
     if (!board) throw new Error('Board element not found');
     
-    const playerElement:HTMLElement | null = board.querySelector(`[data-player-nickname="${player.nickname}"]`);
+    const playerElement:HTMLElement | null = getPlayerElement(player.nickname);
     if (!playerElement) throw new Error('Player element not found');
-    playerElement.getAnimations().forEach(anim => anim.cancel());
+    cancelAnimationsForPlayer(player.nickname);
 
     const playerRect = playerElement.getBoundingClientRect();
 
@@ -29,12 +46,13 @@ function FLIPMove(player: Player, move: ValidMove) {
     });
     
     // playerElement.classList.remove('player-highlight');
-    playerElement.animate(animations, {
+    const anim = playerElement.animate(animations, {
         duration: 200 * positions.length,
         easing: 'ease-in-out',
         fill: 'forwards',
-        composite: 'replace'
+        composite: 'add'
     });
+    addAnimationForPlayer(player.nickname, anim);
 }
 
 export function getPlayerElement(nickname: string): HTMLElement | null {
