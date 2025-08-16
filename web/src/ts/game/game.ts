@@ -134,12 +134,7 @@ function playMove(pos: Pos, someGameState: t.GameState = gameState, someRenderIn
     someGameState.history.push({...pos});
 
     advanceMove(someGameState);
-
-    if (!myNickname) {
-        suggestMoving(someGameState, someRenderInterface);
-    } else if (myNickname === _getCurrentPlayer(someGameState).nickname) {
-        suggestMoving(someGameState, someRenderInterface, false, myNickname, afterMyMove);
-    }
+    suggestMoving(someGameState, someRenderInterface, false, myNickname, afterMyMove);
 }
 
 
