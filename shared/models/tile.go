@@ -84,6 +84,35 @@ func (t Tile) CanStart() bool {
 	return t.Kind == enums.Wildcard || t.Kind == enums.Layout
 }
 
+func (from Tile) AvailableMoves(b *Board) (result []valueobjects.Point) {
+	switch from.Kind {
+	case enums.Layout:
+		return b.bfs(from, int(from.getEnergy()), true)
+	case enums.Wildcard:
+		return b.bfs(from, 4, false)
+	case enums.Teleport:
+		for _, row := range b.Tiles {
+			for _, tile := range row {
+				if tile.Kind != enums.Teleport && (from.Color == enums.ColorLess || tile.Color == from.Color) && 
+				   tile.Open && tile.Pos != from.Pos {
+					result = append(result, tile.Pos)
+				}
+			}
+		}
+	case enums.Wall, enums.Zero:
+		// No moves available for walls or zero tiles
+		return nil
+	default:
+		fmt.Printf("Unknown tile kind %s at %s\n", from.Kind.String(), from.Pos.String())
+		return nil
+	}
+
+	if len(result) == 0 {
+		fmt.Printf("No available moves for tile %s (%s)\n", from.Pos.String(), from.Kind.String())
+	}
+	return result
+}
+
 func (from Tile) validateMove(b *Board, m dtos.Move) (destTile *Tile, err error) {
 	dest, err := m.GetPoint()
 	if err != nil {

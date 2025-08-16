@@ -128,7 +128,7 @@ function initPrepState() {
     if (openLinkBtn) {
         openLinkBtn.classList.remove('hidden');
         openLinkBtn.addEventListener('click', () => {
-            const gameLink = `${window.location.origin}/?c=${netcode.gameCode}&n=test`;
+            const gameLink = `${window.location.origin}/?c=${netcode.gameCode}&n=test&start=1`;
             if (gameLink) {
                 window.open(gameLink, '_blank')?.focus();
             }

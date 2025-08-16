@@ -20,14 +20,15 @@ const (
 )
 
 type Board struct {
-	mu      sync.Mutex
-	Width   uint16
-	Height  uint16
-	Tiles   [][]Tile
-	Players []string
-	Turn    uint32
-	Pos     []valueobjects.Point
-	Phase   BoardPhase
+	mu       sync.Mutex
+	Width    uint16
+	Height   uint16
+	Tiles    [][]Tile
+	Players  []string
+	Turn     uint32
+	Pos      []valueobjects.Point
+	IsActive []bool
+	Phase    BoardPhase
 }
 
 var (
@@ -172,6 +173,13 @@ func StartGame(code GameCode) (*Board, error) {
 		used[validPositions[idx]] = true
 		validPositions = append(validPositions[:idx], validPositions[idx+1:]...)
 	}
+
+	// Mark all players as active
+	board.IsActive = make([]bool, len(board.Players))
+	for i := range board.IsActive {
+		board.IsActive[i] = true
+	}
+
 	board.Phase = PhaseStarted
 	gameBoardsMu.Lock()
 	gameBoards[code] = board
@@ -274,10 +282,38 @@ func (b *Board) Move(moves []dtos.Move) (*dtos.Delta, error) {
 	for _, m := range moveData {
 		if m.from.applyMove(b, m.to) {
 			b.Turn++
+			// Skip dead players' moves
+			for !b.IsActive[(b.Turn)%uint32(len(b.Pos))] {
+				b.Turn++
+			}
+			// Kill the next player now if it can't move
+			checkNextForDeadness(b)
 		}
 		delta.Delta = append(delta.Delta, m.move)
 	}
 	return &delta, nil
+}
+
+func checkNextForDeadness(b *Board) {
+	nextPlayerPos := b.Pos[(b.Turn)%uint32(len(b.Pos))]
+	nextPlayerTile, err := b.getTileAt(nextPlayerPos)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to get tile at %s: %v", nextPlayerPos.String(), err))
+	}
+	if len(nextPlayerTile.AvailableMoves(b)) == 0 {
+		b.IsActive[(b.Turn)%uint32(len(b.Pos))] = false
+		fmt.Printf("Player %d is out of the game\n", (b.Turn)%uint32(len(b.Pos)))
+		activeCount := 0
+		for _, active := range b.IsActive {
+			if active {
+				activeCount++
+			}
+		}
+		if activeCount <= 1 {
+			b.Phase = PhaseLobby
+			fmt.Println("Game over, returning to lobby")
+		}
+	}
 }
 
 func (b *Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, exact bool) (*Tile, bool) {
@@ -338,4 +374,49 @@ func (b *Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, 
 	}
 
 	return nil, false
+}
+
+func (b *Board) bfs(src Tile, energy int, exact bool) (result []valueobjects.Point) {
+	type bfsEntry struct {
+		p    valueobjects.Point
+		dist int
+	}
+
+	q := []bfsEntry{{p: src.Pos, dist: 0}}
+	visited := map[valueobjects.Point]bool{}
+
+	for len(q) > 0 {
+		cur := q[len(q)-1]
+		q = q[1:]
+		if visited[cur.p] {
+			continue
+		}
+		visited[cur.p] = true
+
+		top := cur.p.Top(int(b.Width), int(b.Height))
+		if top != nil && !visited[*top] {
+			q = append(q, bfsEntry{*top, cur.dist + 1})
+		}
+
+		bottom := cur.p.Bottom(int(b.Width), int(b.Height))
+		if bottom != nil && !visited[*bottom] {
+			q = append(q, bfsEntry{*bottom, cur.dist + 1})
+		}
+
+		left := cur.p.Left(int(b.Width), int(b.Height))
+		if left != nil && !visited[*left] {
+			q = append(q, bfsEntry{*left, cur.dist + 1})
+		}
+
+		right := cur.p.Right(int(b.Width), int(b.Height))
+		if right != nil && !visited[*right] {
+			q = append(q, bfsEntry{*right, cur.dist + 1})
+		}
+
+		if !exact || cur.dist == energy {
+			result = append(result, cur.p)
+			continue
+		}
+	}
+	return
 }
