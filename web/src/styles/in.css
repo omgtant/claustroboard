@@ -83,7 +83,7 @@
     }
 
     .log {
-        @apply block text-right overflow-y-scroll h-full bg-gray-800 p-2 rounded-lg;
+        @apply absolute left-full ml-4 w-48 block text-right overflow-y-scroll h-full bg-gray-800 p-2 rounded-lg;
         span {
             @apply block w-full text-sm bg-transparent hover:bg-white/10 transition-colors duration-75;
         }
