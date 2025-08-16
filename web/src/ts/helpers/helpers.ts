@@ -1,6 +1,6 @@
 import * as tiles from "../game/tiles";
 import { GameState, InitialPlayer, InitialState, Player, Tile, TileSetup, ValidMove } from "../types/types";
-import { Pos } from "../types/util";
+import { Pos, TileColor } from "../types/util";
 
 export function getMockInitialState(): InitialState {
     const obj = {
@@ -95,7 +95,7 @@ export function bakeTile(tileSetup: TileSetup, pos: Pos): Tile {
     // const tiles = require("../game/tiles");
     if (tileSetup.tile_type === 'Layout') {
         const tile: tiles.LayoutTile = new tiles.LayoutTile();
-        tile.color = tileSetup.color;
+        tile.color = tileSetup.color || TileColor.COLORLESS;
         tile.position = pos;
         tile.isOpen = true;
         tile.energy = +tileSetup.data.energy;
