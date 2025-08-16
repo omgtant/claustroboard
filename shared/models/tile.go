@@ -92,7 +92,7 @@ func (from Tile) AvailableMoves(b *Board) (result []valueobjects.Point) {
 		for _, row := range b.Tiles {
 			for _, tile := range row {
 				if tile.Kind != enums.Teleport && (from.Color == enums.ColorLess || tile.Color == from.Color) &&
-					tile.Open && tile.Pos != from.Pos {
+					tile.Open && b.getPlayerAt(tile.Pos) == -1 {
 					result = append(result, tile.Pos)
 				}
 			}
