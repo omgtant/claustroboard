@@ -307,7 +307,7 @@ func (b *Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, 
 				println("neigh", p.X, p.Y)
 				for _, v := range visited {
 					if p == v.Pos {
-						break browse
+						continue browse
 					}
 				}
 				candidate, _ := b.getTileAt(p)
