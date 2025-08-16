@@ -53,6 +53,19 @@ export function init() {
     if (gameCode) {
         document.getElementById('game-code')!.setAttribute('value', gameCode);
     }
+    const nickname = searchQuery.get('n');
+    if (nickname) {
+        document.getElementById('nickname')!.setAttribute('value', nickname);
+    }
+    if (gameCode && nickname) {
+        console.log('Joining game with code:', gameCode, 'and nickname:', nickname);
+        joinGame(nickname, gameCode);
+        if (searchQuery.get('start')) {
+            console.log('Starting game automatically');
+            document.getElementById('prep-stage')?.remove();
+            netcode.ws.send('start', undefined);
+        }
+    }
 }
 
 function newGameBtn() {
@@ -112,11 +125,11 @@ function initPrepState() {
         console.warn('No game code element found');
     }
 
-        const openLinkBtn = document.getElementById('open-link');
+    const openLinkBtn = document.getElementById('open-link');
     if (openLinkBtn) {
         openLinkBtn.classList.remove('hidden');
         openLinkBtn.addEventListener('click', () => {
-            const gameLink = gameLinkEl?.textContent;
+            const gameLink = `${window.location.origin}/?c=${netcode.gameCode}&n=test&start=1`;
             if (gameLink) {
                 window.open(gameLink, '_blank')?.focus();
             }
