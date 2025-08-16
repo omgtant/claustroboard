@@ -4,13 +4,16 @@ import (
 	"encoding/json"
 
 	"omgtant/claustroboard/shared/config"
+	"omgtant/claustroboard/shared/dtos"
 	"omgtant/claustroboard/shared/models"
 )
 
 var (
 	inboundHandlers = map[string]func(*wsClient, json.RawMessage){
-		"start":     handleStartGame,
-		"broadcast": handleBroadcast,
+		"start":      handleStartGame,
+		"broadcast":  handleBroadcast,
+		"my-move":    handleMove,
+		"come-again": handleBroadcast,
 	}
 )
 
@@ -50,5 +53,26 @@ func handleBroadcast(c *wsClient, data json.RawMessage) {
 	broadcastEvent(c.gameCode, event{
 		Type: "broadcast",
 		Data: data,
+	})
+}
+
+func handleMove(c *wsClient, data json.RawMessage) {
+	board, err := models.GetBoard(c.gameCode)
+	if err != nil {
+		c.writeError(err)
+		return
+	}
+
+	var moves []dtos.Move
+	json.Unmarshal(data, &moves)
+	delta, err := board.Move(moves)
+
+	if err != nil {
+		c.writeError(err)
+		return
+	}
+	broadcastEvent(c.gameCode, event{
+		Type: "their-move",
+		Data: delta,
 	})
 }

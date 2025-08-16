@@ -22,10 +22,10 @@ var (
 
 func Start() {
 	// config
-	db_addr := config.Get().DATABASE_CONNECTION_STRING
+	dbAddr := config.Get().DATABASE_CONNECTION_STRING
 	addr := config.Get().APP_ADDRESS
 
-	if db_addr == "" {
+	if dbAddr == "" {
 		panic("DATABASE_CONNECTION_STRING environment variable is not set")
 	}
 	if addr == "" {
