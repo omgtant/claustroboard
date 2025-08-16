@@ -131,16 +131,21 @@ func (from *Tile) applyMove(b *Board, dest *Tile) (land bool) {
 		n := len(b.Pos)
 
 		activePlayers := make([]int, 0, n)
+		currentActivePlayer := -1
 		for i := range b.Players {
 			if b.IsActive[i] {
 				activePlayers = append(activePlayers, i)
+				if i == player {
+					currentActivePlayer = len(activePlayers) - 1
+				}
 			}
 		}
 
-		nextPlayer := (player + 1) % n
-		nextPlayerTile, _ := b.getTileAt(b.Pos[nextPlayer])
+		m := len(activePlayers)
+
+		nextActivePlayer := (currentActivePlayer + 1) % m
+		nextPlayerTile, _ := b.getTileAt(b.Pos[activePlayers[nextActivePlayer]])
 		b.Tiles[dest.Pos.Y][dest.Pos.X] = nextPlayerTile.CopyFor(dest.Pos)
-		b.Pos[nextPlayer] = dest.Pos
 
 		playerPos := b.Pos[player]
 		for i, cur := range activePlayers {
@@ -150,8 +155,8 @@ func (from *Tile) applyMove(b *Board, dest *Tile) (land bool) {
 			b.Pos[cur] = b.Pos[activePlayers[i+1]]
 			fmt.Printf("Player %d swapped to position %s\n", cur, b.Pos[activePlayers[i+1]].String())
 		}
-
 		b.Pos[activePlayers[len(activePlayers)-1]] = playerPos
+
 		fmt.Printf("Player %d swapped to position %s\n", activePlayers[len(activePlayers)-1], playerPos.String())
 	}
 
