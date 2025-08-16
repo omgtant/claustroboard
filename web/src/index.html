@@ -13,12 +13,41 @@
             <div class="w-full h-96">
                 <div class="lg:grid lg:items-start grid-cols-[1fr_200px] flex flex-col items-center w-fit mx-auto gap-4 h-full">
                     <div class="h-full bg-gray-800 p-4 rounded-lg flex flex-col justify-between">
-                        <h1 class="block text-3xl text-slate-100 w-min">Welcome to the Claustroboard!!!</h1>
+                        <h1 class="block w-min">Welcome to the Claustroboard!!!</h1>
                     </div>
                     <div id="log" class="log row-span-2">
                     </div>
-                    <div class="board" id="board">
-            
+                    <div class="board-wrapper">
+                        <div class="board-overlay" id="board-overlay">
+                            <div class="flex flex-col gap-4 h-full justify-around py-16">
+                                <div>
+                                    <label for="nickname" class="text-xl" id="nickname">Nickname</label>
+                                    <input type="text" name="nickname" class="w-full" required />
+                                </div>
+                                <hr />
+                                <div class="flex gap-4">
+                                    <div class="h-full flex flex-col">
+                                        <h2>Create</h2>
+                                        <button class="flex-1 primary-btn">Create</button>
+                                    </div>
+                                    <div class="vr"></div>
+                                    <div>
+                                        <h2>or Join</h2>
+                                        <div>
+                                            <div>
+                                                <label for="game-code">Code</label>
+                                                <div class="flex gap-2">
+                                                    <input type="text" name="game-code" placeholder="abcd1234" />
+                                                    <button>Join</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="board" id="board">
+                        </div>
                     </div>
                 </div>
             </div>
