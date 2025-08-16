@@ -294,13 +294,24 @@ func (b *Board) Move(moves []dtos.Move) (*dtos.Delta, error) {
 	return &delta, nil
 }
 
+func (b *Board) getPlayerAt(p valueobjects.Point) int {
+	for i, pos := range b.Pos {
+		if pos == p {
+			return i
+		}
+	}
+	return -1
+}
+
 func checkNextForDeadness(b *Board) {
 	nextPlayerPos := b.Pos[(b.Turn)%uint32(len(b.Pos))]
 	nextPlayerTile, err := b.getTileAt(nextPlayerPos)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to get tile at %s: %v", nextPlayerPos.String(), err))
 	}
-	if len(nextPlayerTile.AvailableMoves(b)) == 0 {
+	moves := nextPlayerTile.AvailableMoves(b)
+	length := len(moves)
+	if length == 0 {
 		b.IsActive[(b.Turn)%uint32(len(b.Pos))] = false
 		fmt.Printf("Player %d is out of the game\n", (b.Turn)%uint32(len(b.Pos)))
 		activeCount := 0
@@ -391,6 +402,11 @@ func (b *Board) bfs(src Tile, energy int, exact bool) (result []valueobjects.Poi
 		if visited[cur.p] {
 			continue
 		}
+		t, err := b.getTileAt(cur.p)
+		if err != nil || t == nil || !t.Open || b.getPlayerAt(cur.p) == -1 {
+			continue
+		}
+
 		visited[cur.p] = true
 
 		top := cur.p.Top(int(b.Width), int(b.Height))
@@ -413,7 +429,7 @@ func (b *Board) bfs(src Tile, energy int, exact bool) (result []valueobjects.Poi
 			q = append(q, bfsEntry{*right, cur.dist + 1})
 		}
 
-		if !exact || cur.dist == energy {
+		if (!exact || cur.dist == energy) && t.CanLand() {
 			result = append(result, cur.p)
 			continue
 		}
