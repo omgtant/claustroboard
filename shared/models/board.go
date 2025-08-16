@@ -41,8 +41,8 @@ func NewGameBoard(players []string, palette []enums.TileKind, width uint16, heig
 		Phase:  PhaseLobby,
 	}
 
-	for x := uint16(0); x < width; x++ {
-		for y := uint16(0); y < height; y++ {
+	for y := uint16(0); y < height; y++ {
+		for x := uint16(0); x < width; x++ {
 			board.Tiles = append(board.Tiles, *RandomizeTile(x, y))
 		}
 	}
@@ -205,7 +205,7 @@ func Snapshot(code GameCode) (*dtos.Board, error) {
 }
 
 func (b Board) getTileIndex(p valueobjects.Point) (i int, err error) {
-	i = int(p.X)*int(p.Y) + int(p.Y%b.Width)
+	i = int(b.Width)*int(p.Y) + int(p.X)
 	if len(b.Tiles) < i {
 		return -1, errors.New("out of bound")
 	}
