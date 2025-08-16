@@ -112,6 +112,17 @@ function initPrepState() {
         console.warn('No game code element found');
     }
 
+        const openLinkBtn = document.getElementById('open-link');
+    if (openLinkBtn) {
+        openLinkBtn.classList.remove('hidden');
+        openLinkBtn.addEventListener('click', () => {
+            const gameLink = gameLinkEl?.textContent;
+            if (gameLink) {
+                window.open(gameLink, '_blank')?.focus();
+            }
+        });
+    }
+
     document.getElementById('start-btn')?.addEventListener('click', () => {
         netcode.ws.send('start', undefined);
     });
