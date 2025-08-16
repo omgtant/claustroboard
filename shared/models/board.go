@@ -222,17 +222,19 @@ func (b Board) getTileAt(p valueobjects.Point) (t *Tile, internalError error) {
 }
 
 func (b Board) getCurrent() (t *Tile, index int, internalError error) {
+	if len(b.Pos) <= 0 {
+		return nil, 0, errors.New("game has not started")
+	}
 	index = int(b.Turn) % len(b.Pos)
 	player := b.Pos[index]
 	t, internalError = b.getTileAt(player)
 	return t, index, internalError
 }
 
-func (b Board) movePlayer() {
-
-}
-
 func (b Board) Move(moves []dtos.Move) (*dtos.Delta, error) {
+	if b.Phase != PhaseStarted {
+		return nil, errors.New("game has not started")
+	}
 	type MoveData struct {
 		t    *Tile
 		from *Tile
