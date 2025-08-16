@@ -56,18 +56,18 @@ function suggestMoving(someGameState: t.GameState = gameState, someRenderInterfa
         someRenderInterface?.renderWin(someGameState, _getCurrentPlayer(someGameState));
         return;
     }
+
+    someGameState.board.tiles.forEach(row => {
+        row.forEach(tile => {
+            tile.onTurnStart(someGameState);
+        });
+    });
+
     if (myNickname && myNickname !== _getCurrentPlayer(someGameState).nickname) {
         someRenderInterface?.clearHighlights();
         return;
     }
 
-    if (!lastTurnWasSkipped) {
-        someGameState.board.tiles.forEach(row => {
-            row.forEach(tile => {
-                tile.onTurnStart(someGameState);
-            });
-        });
-    }
 
     const moves = getAvailableMoves(someGameState);
     if (moves.length === 0) {
