@@ -274,6 +274,8 @@ function highlightWinner(player: Player) {
 }
 
 function highlightOtherActivePlayer(player: Player) {
+    clearAllArrows();
+
     const playerElement = getPlayerElement(player.nickname);
     if (!playerElement) throw new Error('Player element not found');
 
