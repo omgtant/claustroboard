@@ -150,19 +150,19 @@
                 }
 
                 &.tile-RED {
-                    filter: hue-rotate(-260deg);
+                    filter: hue-rotate(-260deg) brightness(90%) saturate(120%);
                 }
 
                 &.tile-YELLOW {
-                    filter: brightness(110%) hue-rotate(-2000deg);
+                    filter: brightness(110%) hue-rotate(-200deg) saturate(110%);
                 }
 
                 &.tile-GREEN {
-                    filter: brightness(110%) saturate(50%) hue-rotate(-120deg);
+                    filter: brightness(110%) saturate(70%) hue-rotate(-120deg);
                 }
 
                 &.tile-BLUE {
-                    filter: hue-rotate(0deg);
+                    filter: hue-rotate(0deg) brightness(90%) saturate(120%);
                 }
 
                 &.tile-COLORLESS {
