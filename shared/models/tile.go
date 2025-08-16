@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"omgtant/claustroboard/shared/dtos"
 	"omgtant/claustroboard/shared/enums"
 	"omgtant/claustroboard/shared/valueobjects"
@@ -115,26 +116,31 @@ func (t Tile) validateMove(b *Board, m dtos.Move) (destTile *Tile, err error) {
 	return
 }
 
-func (destTile Tile) applyMove(b *Board, from *Tile) (land bool) {
+func (from *Tile) applyMove(b *Board, dest *Tile) (land bool) {
 	from.Open = false
 
-	b.Pos[int(b.Turn)%len(b.Pos)] = destTile.Pos
+	b.Pos[int(b.Turn)%len(b.Pos)] = dest.Pos
 
-	if destTile.CanLand() {
+	if dest.CanLand() {
 		land = true
 	}
 
-	if destTile.Kind == enums.Zero {
+	if dest.Kind == enums.Zero {
 		for i := 1; i < len(b.Pos); i++ {
 			b.Pos[i] = b.Pos[i-1]
 		}
 
 		latestLastPlayerTile, _ := b.getTileAt(b.Pos[len(b.Pos)-1])
 		newLastPlayerTile := latestLastPlayerTile.Copy()
-		newLastPlayerTile.Pos = destTile.Pos
-		b.Tiles[destTile.Pos.X][destTile.Pos.Y] = newLastPlayerTile
-		b.Pos[0] = destTile.Pos
+		newLastPlayerTile.Pos = dest.Pos
+		b.Tiles[dest.Pos.X][dest.Pos.Y] = newLastPlayerTile
+		b.Pos[0] = dest.Pos
 	}
+
+	fmt.Printf("Turn %d: Player moved from %s (%s) to %s (%s)\n",
+		b.Turn,
+		from.Pos.String(), from.Kind.String(),
+		dest.Pos.String(), dest.Kind.String())
 
 	return
 }

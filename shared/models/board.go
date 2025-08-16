@@ -20,6 +20,7 @@ const (
 )
 
 type Board struct {
+	mu      sync.Mutex
 	Width   uint16
 	Height  uint16
 	Tiles   [][]Tile
@@ -33,6 +34,9 @@ var (
 	gameBoardsMu sync.RWMutex
 	gameBoards   = make(map[GameCode]*Board)
 )
+
+func (b *Board) Lock()   { b.mu.Lock() }
+func (b *Board) Unlock() { b.mu.Unlock() }
 
 func NewGameBoard(players []string, palette []enums.TileKind, width uint16, height uint16) (GameCode, error) {
 	board := Board{
@@ -210,7 +214,7 @@ func Snapshot(code GameCode) (*dtos.Board, error) {
 	}, nil
 }
 
-func (b Board) getTileAt(p valueobjects.Point) (t *Tile, internalError error) {
+func (b *Board) getTileAt(p valueobjects.Point) (t *Tile, internalError error) {
 	if p.Y >= b.Height || p.X >= b.Width {
 		return nil, errors.New("point out of bounds")
 	}
@@ -218,7 +222,7 @@ func (b Board) getTileAt(p valueobjects.Point) (t *Tile, internalError error) {
 	return
 }
 
-func (b Board) getCurrent() (t *Tile, index int, internalError error) {
+func (b *Board) GetCurrent() (t *Tile, index int, internalError error) {
 	if len(b.Pos) <= 0 {
 		return nil, 0, errors.New("game has not started")
 	}
@@ -228,47 +232,52 @@ func (b Board) getCurrent() (t *Tile, index int, internalError error) {
 	return t, index, internalError
 }
 
-func (b Board) Move(moves []dtos.Move) (*dtos.Delta, error) {
+func (b *Board) Move(moves []dtos.Move) (*dtos.Delta, error) {
 	if b.Phase != PhaseStarted {
 		return nil, errors.New("game has not started")
 	}
 	type MoveData struct {
-		t    *Tile
 		from *Tile
+		to   *Tile
 		move dtos.Move
 	}
-	destTiles := []MoveData{}
+	moveData := []MoveData{}
 
 	for _, m := range moves {
-		t, _, err := b.getCurrent()
+		t, _, err := b.GetCurrent()
 		if t == nil || err != nil {
 			continue
 		}
 
-		destTile, err := t.validateMove(&b, m)
+		destTile, err := t.validateMove(b, m)
 		if err != nil {
 			return nil, err
 		}
 
 		if destTile != nil {
-			destTiles = append(destTiles, MoveData{t: destTile, from: t, move: m})
+			moveData = append(moveData, MoveData{to: destTile, from: t, move: m})
+		}
+
+		// we don't want to move a different player!
+		if destTile.CanLand() {
+			break
 		}
 	}
 
 	delta := dtos.Delta{
 		Turn: b.Turn,
 	}
-	for _, destTile := range destTiles {
-		if destTile.t.applyMove(&b, destTile.from) {
+	for _, m := range moveData {
+		if m.from.applyMove(b, m.to) {
 			b.Turn++
 		}
-		delta.Delta = append(delta.Delta, destTile.move)
+		delta.Delta = append(delta.Delta, m.move)
 	}
 	return &delta, nil
-
 }
 
-func (b Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, exact bool) (*Tile, bool) {
+func (b *Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, exact bool) (*Tile, bool) {
+	println("validate", src.Kind, src.Pos.X, src.Pos.Y, dest.X, dest.Y, distTarget, exact)
 	visited := []Tile{src}
 	queue := []Tile{src}
 	dist := 1
@@ -295,6 +304,7 @@ func (b Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, e
 
 		browse:
 			for _, p := range neighborsMatrix {
+				println("neigh", p.X, p.Y)
 				for _, v := range visited {
 					if p == v.Pos {
 						break browse
@@ -304,6 +314,7 @@ func (b Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, e
 				candidateValid := candidate != nil && candidate.Open
 				candidateIsTarget := dest == candidate.Pos && (!exact || dist == distTarget)
 
+				println("candidate", candidate.Pos.X, candidate.Pos.Y, candidateValid, candidateIsTarget)
 				if !candidateValid {
 					if candidateIsTarget {
 						return nil, false

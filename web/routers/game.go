@@ -2,6 +2,7 @@ package routers
 
 import (
 	"encoding/json"
+	"errors"
 
 	"omgtant/claustroboard/shared/config"
 	"omgtant/claustroboard/shared/dtos"
@@ -62,6 +63,23 @@ func handleMove(c *wsClient, data json.RawMessage) {
 		c.writeError(err)
 		return
 	}
+
+	board.Lock()
+	defer board.Unlock()
+
+	_, idx, err := board.GetCurrent()
+	if err != nil {
+		c.writeError(err)
+		return
+	}
+
+	currentPlayer := board.Players[idx]
+	if currentPlayer != c.nickname {
+		c.writeError(errors.New("it is not your turn"))
+		return
+	}
+
+	println("turn", currentPlayer)
 
 	var moves []dtos.Move
 	json.Unmarshal(data, &moves)
