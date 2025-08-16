@@ -294,6 +294,10 @@ export class WebSocketManager<TEventMap extends Record<string, any> = {}>
 
   private startHeartbeat(): void {
     this.clearHeartbeat();
+    if (this.config.heartbeatInterval <= 0) {
+      this.log('Heartbeat disabled');
+      return;
+    }
     this.heartbeatInterval = window.setInterval(() => {
       if (this.isConnected) {
         // Send heartbeat as system event
