@@ -87,7 +87,10 @@ func (t Tile) CanStart() bool {
 }
 
 func (t Tile) validateMove(b *Board, m dtos.Move) (destTile *Tile, err error) {
-	dest := m.GetPoint()
+	dest, err := m.GetPoint()
+	if err != nil {
+		return nil, errors.New("only point moves are implemented")
+	}
 	switch t.Kind {
 	case enums.Layout:
 		var ok bool
