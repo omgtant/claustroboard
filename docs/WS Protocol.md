@@ -1,7 +1,7 @@
  **version:** v1.5
 Let's call "actions" websocket payloads sent to the server by a client, and "events" payloads sent by the server to a client. An event sent to all clients at once can be qualified of "broadcast".
 
-HTTP GET (WS) `/api/v1/new-game?nickname=$NICK`
+HTTP GET (WS) `/api/v1/start-game?nickname=$NICK`
 	-> event `created` `{"code": "game code (i.e. ABC123)"}`
 	-> broadcast `playerlist-changed`: `["nickname"]`
 HTTP GET (WS) `/api/v1/join/<code>?nickname=$NICK`
