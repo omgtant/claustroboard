@@ -30,7 +30,8 @@ export const renderInterface: RenderInterface = {
     refreshTile,
     renderWin,
     gameStart,
-    highlightPlayer,
+    highlightWinner,
+    highlightOtherActivePlayer,
     suggestMoves,
     playerLost,
 }
@@ -114,7 +115,7 @@ function suggestMoves(moves: ValidMove[], player: Player, choiceCallback?: (move
         console.warn("No valid moves available for player", player.nickname);
         return;
     }
-    highlightPlayer(player);
+    highlightWinner(player);
     
     highlightTiles([player.position], TileHighlightFlags.SELECTION);
     
@@ -258,7 +259,21 @@ function renderState(state: GameState) {
     });
 }
 
-function highlightPlayer(player: Player, flags: PlayerHighlightFlags = PlayerHighlightFlags.NONE) {
+function highlightWinner(player: Player) {
+    const playerElement = document.querySelector(`[data-player-nickname="${player.nickname}"]`);
+    if (!playerElement) throw new Error('Player element not found');
+
+    const otherPlayers = document.querySelectorAll('.player-parent');
+    otherPlayers.forEach(el => {
+        if (el !== playerElement) {
+            el.classList.remove('player-highlight');
+        }
+    });
+
+    playerElement.classList.add('player-highlight');
+}
+
+function highlightOtherActivePlayer(player: Player) {
     const playerElement = document.querySelector(`[data-player-nickname="${player.nickname}"]`);
     if (!playerElement) throw new Error('Player element not found');
 

@@ -65,6 +65,7 @@ function suggestMoving(someGameState: t.GameState = gameState, someRenderInterfa
 
     if (myNickname && myNickname !== _getCurrentPlayer(someGameState).nickname) {
         someRenderInterface?.clearHighlights();
+        someRenderInterface?.highlightOtherActivePlayer(_getCurrentPlayer(someGameState));
         return;
     }
 

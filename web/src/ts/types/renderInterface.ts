@@ -11,6 +11,7 @@ export enum PlayerHighlightFlags {
     NONE = 0,
     WINNER = 1,
     LOSER = 2,
+    ACTIVE = 4,
 }
 
 export interface RenderInterface {
@@ -27,6 +28,7 @@ export interface RenderInterface {
     refreshTile(tile: t.Tile): void;
     renderWin(state: t.GameState, winner: t.Player): void;
     gameStart(state: t.GameState): void;
-    highlightPlayer(player: t.Player, flags: PlayerHighlightFlags): void;
+    highlightWinner(player: t.Player, flags: PlayerHighlightFlags): void;
+    highlightOtherActivePlayer(player: t.Player): void;
     playerLost(player: t.Player): void;
 }
