@@ -31,6 +31,7 @@ var TileKindNames = map[TileKind]TileKindName{
 	Teleport: kindTeleport,
 	Wall:     kindWall,
 	Wildcard: kindWildcard,
+	Zero:     kindZero,
 }
 
 func (ss TileKind) String() string {
