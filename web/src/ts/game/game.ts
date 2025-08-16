@@ -23,7 +23,7 @@ export function startSingleplayer(someGameState: t.GameState = gameState, someRe
 }
 
 export function startMultiplayer(someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface, myNickname: string, afterMyMove?: (pos: Pos) => Promise<boolean>) {
-    someRenderInterface?.registerCallbacks((pos) => playMove(pos, someGameState, someRenderInterface, myNickname), jumpToHistory);
+    someRenderInterface?.registerCallbacks((pos) => playMove(pos, someGameState, someRenderInterface, myNickname), () => {});
     someRenderInterface?.renderState(someGameState);
     someRenderInterface?.gameStart(someGameState);
     someGameState.someRenderInterface = someRenderInterface;
