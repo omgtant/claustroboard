@@ -261,14 +261,18 @@ func (b *Board) Move(moves []dtos.Move) (*dtos.Delta, error) {
 			continue
 		}
 
-		destTile, err := t.validateMove(b, m)
+		validMoves := t.AvailableMoves(b)
+		destPoint, err := m.GetPoint()
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("invalid move %s: %v", m, err)
+		}
+		destTile, err := b.getTileAt(destPoint)
+
+		if !slices.Contains(validMoves, destPoint) || err != nil || destTile == nil {
+			return nil, fmt.Errorf("invalid move %s: %v", m, err)
 		}
 
-		if destTile != nil {
-			moveData = append(moveData, MoveData{to: destTile, from: t, move: m})
-		}
+		moveData = append(moveData, MoveData{to: destTile, from: t, move: m})
 
 		// we don't want to move a different player!
 		if destTile.CanLand() {
@@ -385,6 +389,52 @@ func (b *Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, 
 	}
 
 	return nil, false
+}
+
+func (b *Board) dfs(me Tile, energy int, exact bool, visited map[valueobjects.Point]bool) (result []valueobjects.Point) {
+	if energy == 0 {
+		return []valueobjects.Point{me.Pos}
+	}
+
+	visited[me.Pos] = true
+
+	result = []valueobjects.Point{}
+
+	for _, him := range []*valueobjects.Point{
+		me.Pos.Top(int(b.Width), int(b.Height)),
+		me.Pos.Bottom(int(b.Width), int(b.Height)),
+		me.Pos.Left(int(b.Width), int(b.Height)),
+		me.Pos.Right(int(b.Width), int(b.Height)),
+	} {
+		if him == nil || visited[*him] {
+			continue
+		}
+
+		tile, err := b.getTileAt(*him)
+		if err != nil || tile == nil || !tile.Open || b.getPlayerAt(*him) != -1 {
+			continue
+		}
+
+		for _, p := range b.dfs(*tile, energy-1, exact, visited) {
+			if !slices.Contains(result, p) {
+				result = append(result, p)
+			}
+		}
+	}
+
+	visited[me.Pos] = false
+
+	if exact {
+		return result
+	}
+
+	if true {
+		if !slices.Contains(result, me.Pos) {
+			result = append(result, me.Pos)
+		}
+	}
+
+	return result
 }
 
 func (b *Board) bfs(src Tile, energy int, exact bool) (result []valueobjects.Point) {

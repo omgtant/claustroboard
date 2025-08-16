@@ -2,9 +2,7 @@ package models
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"omgtant/claustroboard/shared/dtos"
 	"omgtant/claustroboard/shared/enums"
 	"omgtant/claustroboard/shared/valueobjects"
 
@@ -87,14 +85,14 @@ func (t Tile) CanStart() bool {
 func (from Tile) AvailableMoves(b *Board) (result []valueobjects.Point) {
 	switch from.Kind {
 	case enums.Layout:
-		return b.bfs(from, int(from.getEnergy()), true)
+		return b.dfs(from, int(from.getEnergy()), true, make(map[valueobjects.Point]bool))
 	case enums.Wildcard:
-		return b.bfs(from, 4, false)
+		return b.dfs(from, 4, false, make(map[valueobjects.Point]bool))
 	case enums.Teleport:
 		for _, row := range b.Tiles {
 			for _, tile := range row {
-				if tile.Kind != enums.Teleport && (from.Color == enums.ColorLess || tile.Color == from.Color) && 
-				   tile.Open && tile.Pos != from.Pos {
+				if tile.Kind != enums.Teleport && (from.Color == enums.ColorLess || tile.Color == from.Color) &&
+					tile.Open && tile.Pos != from.Pos {
 					result = append(result, tile.Pos)
 				}
 			}
@@ -111,44 +109,6 @@ func (from Tile) AvailableMoves(b *Board) (result []valueobjects.Point) {
 		fmt.Printf("No available moves for tile %s (%s)\n", from.Pos.String(), from.Kind.String())
 	}
 	return result
-}
-
-func (from Tile) validateMove(b *Board, m dtos.Move) (destTile *Tile, err error) {
-	dest, err := m.GetPoint()
-	if err != nil {
-		return nil, errors.New("only point moves are implemented")
-	}
-	switch from.Kind {
-	case enums.Layout:
-		var ok bool
-		destTile, ok = b.validateDist(from, dest, int(from.getEnergy()), true)
-		if !ok {
-			err = errors.New("invalid layout move")
-		}
-
-	case enums.Wildcard:
-		var ok bool
-		destTile, ok = b.validateDist(from, dest, 4, false)
-		if !ok {
-			err = errors.New("invalid wildcard move")
-		}
-
-	case enums.Teleport:
-		destTile, err = b.getTileAt(dest)
-		if err != nil || destTile.Color != from.Color {
-			err = errors.New("invalid teleport move")
-		}
-
-	default:
-		err = errors.New("invalid unknown move")
-	}
-
-	if destTile != nil {
-		fmt.Printf("Move validated: from %s (%s) to %s (%s)\n",
-			from.Pos.String(), from.Kind.String(),
-			destTile.Pos.String(), destTile.Kind.String())
-	}
-	return
 }
 
 func (from *Tile) applyMove(b *Board, dest *Tile) (land bool) {
