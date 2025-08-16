@@ -65,7 +65,8 @@ export interface EventMap {
     'they-moved': MoveDelta,
     'come-again': MoveDelta,
     'close': void,
-    'broadcast': any
+    'broadcast': any,
+    'error': any
 }
 
 export type Netcode = {

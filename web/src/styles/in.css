@@ -68,11 +68,11 @@
     }
 
     .board-wrapper {
-        @apply relative min-w-xs min-h-48;
+        @apply relative min-w-xs min-h-48 bg-gray-800 p-2 rounded-lg;
     }
 
     .board-overlay {
-        @apply relative inset-0 bg-gray-800 z-40 rounded-lg flex flex-col gap-2 p-2 h-full;
+        @apply relative inset-0 z-40 flex flex-col gap-2 h-full;
         .error {
             @apply block text-red-500;
         }

@@ -26,7 +26,7 @@ interface WebSocketConfig {
 
 interface QueuedMessage<T extends Record<string, any>> {
   type: keyof T;
-  payload: any;
+  data: any;
   timestamp: number;
 }
 
@@ -158,7 +158,7 @@ export class WebSocketManager<TEventMap extends Record<string, any> = {}>
   send<K extends keyof TEventMap>(type: K, payload: TEventMap[K]): void {
     const message: QueuedMessage<TEventMap> = {
       type,
-      payload,
+      data: payload,
       timestamp: Date.now()
     };
     

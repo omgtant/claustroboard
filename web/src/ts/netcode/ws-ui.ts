@@ -1,7 +1,8 @@
-import { start } from "../game/game";
+import { startMultiplayer } from "../game/game";
 import { readInitialStateIntoGameState, validateNickname } from "../helpers/helpers";
 import { logMessage } from "../render/render";
 import { EventMap, InitialState, MoveDelta, Netcode } from "../types/types";
+import { Pos } from "../types/util";
 import { WebSocketManager } from "./lib";
 
 
@@ -145,7 +146,32 @@ netcode.ws.on('playerlist-changed', (currentPlayers) => {
     });
 });
 
-netcode.ws.on('started', (data: InitialState) => {
-    start(readInitialStateIntoGameState(data));
+netcode.ws.on('started', start);
+
+function start(data: InitialState) {
+    let turnNumber = 0;
+    const gameHandlers = startMultiplayer(readInitialStateIntoGameState(data), undefined, netcode.myNickname, async (pos: Pos) => {
+        console.log('After my move:', pos);
+        return new Promise<boolean>((resolve) => {
+            netcode.ws.send('my-move', {turn: turnNumber, delta: [pos]});
+            const onError = () => {
+                netcode.ws.off('error', onError);
+                resolve(false);
+            }
+            const onTheyMoved = () => {
+                netcode.ws.off('they-moved', onTheyMoved);
+                resolve(true);
+            }
+            netcode.ws.on('error', onError);
+            netcode.ws.on('they-moved', onTheyMoved);
+        });
+    });
     document.getElementById('prep-stage')?.remove();
-});
+
+    netcode.ws.on('they-moved', (moveDelta: MoveDelta) => {
+        moveDelta.delta.forEach((pos) => {
+            gameHandlers.otherMove(pos);
+        });
+        turnNumber = moveDelta.turn+1;
+    });
+}

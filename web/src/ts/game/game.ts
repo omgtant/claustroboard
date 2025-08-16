@@ -14,12 +14,23 @@ function _tile(pos: Pos, someGameState: t.GameState = gameState): t.Tile {
     return someGameState.board.tiles[pos.y][pos.x];
 }
 
-export function start(someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface) {
-    someRenderInterface?.registerCallbacks(playMove, jumpToHistory);
+export function startSingleplayer(someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface) {
+    someRenderInterface?.registerCallbacks((pos) => playMove(pos, someGameState, someRenderInterface), jumpToHistory);
     someRenderInterface?.renderState(someGameState);
     someRenderInterface?.gameStart(someGameState);
     someGameState.someRenderInterface = someRenderInterface;
     suggestMoving(someGameState, someRenderInterface);
+}
+
+export function startMultiplayer(someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface, myNickname: string, afterMyMove?: (pos: Pos) => Promise<boolean>) {
+    someRenderInterface?.registerCallbacks((pos) => playMove(pos, someGameState, someRenderInterface, myNickname), jumpToHistory);
+    someRenderInterface?.renderState(someGameState);
+    someRenderInterface?.gameStart(someGameState);
+    someGameState.someRenderInterface = someRenderInterface;
+    suggestMoving(someGameState, someRenderInterface, false, myNickname, afterMyMove);
+    return {
+        otherMove: (pos: Pos) => playMove(pos, someGameState, someRenderInterface),
+    }
 }
 
 function getAvailableMoves(someGameState: t.GameState = gameState): t.ValidMove[] {
@@ -33,7 +44,8 @@ function advanceMove(someGameState: t.GameState = gameState) {
     someGameState.playerTurnIndex = (someGameState.playerTurnIndex + 1) % someGameState.players.length;
 }
 
-function suggestMoving(someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface, lastTurnWasSkipped: boolean = false) {
+function suggestMoving(someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface, 
+                        lastTurnWasSkipped: boolean = false, myNickname?: string, afterMyMove?: (pos: Pos) => Promise<boolean>) {
     if (someGameState.players.length === 0) throw new Error("No players in the game");
     if (_getCurrentPlayer(someGameState).is_active === false) {
         advanceMove(someGameState);
@@ -42,6 +54,10 @@ function suggestMoving(someGameState: t.GameState = gameState, someRenderInterfa
     }
     if (someGameState.players.filter(p => p.is_active).length === 1) {
         someRenderInterface?.renderWin(someGameState, _getCurrentPlayer(someGameState));
+        return;
+    }
+    if (myNickname && myNickname !== _getCurrentPlayer(someGameState).nickname) {
+        someRenderInterface?.clearHighlights();
         return;
     }
 
@@ -61,6 +77,18 @@ function suggestMoving(someGameState: t.GameState = gameState, someRenderInterfa
         suggestMoving(someGameState, someRenderInterface, true);
         return;
     }
+
+    if (afterMyMove && typeof afterMyMove === 'function') {
+        someRenderInterface?.suggestMoves(moves, _getCurrentPlayer(someGameState), (pos: Pos) => {
+            afterMyMove(pos).then((yes) => {
+                if (yes === false) throw new Error("afterMyMove returned false");
+                playMove(pos, someGameState, someRenderInterface, myNickname);
+
+            })
+        });
+        return; 
+    }
+
     someRenderInterface?.suggestMoves(moves, _getCurrentPlayer(someGameState));
 }
 
@@ -76,9 +104,13 @@ function jumpToHistory(turnNumber: number, someGameState: t.GameState = gameStat
     suggestMoving(gameState, someRenderInterface);
 }
 
-function playMove(pos: Pos, someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface) {
+function playMove(pos: Pos, someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface, myNickname?: string) {
     if (someGameState.players.filter(p => p.is_active).length <= 1) return;
-    
+    if (_getCurrentPlayer(someGameState).is_active === false) {
+        advanceMove(someGameState);
+        playMove(pos, someGameState, someRenderInterface, myNickname);
+        return;
+    }
     const currentPlayer = _getCurrentPlayer(someGameState);
     const oldPos = currentPlayer.position;
     const possibleMoves = toValidMovesOnly(_tile(oldPos, someGameState).availableMoves(someGameState, currentPlayer));
@@ -100,14 +132,19 @@ function playMove(pos: Pos, someGameState: t.GameState = gameState, someRenderIn
     someGameState.history.push({...pos});
 
     advanceMove(someGameState);
-    suggestMoving(someGameState, someRenderInterface);
+
+    if (!myNickname) {
+        suggestMoving(someGameState, someRenderInterface);
+    } else if (myNickname === _getCurrentPlayer(someGameState).nickname) {
+        suggestMoving(someGameState, someRenderInterface);
+    }
 }
 
 
 
 function simulateGame(initial_state: t.InitialState, history: Pos[]): t.GameState {
     const newGameState = readInitialStateIntoGameState(initial_state);
-    start(newGameState);
+    startSingleplayer(newGameState);
     history.forEach((pos, turnNumber) => {
         playMove(pos, newGameState);
     });

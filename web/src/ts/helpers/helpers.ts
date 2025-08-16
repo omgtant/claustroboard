@@ -41,14 +41,14 @@ export function getMockInitialState(): InitialState {
             { tile_type: 'Wildcard', color: 0 },
             { tile_type: 'Teleport', color: 0 }
         ], [
-            {tile_type: 'Zero', color:1},
-            {tile_type: 'Zero', color:2},
-            {tile_type: 'Zero', color:3},
-            {tile_type: 'Zero', color:4},
-            {tile_type: 'Zero', color:4},
-            {tile_type: 'Zero', color:4},
+            {tile_type: 'Wall', color:1},
+            {tile_type: 'Wall', color:2},
+            {tile_type: 'Wall', color:3},
+            {tile_type: 'Wall', color:4},
+            {tile_type: 'Wall', color:4},
+            {tile_type: 'Wall', color:4},
         ]]),
-        players: [{ nickname: 'omga'}, { nickname: 'miltant' }] as InitialPlayer[]
+        players: [{ nickname: 'omga'}, { nickname: 'miltant' }, {nickname: 'f'}] as InitialPlayer[]
     };
     const board = readIntialBoardIntoGameBoard(obj.board);
     const possiblePositions = board.flatMap(row => row.filter(tile => tile.canStartOnMe(board)).map(tile => tile.position));
@@ -98,7 +98,7 @@ export function bakeTile(tileSetup: TileSetup, pos: Pos): Tile {
         tile.color = tileSetup.color;
         tile.position = pos;
         tile.isOpen = true;
-        tile.moveCount = tileSetup.data.move_count;
+        tile.moveCount = +tileSetup.data.energy;
         return tile;
     } else if (tileSetup.tile_type === 'Wall') {
         const tile: tiles.WallTile = new tiles.WallTile();
