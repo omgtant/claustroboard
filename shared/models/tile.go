@@ -125,7 +125,8 @@ func (from Tile) validateMove(b *Board, m dtos.Move) (destTile *Tile, err error)
 func (from *Tile) applyMove(b *Board, dest *Tile) (land bool) {
 	from.Open = false
 
-	b.Pos[int(b.Turn)%len(b.Pos)] = dest.Pos
+	player := int(b.Turn) % len(b.Pos)
+	b.Pos[player] = dest.Pos
 
 	fmt.Printf("Turn %d: Player moved from %s (%s) to %s (%s)\n",
 		b.Turn,
@@ -138,17 +139,19 @@ func (from *Tile) applyMove(b *Board, dest *Tile) (land bool) {
 	}
 
 	if dest.Kind == enums.Zero {
-		fmt.Printf("Player %d swapped to position %s\n", 0, dest.Pos.String())
-		for i := 1; i < len(b.Pos); i++ {
-			b.Pos[i] = b.Pos[i-1]
-			fmt.Printf("Player %d swapped to position %s\n", i, b.Pos[i].String())
+		n := len(b.Pos)
+		for i := player; i != player; i = (i + 1) % n {
+			b.Pos[(i+1)%n] = b.Pos[i]
+			fmt.Printf("Player %d swapped to position %s\n", i+1, b.Pos[(i+1)%n].String())
 		}
 
-		latestLastPlayerTile, _ := b.getTileAt(b.Pos[len(b.Pos)-1])
+		lastPlayer := (player + n - 1) % n
+		latestLastPlayerTile, _ := b.getTileAt(b.Pos[lastPlayer])
 		newLastPlayerTile := latestLastPlayerTile.Copy()
 		newLastPlayerTile.Pos = dest.Pos
 		b.Tiles[dest.Pos.X][dest.Pos.Y] = newLastPlayerTile
-		b.Pos[0] = dest.Pos
+		b.Pos[lastPlayer] = dest.Pos
+		fmt.Printf("Player %d swapped to position %s\n", player, b.Pos[player].String())
 	}
 
 	return
