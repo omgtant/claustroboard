@@ -153,6 +153,12 @@ func StartGame(code GameCode) (*Board, error) {
 			if _, ok := used[idx]; ok {
 				continue
 			}
+
+			tile, err := board.getTileAt(idx)
+			if err != nil || (tile.Kind != enums.Wildcard && tile.Kind != enums.Layout) {
+				continue
+			}
+
 			used[idx] = struct{}{}
 			board.Pos = append(board.Pos, idx)
 			break
