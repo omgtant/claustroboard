@@ -58,9 +58,12 @@ func JoinGameWS(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
-	if !already {
+	if already {
+		http.Error(w, "a player with the same nickname already joined", http.StatusConflict)
+		return
+	} else {
 		if err := models.Join(code, nickname); err != nil {
-			http.Error(w, err.Error(), http.StatusConflict)
+			http.Error(w, err.Error(), http.StatusGone)
 			return
 		}
 	}
