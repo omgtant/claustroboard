@@ -292,12 +292,12 @@ func (b Board) Move(moves []dtos.Move) (delta *dtos.Delta, err error) {
 	return
 }
 
-func (b Board) validateDist(src Tile, dest valueobjects.Point, dist_target int, exact bool) (*Tile, bool) {
+func (b Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, exact bool) (*Tile, bool) {
 	visited := []Tile{src}
 	queue := []Tile{src}
 	dist := 1
 
-	for dist <= dist_target {
+	for dist <= distTarget {
 		queueCopy := []Tile{}
 		copy(queueCopy, queue)
 		queue := []Tile{}
@@ -322,7 +322,7 @@ func (b Board) validateDist(src Tile, dest valueobjects.Point, dist_target int, 
 					continue
 				}
 
-				if dest == candidate.Pos && (!exact || dist == dist_target) {
+				if dest == candidate.Pos && (!exact || dist == distTarget) {
 					return candidate, true
 				}
 
