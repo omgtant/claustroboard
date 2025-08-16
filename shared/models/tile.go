@@ -51,9 +51,6 @@ func RandomizeTileKind(tk enums.TileKind, x, y uint16) *Tile {
 		tile.Color = enums.RandomColor()
 	case enums.Wall:
 		tile.Open = false
-	case enums.Wildcard:
-		tile.setEnergy(4)
-		tile.Color = enums.RandomColor()
 	case enums.Zero:
 		tile.Color = enums.RandomColor()
 	}
@@ -101,7 +98,7 @@ func (t Tile) validateMove(b *Board, m dtos.Move) (destTile *Tile, err error) {
 
 	case enums.Wildcard:
 		var ok bool
-		destTile, ok = b.validateDist(t, dest, int(t.getEnergy()), false)
+		destTile, ok = b.validateDist(t, dest, 4, false)
 		if !ok {
 			err = errors.New("invalid wildcard move")
 		}
