@@ -63,19 +63,18 @@ function suggestMoving(someGameState: t.GameState = gameState, someRenderInterfa
         });
     });
 
-    if (myNickname && myNickname !== _getCurrentPlayer(someGameState).nickname) {
-        someRenderInterface?.clearHighlights();
-        someRenderInterface?.highlightOtherActivePlayer(_getCurrentPlayer(someGameState));
-        return;
-    }
-
-
     const moves = getAvailableMoves(someGameState);
     if (moves.length === 0) {
         _getCurrentPlayer(someGameState).is_active = false;
         someRenderInterface?.playerLost(_getCurrentPlayer(someGameState));
         advanceMove(someGameState);
         suggestMoving(someGameState, someRenderInterface, true, myNickname, afterMyMove);
+        return;
+    }
+
+    if (myNickname && myNickname !== _getCurrentPlayer(someGameState).nickname) {
+        someRenderInterface?.clearHighlights();
+        someRenderInterface?.highlightOtherActivePlayer(_getCurrentPlayer(someGameState));
         return;
     }
 

@@ -127,10 +127,14 @@ function initPrepState() {
     const openLinkBtn = document.getElementById('open-link');
     if (openLinkBtn) {
         openLinkBtn.classList.remove('hidden');
-        openLinkBtn.addEventListener('click', () => {
-            const gameLink = `${window.location.origin}/?c=${netcode.gameCode}&n=test&start=1`;
+        openLinkBtn.addEventListener('click', (e) => {
+            const gameLink = `${window.location.origin}/?c=${netcode.gameCode}&n=test`;
             if (gameLink) {
-                window.open(gameLink, '_blank')?.focus();
+                if (e.ctrlKey || e.metaKey) {
+                    window.open(gameLink, '_blank');
+                } else {
+                    window.open(gameLink, '_blank')?.focus();
+                }
             }
         });
     }
