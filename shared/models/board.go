@@ -54,13 +54,13 @@ func NewGameBoard(players []string, palette []enums.TileKind, width uint16, heig
 		}
 	}
 
-	id := GameCode(02)
+	id := GameCode(rand.Uint64())
 	var attempts int
 	for attempts = 0; attempts < 10; attempts++ {
 		if _, exists := gameBoards[id]; !exists {
 			break
 		}
-		id = GameCode(02)
+		id = GameCode(rand.Uint64())
 	}
 	if attempts == 10 {
 		return 0, errors.New("failed to generate unique board ID after 10 attempts")
