@@ -93,7 +93,7 @@ func handleMove(c *wsClient, data json.RawMessage) {
 		return
 	}
 	broadcastEvent(c.gameCode, event{
-		Type: "their-move",
+		Type: "they-moved",
 		Data: delta,
 	})
 }
