@@ -4,49 +4,49 @@ import { Pos } from "../types/util";
 
 export function getMockInitialState(): InitialState {
     const obj = {
-        palette: [{ 'LayoutTile': { script: 'LayoutTile' } }],
+        palette: [{ 'Layout': { script: 'Layout' } }],
         board: shuffle2DArr([[
-            { tile_type: 'LayoutTile', color: 1, data: { move_count: 1 } },
-            { tile_type: 'LayoutTile', color: 1, data: { move_count: 2 } },
-            { tile_type: 'LayoutTile', color: 1, data: { move_count: 3 } },
-            { tile_type: 'LayoutTile', color: 1, data: { move_count: 4 } },
-            { tile_type: 'TeleportTile', color: 1 },
-            { tile_type: 'WallTile', color: 1}
+            { tile_type: 'Layout', color: 1, data: { move_count: 1 } },
+            { tile_type: 'Layout', color: 1, data: { move_count: 2 } },
+            { tile_type: 'Layout', color: 1, data: { move_count: 3 } },
+            { tile_type: 'Layout', color: 1, data: { move_count: 4 } },
+            { tile_type: 'Teleport', color: 1 },
+            { tile_type: 'Wall', color: 1}
         ], [
-            { tile_type: 'LayoutTile', color: 2, data: { move_count: 1 } },
-            { tile_type: 'LayoutTile', color: 2, data: { move_count: 2 } },
-            { tile_type: 'LayoutTile', color: 2, data: { move_count: 3 } },
-            { tile_type: 'LayoutTile', color: 2, data: { move_count: 4 } },
-            { tile_type: 'TeleportTile', color: 2 },
-            { tile_type: 'WallTile', color: 2}
+            { tile_type: 'Layout', color: 2, data: { move_count: 1 } },
+            { tile_type: 'Layout', color: 2, data: { move_count: 2 } },
+            { tile_type: 'Layout', color: 2, data: { move_count: 3 } },
+            { tile_type: 'Layout', color: 2, data: { move_count: 4 } },
+            { tile_type: 'Teleport', color: 2 },
+            { tile_type: 'Wall', color: 2}
         ], [
-            { tile_type: 'LayoutTile', color: 3, data: { move_count: 1 } },
-            { tile_type: 'LayoutTile', color: 3, data: { move_count: 2 } },
-            { tile_type: 'LayoutTile', color: 3, data: { move_count: 3 } },
-            { tile_type: 'LayoutTile', color: 3, data: { move_count: 4 } },
-            { tile_type: 'TeleportTile', color: 3 },
-            { tile_type: 'WallTile', color: 3}
+            { tile_type: 'Layout', color: 3, data: { move_count: 1 } },
+            { tile_type: 'Layout', color: 3, data: { move_count: 2 } },
+            { tile_type: 'Layout', color: 3, data: { move_count: 3 } },
+            { tile_type: 'Layout', color: 3, data: { move_count: 4 } },
+            { tile_type: 'Teleport', color: 3 },
+            { tile_type: 'Wall', color: 3}
         ], [
-            { tile_type: 'LayoutTile', color: 4, data: { move_count: 1 } },
-            { tile_type: 'LayoutTile', color: 4, data: { move_count: 2 } },
-            { tile_type: 'LayoutTile', color: 4, data: { move_count: 3 } },
-            { tile_type: 'LayoutTile', color: 4, data: { move_count: 4 } },
-            { tile_type: 'TeleportTile', color: 4 },
-            { tile_type: 'WallTile', color: 4}
+            { tile_type: 'Layout', color: 4, data: { move_count: 1 } },
+            { tile_type: 'Layout', color: 4, data: { move_count: 2 } },
+            { tile_type: 'Layout', color: 4, data: { move_count: 3 } },
+            { tile_type: 'Layout', color: 4, data: { move_count: 4 } },
+            { tile_type: 'Teleport', color: 4 },
+            { tile_type: 'Wall', color: 4}
         ], [
-            { tile_type: 'WildcardTile', color: 0 },
-            { tile_type: 'WildcardTile', color: 0 },
-            { tile_type: 'WildcardTile', color: 0 },
-            { tile_type: 'WildcardTile', color: 0 },
-            { tile_type: 'WildcardTile', color: 0 },
-            { tile_type: 'TeleportTile', color: 0 }
+            { tile_type: 'Wildcard', color: 0 },
+            { tile_type: 'Wildcard', color: 0 },
+            { tile_type: 'Wildcard', color: 0 },
+            { tile_type: 'Wildcard', color: 0 },
+            { tile_type: 'Wildcard', color: 0 },
+            { tile_type: 'Teleport', color: 0 }
         ], [
-            {tile_type: 'ZeroTile', color:1},
-            {tile_type: 'ZeroTile', color:2},
-            {tile_type: 'ZeroTile', color:3},
-            {tile_type: 'ZeroTile', color:4},
-            {tile_type: 'ZeroTile', color:4},
-            {tile_type: 'ZeroTile', color:4},
+            {tile_type: 'Zero', color:1},
+            {tile_type: 'Zero', color:2},
+            {tile_type: 'Zero', color:3},
+            {tile_type: 'Zero', color:4},
+            {tile_type: 'Zero', color:4},
+            {tile_type: 'Zero', color:4},
         ]]),
         players: [{ nickname: 'omga'}, { nickname: 'miltant' }] as InitialPlayer[]
     };
@@ -93,32 +93,32 @@ function readIntialBoardIntoGameBoard(tileSetups: TileSetup[][]): Tile[][] {
 
 export function bakeTile(tileSetup: TileSetup, pos: Pos): Tile {
     // const tiles = require("../game/tiles");
-    if (tileSetup.tile_type === 'LayoutTile') {
+    if (tileSetup.tile_type === 'Layout') {
         const tile: tiles.LayoutTile = new tiles.LayoutTile();
         tile.color = tileSetup.color;
         tile.position = pos;
         tile.isOpen = true;
         tile.moveCount = tileSetup.data.move_count;
         return tile;
-    } else if (tileSetup.tile_type === 'WallTile') {
+    } else if (tileSetup.tile_type === 'Wall') {
         const tile: tiles.WallTile = new tiles.WallTile();
         tile.color = tileSetup.color;
         tile.position = pos;
         tile.isOpen = true;
         return tile;
-    } else if (tileSetup.tile_type === 'WildcardTile') {
+    } else if (tileSetup.tile_type === 'Wildcard') {
         const tile: tiles.WildcardTile = new tiles.WildcardTile();
         tile.color = tileSetup.color;
         tile.position = pos;
         tile.isOpen = true;
         return tile;
-    } else if (tileSetup.tile_type === 'TeleportTile') {
+    } else if (tileSetup.tile_type === 'Teleport') {
         const tile: tiles.TeleportTile = new tiles.TeleportTile();
         tile.color = tileSetup.color;
         tile.position = pos;
         tile.isOpen = true;
         return tile;
-    } else if (tileSetup.tile_type === 'ZeroTile') {
+    } else if (tileSetup.tile_type === 'Zero') {
         const tile: tiles.ZeroTile = new tiles.ZeroTile();
         tile.color = tileSetup.color;
         tile.position = pos;
@@ -224,4 +224,10 @@ export function cloneTile(tile: Tile) {
     let newTile: Tile = new tile.constructor; 
     Object.assign(newTile, tile);
     return newTile;
+}
+
+export function validateNickname(nickname: string): [true] | [false, string] {
+    if (!nickname || nickname.trim() === '') return [false, "No nickname"];
+    
+    return [true]
 }

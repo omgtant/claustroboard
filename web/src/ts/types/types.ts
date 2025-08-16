@@ -1,3 +1,4 @@
+import { WebSocketManager } from "../netcode/lib";
 import { RenderInterface } from "./renderInterface";
 import { Pos, TileColor } from "./util";
 
@@ -53,4 +54,28 @@ export type Board = {
 export type ValidMove = {
     to: Pos;
     path?: Pos[];
+}
+
+export interface EventMap {
+    'created': {code: string}
+    'playerlist-changed': string[],
+    'start': void,
+    'started': InitialState,
+    'my-move': MoveDelta,
+    'they-moved': MoveDelta,
+    'come-again': MoveDelta,
+    'close': void,
+    'broadcast': any
+}
+
+export type Netcode = {
+    gameCode: string,
+    myNickname: string,
+    players: string[],
+    ws: WebSocketManager<EventMap>
+}
+
+export type MoveDelta = {
+    turn: number,
+    delta: Pos[]
 }

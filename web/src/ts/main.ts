@@ -1,3 +1,5 @@
 import { start } from './game/game'
+import { init } from './netcode/ws-ui';
 
-start();
+init();
+// start();

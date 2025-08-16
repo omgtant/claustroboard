@@ -45,7 +45,7 @@ function logTurn(turnNumber: number, player: Player, pos: Pos) {
     });
 }
 
-function logMessage(message: string): HTMLSpanElement {
+export function logMessage(message: string): HTMLSpanElement {
     if (!log) throw new Error('Log element not found');
 
     const logEntry = document.createElement('span');

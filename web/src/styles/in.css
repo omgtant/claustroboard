@@ -46,6 +46,26 @@
     .primary-btn {
         @apply bg-blue-500 hover:bg-blue-600;
     }
+    .danger-btn {
+        @apply bg-red-100 hover:bg-red-200 text-red-500;
+    }
+
+    .player-list {
+        @apply flex flex-col gap-2;
+        .player-entry {
+            @apply flex items-center justify-between gap-2 text-lg;
+            button {
+                @apply p-1;
+            }
+        }
+    }
+
+    .can-copy {
+        @apply cursor-pointer text-slate-500 hover:text-slate-600 transition-colors duration-100;
+        &:hover {
+            @apply underline;
+        }
+    }
 
     .board-wrapper {
         @apply relative min-w-xs min-h-48;
@@ -53,6 +73,9 @@
 
     .board-overlay {
         @apply relative inset-0 bg-gray-800 z-40 rounded-lg flex flex-col gap-2 p-2 h-full;
+        .error {
+            @apply block text-red-500;
+        }
     }
 
     .board {

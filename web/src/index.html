@@ -19,30 +19,46 @@
                     </div>
                     <div class="board-wrapper">
                         <div class="board-overlay" id="board-overlay">
-                            <div class="flex flex-col gap-4 h-full justify-around">
-                                <div>
-                                    <p class="error" id="nickname-err"></p>
-                                    <label for="nickname" class="text-xl" id="nickname">Nickname</label>
-                                    <input type="text" name="nickname" class="w-full" required />
-                                </div>
-                                <hr />
-                                <div class="flex gap-4">
-                                    <div class="h-full flex flex-col">
-                                        <h2>Create</h2>
-                                        <button class="flex-1 primary-btn" id="new-game">Create</button>
-                                    </div>
-                                    <div class="vr"></div>
+                            <div id="create-join">
+                                <div class="flex flex-col gap-4 h-full justify-around">
                                     <div>
+                                        <p class="error" id="nickname-err">&NonBreakingSpace;</p>
+                                        <label for="nickname" class="text-xl">Nickname</label>
+                                        <input type="text" name="nickname" id="nickname" class="w-full" required />
+                                    </div>
+                                    <hr />
+                                    <div class="grid grid-cols-[max-content_1fr_max-content] gap-x-4">
+                                        <h2>Create</h2>
+                                        <div class="vr row-span-2"></div>
                                         <h2>or Join</h2>
+                                        <button class="flex-1 primary-btn" id="new-game">Create</button>
                                         <div>
-                                            <div>
-                                                <label for="game-code">Code</label>
-                                                <div class="flex gap-2">
-                                                    <input type="text" name="game-code" placeholder="abcd1234" />
-                                                    <button id="join">Join</button>
-                                                </div>
+                                            <label for="game-code">Code</label>
+                                            <div class="flex gap-2">
+                                                <input type="text" name="game-code" id="game-code" placeholder="abcd1234" />
+                                                <button id="join">Join</button>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="prep-stage" class="hidden">
+                                <p id="game-link" class="can-copy"></p>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <h2>Players</h2>
+                                        <template id="player-template">
+                                            <div class="player-entry">
+                                                <span class="nickname"></span>
+                                                <button class="kick danger-btn">Kick</button>
+                                            </div>
+                                        </template>
+                                        <div id="player-list" class="player-list">
+    
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button class="w-full h-full primary-btn" id="start-btn">Start</button>
                                     </div>
                                 </div>
                             </div>
