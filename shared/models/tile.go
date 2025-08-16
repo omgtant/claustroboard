@@ -84,35 +84,39 @@ func (t Tile) CanStart() bool {
 	return t.Kind == enums.Wildcard || t.Kind == enums.Layout
 }
 
-func (t Tile) validateMove(b *Board, m dtos.Move) (destTile *Tile, err error) {
+func (from Tile) validateMove(b *Board, m dtos.Move) (destTile *Tile, err error) {
 	dest, err := m.GetPoint()
 	if err != nil {
 		return nil, errors.New("only point moves are implemented")
 	}
-	switch t.Kind {
+	switch from.Kind {
 	case enums.Layout:
 		var ok bool
-		destTile, ok = b.validateDist(t, dest, int(t.getEnergy()), true)
+		destTile, ok = b.validateDist(from, dest, int(from.getEnergy()), true)
 		if !ok {
 			err = errors.New("invalid layout move")
 		}
 
 	case enums.Wildcard:
 		var ok bool
-		destTile, ok = b.validateDist(t, dest, 4, false)
+		destTile, ok = b.validateDist(from, dest, 4, false)
 		if !ok {
 			err = errors.New("invalid wildcard move")
 		}
 
 	case enums.Teleport:
 		destTile, err = b.getTileAt(dest)
-		if err != nil || destTile.Color != t.Color {
+		if err != nil || destTile.Color != from.Color {
 			err = errors.New("invalid teleport move")
 		}
 
 	default:
 		err = errors.New("invalid unknown move")
 	}
+
+	fmt.Printf("Move validated: from %s (%s) to %s (%s)\n",
+		from.Pos.String(), from.Kind.String(),
+		destTile.Pos.String(), destTile.Kind.String())
 	return
 }
 
@@ -121,13 +125,21 @@ func (from *Tile) applyMove(b *Board, dest *Tile) (land bool) {
 
 	b.Pos[int(b.Turn)%len(b.Pos)] = dest.Pos
 
+	fmt.Printf("Turn %d: Player moved from %s (%s) to %s (%s)\n",
+		b.Turn,
+		from.Pos.String(), from.Kind.String(),
+		dest.Pos.String(), dest.Kind.String())
+
 	if dest.CanLand() {
 		land = true
+		println("(and landed)")
 	}
 
 	if dest.Kind == enums.Zero {
+		fmt.Printf("Player %d swapped to position %s\n", 0, dest.Pos.String())
 		for i := 1; i < len(b.Pos); i++ {
 			b.Pos[i] = b.Pos[i-1]
+			fmt.Printf("Player %d swapped to position %s\n", i, b.Pos[i].String())
 		}
 
 		latestLastPlayerTile, _ := b.getTileAt(b.Pos[len(b.Pos)-1])
@@ -136,11 +148,6 @@ func (from *Tile) applyMove(b *Board, dest *Tile) (land bool) {
 		b.Tiles[dest.Pos.X][dest.Pos.Y] = newLastPlayerTile
 		b.Pos[0] = dest.Pos
 	}
-
-	fmt.Printf("Turn %d: Player moved from %s (%s) to %s (%s)\n",
-		b.Turn,
-		from.Pos.String(), from.Kind.String(),
-		dest.Pos.String(), dest.Kind.String())
 
 	return
 }
