@@ -83,7 +83,7 @@ function suggestMoving(someGameState: t.GameState = gameState, someRenderInterfa
         someRenderInterface?.suggestMoves(moves, _getCurrentPlayer(someGameState), (pos: Pos) => {
             afterMyMove(pos).then((yes) => {
                 if (yes) {
-                    playMove(pos, someGameState, someRenderInterface, myNickname);
+                    // playMove(pos, someGameState, someRenderInterface, myNickname);
                 } else {
                     someRenderInterface?.complainInvalidMove();
                 }
