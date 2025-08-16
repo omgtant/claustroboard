@@ -155,13 +155,11 @@ func StartGame(code GameCode) (*Board, error) {
 			}
 
 			tile, err := board.getTileAt(idx)
-			if err != nil || (tile.Kind != enums.Wildcard && tile.Kind != enums.Layout) {
-				continue
+			if err == nil && tile.CanStart() {
+				used[idx] = struct{}{}
+				board.Pos = append(board.Pos, idx)
+				break
 			}
-
-			used[idx] = struct{}{}
-			board.Pos = append(board.Pos, idx)
-			break
 		}
 	}
 	board.Phase = PhaseStarted
@@ -234,68 +232,41 @@ func (b Board) movePlayer() {
 
 }
 
-func (b Board) Move(moves []dtos.Move) (delta *dtos.Delta, err error) {
-	delta = &dtos.Delta{}
+func (b Board) Move(moves []dtos.Move) (*dtos.Delta, error) {
+	type MoveData struct {
+		t    *Tile
+		from *Tile
+		move dtos.Move
+	}
+	destTiles := []MoveData{}
 
 	for _, m := range moves {
-		t, i, _ := b.getCurrent()
-		if t == nil {
+		t, _, err := b.getCurrent()
+		if t == nil || err != nil {
 			continue
 		}
-		dest := m.GetPoint()
-		var destTile *Tile
 
-		switch t.Kind {
-		case enums.Layout:
-			var ok bool
-			destTile, ok = b.validateDist(*t, dest, int(t.Energy), true)
-			if !ok {
-				return nil, errors.New("invalid layout move")
-			}
-
-		case enums.Teleport:
-			destTile, err = b.getTileAt(dest)
-			if err != nil || destTile.Color != t.Color {
-				return nil, errors.New("invalid teleport move")
-			}
-
-		case enums.Wildcard:
-			var ok bool
-			destTile, ok = b.validateDist(*t, dest, int(t.Energy), false)
-			if !ok {
-				return nil, errors.New("invalid wildcard move")
-			}
-
-		default:
-			return nil, errors.New("invalid unknown move")
+		destTile, err := t.validateMove(&b, m)
+		if err != nil {
+			return nil, err
 		}
 
 		if destTile != nil {
-			t.Open = false
-			delta.Delta = append(delta.Delta, m)
-			b.Pos[i] = destTile.Pos
-
-			switch destTile.Kind {
-			case enums.Layout, enums.Wildcard:
-				b.Turn++
-			case enums.Zero:
-				b.Turn++
-
-				for i := 1; i < len(b.Pos); i++ {
-					b.Pos[i] = b.Pos[i-1]
-				}
-
-				latestLastPlayerTile, _ := b.getTileAt(b.Pos[len(b.Pos)-1])
-				newLastPlayerTile := latestLastPlayerTile.Copy()
-				newLastPlayerTile.Pos = destTile.Pos
-				b.Tiles[i] = newLastPlayerTile
-				b.Pos[0] = destTile.Pos
-			}
+			destTiles = append(destTiles, MoveData{t: destTile, from: t, move: m})
 		}
 	}
 
-	delta.Turn = b.Turn
-	return
+	delta := dtos.Delta{
+		Turn: b.Turn,
+	}
+	for _, destTile := range destTiles {
+		if destTile.t.applyMove(&b, destTile.from) {
+			b.Turn++
+		}
+		delta.Delta = append(delta.Delta, destTile.move)
+	}
+	return &delta, nil
+
 }
 
 func (b Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, exact bool) (*Tile, bool) {
@@ -324,11 +295,17 @@ func (b Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, e
 					}
 				}
 				candidate, _ := b.getTileAt(p)
-				if candidate == nil || !candidate.Open {
+				candidateValid := candidate != nil && candidate.Open
+				candidateIsTarget := dest == candidate.Pos && (!exact || dist == distTarget)
+
+				if !candidateValid {
+					if candidateIsTarget {
+						return nil, false
+					}
 					continue
 				}
 
-				if dest == candidate.Pos && (!exact || dist == distTarget) {
+				if candidateIsTarget {
 					return candidate, true
 				}
 
