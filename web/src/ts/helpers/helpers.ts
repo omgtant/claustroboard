@@ -102,25 +102,25 @@ export function bakeTile(tileSetup: TileSetup, pos: Pos): Tile {
         return tile;
     } else if (tileSetup.tile_type === 'Wall') {
         const tile: tiles.WallTile = new tiles.WallTile();
-        tile.color = tileSetup.color;
+        tile.color = tileSetup.color || TileColor.COLORLESS;
         tile.position = pos;
         tile.isOpen = true;
         return tile;
     } else if (tileSetup.tile_type === 'Wildcard') {
         const tile: tiles.WildcardTile = new tiles.WildcardTile();
-        tile.color = tileSetup.color;
+        tile.color = tileSetup.color || TileColor.COLORLESS;
         tile.position = pos;
         tile.isOpen = true;
         return tile;
     } else if (tileSetup.tile_type === 'Teleport') {
         const tile: tiles.TeleportTile = new tiles.TeleportTile();
-        tile.color = tileSetup.color;
+        tile.color = tileSetup.color || TileColor.COLORLESS;
         tile.position = pos;
         tile.isOpen = true;
         return tile;
     } else if (tileSetup.tile_type === 'Zero') {
         const tile: tiles.ZeroTile = new tiles.ZeroTile();
-        tile.color = tileSetup.color;
+        tile.color = tileSetup.color || TileColor.COLORLESS;
         tile.position = pos;
         tile.isOpen = true;
         return tile;

@@ -8,7 +8,7 @@ export type InitialState = {
     players: InitialPlayer[];
 }
 
-export type TileSetup = {tile_type: string, color:number, data?: any}
+export type TileSetup = {tile_type: string, color?:number, data?: any}
 
 export type GameState = {
     board: Board;
