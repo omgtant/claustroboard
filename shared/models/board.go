@@ -264,12 +264,12 @@ func (b *Board) Move(moves []dtos.Move) (*dtos.Delta, error) {
 		validMoves := t.AvailableMoves(b)
 		destPoint, err := m.GetPoint()
 		if err != nil {
-			return nil, fmt.Errorf("invalid move %s: %v", m, err)
+			return nil, fmt.Errorf("invalid move %v: %v", m, err)
 		}
 		destTile, err := b.getTileAt(destPoint)
 
 		if !slices.Contains(validMoves, destPoint) || err != nil || destTile == nil {
-			return nil, fmt.Errorf("invalid move %s: %v", m, err)
+			return nil, fmt.Errorf("invalid move %v: %v", m, err)
 		}
 
 		moveData = append(moveData, MoveData{to: destTile, from: t, move: m})

@@ -61,8 +61,8 @@ func RandomizeTile(x, y uint16) *Tile {
 	return RandomizeTileKind(enums.RandomKind(), x, y)
 }
 
-func (t1 Tile) Copy() (t2 Tile) {
-	t2.Pos = t1.Pos
+func (t1 Tile) CopyFor(p valueobjects.Point) (t2 Tile) {
+	t2.Pos = p
 	t2.Open = t1.Open
 	t2.Color = t1.Color
 	t2.Kind = t1.Kind
@@ -129,18 +129,30 @@ func (from *Tile) applyMove(b *Board, dest *Tile) (land bool) {
 
 	if dest.Kind == enums.Zero {
 		n := len(b.Pos)
-		for i := player; i != player; i = (i + 1) % n {
-			b.Pos[(i+1)%n] = b.Pos[i]
-			fmt.Printf("Player %d swapped to position %s\n", i+1, b.Pos[(i+1)%n].String())
+
+		activePlayers := make([]int, 0, n)
+		for i := range b.Players {
+			if b.IsActive[i] {
+				activePlayers = append(activePlayers, i)
+			}
 		}
 
-		lastPlayer := (player + n - 1) % n
-		latestLastPlayerTile, _ := b.getTileAt(b.Pos[lastPlayer])
-		newLastPlayerTile := latestLastPlayerTile.Copy()
-		newLastPlayerTile.Pos = dest.Pos
-		b.Tiles[dest.Pos.X][dest.Pos.Y] = newLastPlayerTile
-		b.Pos[lastPlayer] = dest.Pos
-		fmt.Printf("Player %d swapped to position %s\n", player, b.Pos[player].String())
+		nextPlayer := (player + 1) % n
+		nextPlayerTile, _ := b.getTileAt(b.Pos[nextPlayer])
+		b.Tiles[dest.Pos.Y][dest.Pos.X] = nextPlayerTile.CopyFor(dest.Pos)
+		b.Pos[nextPlayer] = dest.Pos
+
+		playerPos := b.Pos[player]
+		for i, cur := range activePlayers {
+			if i == len(activePlayers)-1 {
+				continue
+			}
+			b.Pos[cur] = b.Pos[activePlayers[i+1]]
+			fmt.Printf("Player %d swapped to position %s\n", cur, b.Pos[activePlayers[i+1]].String())
+		}
+
+		b.Pos[activePlayers[len(activePlayers)-1]] = playerPos
+		fmt.Printf("Player %d swapped to position %s\n", activePlayers[len(activePlayers)-1], playerPos.String())
 	}
 
 	return
