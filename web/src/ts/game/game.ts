@@ -29,7 +29,7 @@ export function startMultiplayer(someGameState: t.GameState = gameState, someRen
     someGameState.someRenderInterface = someRenderInterface;
     suggestMoving(someGameState, someRenderInterface, false, myNickname, afterMyMove);
     return {
-        otherMove: (pos: Pos) => playMove(pos, someGameState, someRenderInterface),
+        otherMove: (pos: Pos) => playMove(pos, someGameState, someRenderInterface, myNickname, afterMyMove),
     }
 }
 
@@ -49,7 +49,7 @@ function suggestMoving(someGameState: t.GameState = gameState, someRenderInterfa
     if (someGameState.players.length === 0) throw new Error("No players in the game");
     if (_getCurrentPlayer(someGameState).is_active === false) {
         advanceMove(someGameState);
-        suggestMoving(someGameState, someRenderInterface, true);
+        suggestMoving(someGameState, someRenderInterface, true, myNickname, afterMyMove);
         return;
     }
     if (someGameState.players.filter(p => p.is_active).length === 1) {
@@ -74,16 +74,18 @@ function suggestMoving(someGameState: t.GameState = gameState, someRenderInterfa
         _getCurrentPlayer(someGameState).is_active = false;
         someRenderInterface?.playerLost(_getCurrentPlayer(someGameState));
         advanceMove(someGameState);
-        suggestMoving(someGameState, someRenderInterface, true);
+        suggestMoving(someGameState, someRenderInterface, true, myNickname, afterMyMove);
         return;
     }
 
     if (afterMyMove && typeof afterMyMove === 'function') {
         someRenderInterface?.suggestMoves(moves, _getCurrentPlayer(someGameState), (pos: Pos) => {
             afterMyMove(pos).then((yes) => {
-                if (yes === false) throw new Error("afterMyMove returned false");
-                playMove(pos, someGameState, someRenderInterface, myNickname);
-
+                if (yes) {
+                    playMove(pos, someGameState, someRenderInterface, myNickname);
+                } else {
+                    someRenderInterface?.complainInvalidMove();
+                }
             })
         });
         return; 
@@ -103,11 +105,11 @@ function jumpToHistory(turnNumber: number, someGameState: t.GameState = gameStat
     suggestMoving(gameState, someRenderInterface);
 }
 
-function playMove(pos: Pos, someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface, myNickname?: string) {
+function playMove(pos: Pos, someGameState: t.GameState = gameState, someRenderInterface: RenderInterface | undefined = renderInterface, myNickname?: string, afterMyMove?: (pos: Pos) => Promise<boolean>) {
     if (someGameState.players.filter(p => p.is_active).length <= 1) return;
     if (_getCurrentPlayer(someGameState).is_active === false) {
         advanceMove(someGameState);
-        playMove(pos, someGameState, someRenderInterface, myNickname);
+        playMove(pos, someGameState, someRenderInterface, myNickname, afterMyMove);
         return;
     }
     const currentPlayer = _getCurrentPlayer(someGameState);
@@ -135,7 +137,7 @@ function playMove(pos: Pos, someGameState: t.GameState = gameState, someRenderIn
     if (!myNickname) {
         suggestMoving(someGameState, someRenderInterface);
     } else if (myNickname === _getCurrentPlayer(someGameState).nickname) {
-        suggestMoving(someGameState, someRenderInterface);
+        suggestMoving(someGameState, someRenderInterface, false, myNickname, afterMyMove);
     }
 }
 

@@ -68,7 +68,7 @@ interface SystemEvents {
   'connection:open': {};
   'connection:close': { code: number; reason: string; wasClean: boolean };
   'connection:error': { error: Event | Error };
-  'connection:heartbeat': { timestamp: number };
+  'ping': { timestamp: number };
   'connection:state-change': { state: ConnectionState; previousState: ConnectionState };
 }
 
@@ -251,8 +251,8 @@ export class WebSocketManager<TEventMap extends Record<string, any> = {}>
     const { type, data: payload } = data;
     
     // Handle system heartbeat
-    if (type === 'connection:heartbeat') {
-      this.emit('connection:heartbeat', payload || { timestamp: Date.now() });
+    if (type === 'ping') {
+      this.emit('ping', payload || { timestamp: Date.now() });
       return;
     }
 
@@ -303,7 +303,7 @@ export class WebSocketManager<TEventMap extends Record<string, any> = {}>
         // Send heartbeat as system event
         try {
           this.ws?.send(JSON.stringify({
-            type: 'connection:heartbeat',
+            type: 'ping',
             payload: { timestamp: Date.now() },
             timestamp: Date.now()
           }));

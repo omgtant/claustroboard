@@ -218,7 +218,7 @@ function _createTile(tile: Tile) {
     
     tileParent.addEventListener('click', () => {
         if (_choiceCallback) _choiceCallback(tile.position);
-        callbacks.tryMoveTo(tile.position);
+        else callbacks.tryMoveTo(tile.position);
     });
 
     return tileGrandparent;

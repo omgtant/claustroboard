@@ -10,7 +10,7 @@ export let netcode: Netcode = {
     gameCode: '',
     myNickname: '',
     players: [] as string[],
-    ws: new WebSocketManager<EventMap>({heartbeatInterval: -1})
+    ws: new WebSocketManager<EventMap>({heartbeatInterval: 10000})
 };
 
 function getNickname() {
@@ -58,9 +58,8 @@ export function init() {
         document.getElementById('nickname')!.setAttribute('value', nickname);
     }
     if (gameCode && nickname) {
-        console.log('Joining game with code:', gameCode, 'and nickname:', nickname);
-        joinGame(nickname, gameCode);
         if (searchQuery.get('start')) {
+            joinGame(nickname, gameCode);
             console.log('Starting game automatically');
             document.getElementById('prep-stage')?.remove();
             netcode.ws.send('start', undefined);
@@ -129,7 +128,7 @@ function initPrepState() {
     if (openLinkBtn) {
         openLinkBtn.classList.remove('hidden');
         openLinkBtn.addEventListener('click', () => {
-            const gameLink = `${window.location.origin}/?c=${netcode.gameCode}&n=test&start=1`;
+            const gameLink = `${window.location.origin}/?c=${netcode.gameCode}&n=test`;
             if (gameLink) {
                 window.open(gameLink, '_blank')?.focus();
             }
@@ -172,26 +171,28 @@ netcode.ws.on('playerlist-changed', (currentPlayers) => {
 
 netcode.ws.on('started', start);
 
-function start(data: InitialState) {
-    let turnNumber = 0;
-    const gameHandlers = startMultiplayer(readInitialStateIntoGameState(data), undefined, netcode.myNickname, async (pos: Pos) => {
-        console.log('After my move:', pos);
-        return new Promise<boolean>((resolve) => {
-            netcode.ws.send('my-move', {turn: turnNumber, delta: [pos]});
-            const onError = () => {
-                netcode.ws.off('error', onError);
-                resolve(false);
-            }
-            const onTheyMoved = () => {
-                netcode.ws.off('they-moved', onTheyMoved);
-                resolve(true);
-            }
-            netcode.ws.on('error', onError);
-            netcode.ws.on('they-moved', onTheyMoved);
-        });
+let turnNumber = 0;
+const afterMyMove = async (pos: Pos) => {
+    console.log('After my move:', pos);
+    return new Promise<boolean>((resolve) => {
+        netcode.ws.send('my-move', {turn: turnNumber, delta: [pos]});
+        const onError = () => {
+            netcode.ws.off('error', onError);
+            resolve(false);
+        }
+        const onTheyMoved = () => {
+            netcode.ws.off('they-moved', onTheyMoved);
+            resolve(true);
+        }
+        netcode.ws.on('error', onError);
+        netcode.ws.on('they-moved', onTheyMoved);
     });
-    document.getElementById('prep-stage')?.remove();
+}
 
+function start(data: InitialState) {
+    const gameHandlers = startMultiplayer(readInitialStateIntoGameState(data), undefined, netcode.myNickname, afterMyMove);
+    document.getElementById('prep-stage')?.remove();
+    
     netcode.ws.on('they-moved', (moveDelta: MoveDelta) => {
         console.log('They moved:', moveDelta);
         moveDelta.delta.forEach((pos) => {
