@@ -5,6 +5,7 @@ HTTP GET (WS) `/api/v1/start-game?nickname=$NICK`
 	-> event `created` `{"code": "game code (i.e. ABC123)"}`
 	-> broadcast `playerlist-changed`: `["nickname"]`
 HTTP GET (WS) `/api/v1/join/<code>?nickname=$NICK`
+	| errors: 409 already used nickname, 410 game already started
 	-> broadcast `playerlist-changed`: `["nickname1", "nickname2", ...]`
 
 state:

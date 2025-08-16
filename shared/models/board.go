@@ -282,11 +282,18 @@ func (b Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, e
 		queue = []Tile{}
 
 		for _, v := range queueCopy {
-			neighborsMatrix := []valueobjects.Point{
-				{X: v.Pos.X + 1, Y: v.Pos.Y},
-				{X: v.Pos.X - 1, Y: v.Pos.Y},
-				{X: v.Pos.X, Y: v.Pos.Y + 1},
-				{X: v.Pos.X, Y: v.Pos.Y - 1},
+			neighborsMatrix := []valueobjects.Point{}
+			if v.Pos.X+1 < b.Width {
+				neighborsMatrix = append(neighborsMatrix, valueobjects.Point{X: v.Pos.X + 1, Y: v.Pos.Y})
+			}
+			if v.Pos.X > 0 {
+				neighborsMatrix = append(neighborsMatrix, valueobjects.Point{X: v.Pos.X - 1, Y: v.Pos.Y})
+			}
+			if v.Pos.Y+1 < b.Height {
+				neighborsMatrix = append(neighborsMatrix, valueobjects.Point{X: v.Pos.X, Y: v.Pos.Y + 1})
+			}
+			if v.Pos.Y > 0 {
+				neighborsMatrix = append(neighborsMatrix, valueobjects.Point{X: v.Pos.X, Y: v.Pos.Y - 1})
 			}
 
 		browse:
