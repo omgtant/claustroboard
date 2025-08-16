@@ -166,9 +166,9 @@ export class ZeroTile extends Tile {
 
         activePlayers.forEach((pl, index) => {
             if (index === activePlayers.length-1) return;
-
+            const oldPos = pl.position;
             pl.position = activePlayers[index+1].position;
-            renderInterface.movePlayer(-1, pl, {to: pl.position})
+            renderInterface.movePlayer(-1, pl, {to: pl.position, path: [oldPos, pl.position]})
         })
         activePlayers[activePlayers.length-1].position = pos;
         renderInterface.movePlayer(-1, activePlayers[activePlayers.length-1], {to: activePlayers[activePlayers.length-1].position}); 
