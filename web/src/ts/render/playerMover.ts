@@ -59,8 +59,6 @@ function FLIPPlayerEnd(player: Player) {
     const dX = newRect.x - parseFloat(oldX || '0');
     const dY = newRect.y - parseFloat(oldY || '0');
 
-    console.log(`Player ${player.nickname} moved by (${dX}, ${dY})`);
-
     playerElement.animate([
         { transform: `translate(${-dX}px, ${-dY}px)` },
         { transform: 'translate(0, 0)' }

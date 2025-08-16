@@ -100,7 +100,6 @@ function jumpToHistory(turnNumber: number, someGameState: t.GameState = gameStat
 
     gameState = simulateGame(someGameState.initialState, someGameState.history.slice(0, turnNumber + 1));
 
-    console.log(`Jumped to turn ${turnNumber}`);
     suggestMoving(gameState, someRenderInterface);
 }
 

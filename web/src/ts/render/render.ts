@@ -130,7 +130,6 @@ function suggestMoves(moves: ValidMove[], player: Player, choiceCallback?: (move
  */
 
 function refreshTile(tile: Tile) {
-    console.log(`Refreshing tile at position (${tile.position.x}, ${tile.position.y})`);
     const tileElement = getElementByPos(tile.position);
     if (!tileElement) throw new Error('Tile element not found');
 
@@ -283,7 +282,6 @@ function playerLost(player: Player) {
 }
 
 function clearAllArrows() {
-    console.log('b');
     const arrows = document.querySelectorAll('.move-arrow');
     arrows.forEach(arrow => {
         arrow.remove();
@@ -305,8 +303,6 @@ function getCenterOfTileElementPercentRelToBoard(pos: Pos): {xPercent: number, y
 }
 
 function arrowOnHover(move: ValidMove) {
-    console.log('a');
-
     if (!move.path || move.path.length < 2) return;
 
     const tileElement = getElementByPos(move.to);

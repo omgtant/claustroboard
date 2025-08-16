@@ -180,6 +180,7 @@ function start(data: InitialState) {
     document.getElementById('prep-stage')?.remove();
 
     netcode.ws.on('they-moved', (moveDelta: MoveDelta) => {
+        console.log('They moved:', moveDelta);
         moveDelta.delta.forEach((pos) => {
             gameHandlers.otherMove(pos);
         });
