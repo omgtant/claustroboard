@@ -54,7 +54,7 @@ func Start() {
 		serverErrors <- s.ListenAndServe()
 	}()
 
-	fmt.Printf("Server is ready to handle requests at http://%s", addr)
+	fmt.Printf("Server is ready to handle requests at http://%s\n", addr)
 
 	// listen for signals
 

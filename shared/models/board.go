@@ -41,8 +41,8 @@ func NewGameBoard(players []string, palette []enums.TileKind, width uint16, heig
 		Phase:  PhaseLobby,
 	}
 
-	for x := uint16(0); x < width; x++ {
-		for y := uint16(0); y < height; y++ {
+	for y := uint16(0); y < height; y++ {
+		for x := uint16(0); x < width; x++ {
 			board.Tiles = append(board.Tiles, *RandomizeTile(x, y))
 		}
 	}
@@ -56,7 +56,7 @@ func NewGameBoard(players []string, palette []enums.TileKind, width uint16, heig
 		id = GameCode(rand.Uint64())
 	}
 	if attempts == 10 {
-		return 0, fmt.Errorf("failed to generate unique board ID after 10 attempts")
+		return 0, errors.New("failed to generate unique board ID after 10 attempts")
 	}
 
 	gameBoardsMu.Lock()
@@ -87,7 +87,7 @@ func Join(id GameCode, p string) error {
 		return err
 	}
 	if board.Phase != PhaseLobby {
-		return fmt.Errorf("cannot join game that has already started")
+		return errors.New("cannot join game that has already started")
 	}
 
 	board.Players = append(board.Players, p)
@@ -135,11 +135,11 @@ func StartGame(code GameCode) (*Board, error) {
 		return nil, err
 	}
 	if board.Phase == PhaseStarted {
-		return board, nil
+		return board, errors.New("already started")
 	}
 	total := int(board.Width) * int(board.Height)
 	if len(board.Players) > total {
-		return nil, fmt.Errorf("not enough tiles for players")
+		return nil, errors.New("not enough tiles for players")
 	}
 
 	used := make(map[valueobjects.Point]struct{}, len(board.Players))
@@ -205,7 +205,7 @@ func Snapshot(code GameCode) (*dtos.Board, error) {
 }
 
 func (b Board) getTileIndex(p valueobjects.Point) (i int, err error) {
-	i = int(p.X)*int(p.Y) + int(p.Y%b.Width)
+	i = int(b.Width)*int(p.Y) + int(p.X)
 	if len(b.Tiles) < i {
 		return -1, errors.New("out of bound")
 	}
@@ -222,17 +222,19 @@ func (b Board) getTileAt(p valueobjects.Point) (t *Tile, internalError error) {
 }
 
 func (b Board) getCurrent() (t *Tile, index int, internalError error) {
+	if len(b.Pos) <= 0 {
+		return nil, 0, errors.New("game has not started")
+	}
 	index = int(b.Turn) % len(b.Pos)
 	player := b.Pos[index]
 	t, internalError = b.getTileAt(player)
 	return t, index, internalError
 }
 
-func (b Board) movePlayer() {
-
-}
-
 func (b Board) Move(moves []dtos.Move) (*dtos.Delta, error) {
+	if b.Phase != PhaseStarted {
+		return nil, errors.New("game has not started")
+	}
 	type MoveData struct {
 		t    *Tile
 		from *Tile
@@ -275,9 +277,9 @@ func (b Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, e
 	dist := 1
 
 	for dist <= distTarget {
-		queueCopy := []Tile{}
+		queueCopy := make([]Tile, len(queue))
 		copy(queueCopy, queue)
-		queue := []Tile{}
+		queue = []Tile{}
 
 		for _, v := range queueCopy {
 			neighborsMatrix := []valueobjects.Point{

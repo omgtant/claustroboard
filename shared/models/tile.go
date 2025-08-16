@@ -11,33 +11,48 @@ import (
 )
 
 type Tile struct {
-	Pos    valueobjects.Point
-	Open   bool
-	Color  enums.TileColor
-	Energy int16
-	Kind   enums.TileKind
-	Data   map[string]json.RawMessage
+	Pos   valueobjects.Point
+	Open  bool
+	Color enums.TileColor
+	Kind  enums.TileKind
+	Data  map[string]json.RawMessage
+}
+
+func (t *Tile) getEnergy() int {
+	if energyData, exists := t.Data["energy"]; exists {
+		var energy int
+		json.Unmarshal(energyData, &energy)
+		return energy
+	}
+	return 0
+}
+
+func (t *Tile) setEnergy(e int) {
+	if t.Data == nil {
+		t.Data = make(map[string]json.RawMessage)
+	}
+	energyBytes, _ := json.Marshal(e)
+	t.Data["energy"] = energyBytes
 }
 
 func RandomizeTileKind(tk enums.TileKind, x, y uint16) *Tile {
 	tile := &Tile{
-		Pos:    valueobjects.Point{X: x, Y: y},
-		Open:   true,
-		Kind:   tk,
-		Color:  enums.ColorLess,
-		Energy: 0,
+		Pos:   valueobjects.Point{X: x, Y: y},
+		Open:  true,
+		Kind:  tk,
+		Color: enums.ColorLess,
 	}
 
 	switch tk {
 	case enums.Layout:
-		tile.Energy = int16(1 + rand.Intn(4))
+		tile.setEnergy(1 + rand.Intn(4))
 		tile.Color = enums.RandomColor()
 	case enums.Teleport:
 		tile.Color = enums.RandomColor()
 	case enums.Wall:
 		tile.Open = false
 	case enums.Wildcard:
-		tile.Energy = 4
+		tile.setEnergy(4)
 		tile.Color = enums.RandomColor()
 	case enums.Zero:
 		tile.Color = enums.RandomColor()
@@ -54,7 +69,6 @@ func (t1 Tile) Copy() (t2 Tile) {
 	t2.Pos = t1.Pos
 	t2.Open = t1.Open
 	t2.Color = t1.Color
-	t2.Energy = t1.Energy
 	t2.Kind = t1.Kind
 	t2.Data = map[string]json.RawMessage{}
 	for k, v := range t1.Data {
@@ -73,18 +87,21 @@ func (t Tile) CanStart() bool {
 }
 
 func (t Tile) validateMove(b *Board, m dtos.Move) (destTile *Tile, err error) {
-	dest := m.GetPoint()
+	dest, err := m.GetPoint()
+	if err != nil {
+		return nil, errors.New("only point moves are implemented")
+	}
 	switch t.Kind {
 	case enums.Layout:
 		var ok bool
-		destTile, ok = b.validateDist(t, dest, int(t.Energy), true)
+		destTile, ok = b.validateDist(t, dest, int(t.getEnergy()), true)
 		if !ok {
 			err = errors.New("invalid layout move")
 		}
 
 	case enums.Wildcard:
 		var ok bool
-		destTile, ok = b.validateDist(t, dest, int(t.Energy), false)
+		destTile, ok = b.validateDist(t, dest, int(t.getEnergy()), false)
 		if !ok {
 			err = errors.New("invalid wildcard move")
 		}
