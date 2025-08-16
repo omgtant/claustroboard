@@ -56,7 +56,7 @@ func NewGameBoard(players []string, palette []enums.TileKind, width uint16, heig
 		id = GameCode(rand.Uint64())
 	}
 	if attempts == 10 {
-		return 0, fmt.Errorf("failed to generate unique board ID after 10 attempts")
+		return 0, errors.New("failed to generate unique board ID after 10 attempts")
 	}
 
 	gameBoardsMu.Lock()
@@ -87,7 +87,7 @@ func Join(id GameCode, p string) error {
 		return err
 	}
 	if board.Phase != PhaseLobby {
-		return fmt.Errorf("cannot join game that has already started")
+		return errors.New("cannot join game that has already started")
 	}
 
 	board.Players = append(board.Players, p)
@@ -135,11 +135,11 @@ func StartGame(code GameCode) (*Board, error) {
 		return nil, err
 	}
 	if board.Phase == PhaseStarted {
-		return board, nil
+		return board, errors.New("already started")
 	}
 	total := int(board.Width) * int(board.Height)
 	if len(board.Players) > total {
-		return nil, fmt.Errorf("not enough tiles for players")
+		return nil, errors.New("not enough tiles for players")
 	}
 
 	used := make(map[valueobjects.Point]struct{}, len(board.Players))
