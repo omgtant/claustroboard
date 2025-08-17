@@ -127,7 +127,7 @@ function initPrepState() {
         copyBtn.classList.remove('hidden');
         copyBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            navigator.clipboard.writeText(copyBtn.textContent || '');
+            navigator.clipboard.writeText(gameLinkEl?.textContent || '');
             copyBtn.querySelector('.hide-on-copy')?.classList.add('hidden');
             setTimeout(() => {
                 copyBtn.querySelector('.hide-on-copy')?.classList.remove('hidden');
