@@ -13,10 +13,11 @@
 @layer base {
     *, pre {
         font-family: 'Comic Mono', monospace;
+        @apply text-white;
     }
     body {
         image-rendering: pixelated;
-        @apply bg-gray-900 text-white;
+        @apply bg-gray-900;
     }
     h1 {
         @apply text-3xl text-slate-100
@@ -87,6 +88,41 @@
         }
     }
 
+    .config-dialog {
+        @apply relative m-auto bg-gray-700 rounded-xl min-w-40 min-h-40 px-4 py-8;
+        .close-config-btn {
+            @apply absolute top-2 right-2 p-1 bg-gray-700 hover:bg-gray-600 transition-colors duration-100 rounded-full;
+        }
+        .tile-list {
+            @apply grid grid-cols-5 gap-4;
+        }
+    }
+
+    .right-btn, .left-btn {
+        width: 32px;
+        height: 52px;
+        @apply relative bg-transparent hover:bg-transparent p-0;
+        @apply outline-none;
+        > :first-child {
+            @apply absolute top-1 left-0;
+            background-image: url('../public/atlas.png');
+            background-position: 0px -80px;
+            width: 32px;
+            height: 48px;
+        }
+        &:disabled > :first-child{
+            background-position: 0px -128px;
+        }
+        &.left-btn {
+            @apply -scale-x-100;
+        }
+        &:focus {
+            content: '';
+            background-image: url('../public/atlas.png');
+            background-position: 0px -176px;
+        }
+    }
+
     .selection {
         @apply absolute z-40 opacity-0;
         background-image: url('../public/atlas.png');
@@ -151,6 +187,25 @@
             @apply rotate-x-0;
         }
     }
+    .tile-RED {
+        filter: hue-rotate(-260deg) brightness(90%) saturate(120%);
+    }
+
+    .tile-YELLOW {
+        filter: brightness(110%) hue-rotate(-200deg) saturate(110%);
+    }
+
+    .tile-GREEN {
+        filter: brightness(110%) saturate(70%) hue-rotate(-120deg);
+    }
+
+    .tile-BLUE {
+        filter: hue-rotate(-20deg) brightness(90%) saturate(200%);
+    }
+
+    .tile-COLORLESS {
+        filter: saturate(50%) brightness(100%);
+    }
     .tile {
         background-image: url('../public/atlas.png');
         width: 68px;
@@ -176,26 +231,6 @@
 
         &.tile-type-2 {
             background-position: -112px 0px;
-        }
-
-        &.tile-RED {
-            filter: hue-rotate(-260deg) brightness(90%) saturate(120%);
-        }
-
-        &.tile-YELLOW {
-            filter: brightness(110%) hue-rotate(-200deg) saturate(110%);
-        }
-
-        &.tile-GREEN {
-            filter: brightness(110%) saturate(70%) hue-rotate(-120deg);
-        }
-
-        &.tile-BLUE {
-            filter: hue-rotate(-20deg) brightness(90%) saturate(200%);
-        }
-
-        &.tile-COLORLESS {
-            filter: saturate(50%) brightness(100%);
         }
 
         &.tile-layout-1::after {
