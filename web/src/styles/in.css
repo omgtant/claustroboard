@@ -102,7 +102,7 @@
         @apply block w-full text-left overflow-y-scroll bg-gray-800 p-2 rounded-lg;
         @apply lg:absolute lg:left-full lg:ml-4 lg:w-48 lg:h-full;
         span {
-            @apply block w-full text-sm bg-transparent hover:bg-white/10 transition-colors duration-75;
+            @apply block w-full bg-transparent hover:bg-white/10 transition-colors duration-75;
         }
     }
 
