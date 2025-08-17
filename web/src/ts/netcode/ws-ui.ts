@@ -116,26 +116,22 @@ function initPrepState() {
     const gameLinkEl = document.getElementById('game-link');
     if (gameLinkEl) {
         gameLinkEl.textContent = `${window.location.origin}/?c=${netcode.gameCode}`;
-        gameLinkEl.addEventListener('click', (e) => {
-            e.preventDefault();
-            navigator.clipboard.writeText(gameLinkEl.textContent || '');
-        });
+        gameLinkEl.setAttribute('href', gameLinkEl.textContent);
     } else {
         console.warn('No game code element found');
     }
 
-    const openLinkBtn = document.getElementById('open-link');
-    if (openLinkBtn) {
-        openLinkBtn.classList.remove('hidden');
-        openLinkBtn.addEventListener('click', (e) => {
-            const gameLink = `${window.location.origin}/?c=${netcode.gameCode}`;
-            if (gameLink) {
-                if (e.ctrlKey || e.metaKey) {
-                    window.open(gameLink, '_blank');
-                } else {
-                    window.open(gameLink, '_blank')?.focus();
-                }
-            }
+    const copyBtn = document.getElementById('copy-link');
+    if (copyBtn) {
+        if (!navigator.clipboard) return;
+        copyBtn.classList.remove('hidden');
+        copyBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigator.clipboard.writeText(copyBtn.textContent || '');
+            copyBtn.querySelector('.hide-on-copy')?.classList.add('hidden');
+            setTimeout(() => {
+                copyBtn.querySelector('.hide-on-copy')?.classList.remove('hidden');
+            }, 1000);
         });
     }
 
