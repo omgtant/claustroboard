@@ -1,11 +1,11 @@
 # Main menu actions
 
 - Create a new game
-  -	public (matchmaking)
+  - public (matchmaking)
   - private
 - Join a new game
   - matchmaking
-  - private (code)
+  - private (with code)
 - Play a solo game
 
 # Presentation as tabs
@@ -16,9 +16,9 @@ In any scenario, a nickname input is displayed close to join/create/play CTAs.
 
 ### Option 1
 - Real-time table of existing matchmaking lobbies with their options
-  - Click to enter
+  - Click row to enter
 - Button to create a new game
-  - Simplified dialog to customize a currated set of game options (board size, available tiles, maximum number of players...)
+  - Simplified dialog to customize a curated set of game options (board size, available tiles, maximum number of players...)
 - Starts the lobby screen with the list of players (+kick button) and a button to start the game.
 
 ### Option 2
