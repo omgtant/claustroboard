@@ -1,3 +1,27 @@
+# Application UX
+
+## Main menu actions
+
+- Create a new game
+  -	public (matchmaking)
+  - private
+- Join a new game
+  - matchmaking
+  - private (code)
+- Play a solo game
+
+## Presentation as tabs
+### Matchmaking
+#### Option 1
+- Real-time table of existing matchmaking lobbies with their different properties (board size, available tiles...)
+  - Click to enter
+- Button to create a new game
+  - Simplified modal to customize a currated set of game options
+
+#### Option 2
+- Single CTA which joins an existing/creates a new matchmaking lobby
+- Lobby with a timer once N players are in and voting-based game options (eg. tile blacklists), some other options are standardized (ie. board size, based on the number of players or fixed)
+
 
 # Human-readable rules
 
