@@ -76,7 +76,7 @@
         @apply w-full lg:w-auto lg:absolute right-full mr-4 bg-gray-800;
         @apply p-2 rounded-lg z-40 h-full flex flex-col lg:flex-row-reverse;
         h2 {
-            @apply wrap-anywhere lg:w-min block h-full lg:capitalize;
+            @apply lg:wrap-anywhere lg:w-min block h-full lg:uppercase;
         }
         .accordion {
             @apply w-full;
