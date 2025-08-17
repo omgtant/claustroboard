@@ -80,7 +80,7 @@
         }
         .accordion {
             @apply w-full;
-            @apply lg:peer-checked:w-64 lg:w-0 lg:overflow-hidden lg:transition-[width] lg:duration-100;
+            @apply lg:peer-checked:w-64 lg:peer-focus:w-64 lg:w-0 lg:overflow-hidden lg:transition-[width] lg:duration-100;
         }
         .accordion-content {
             @apply w-full lg:w-64 p-1;
