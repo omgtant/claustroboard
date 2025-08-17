@@ -48,7 +48,7 @@ export function getMockInitialState(): InitialState {
             {tile_type: 'Wall', color:4},
             {tile_type: 'Wall', color:4},
         ]]),
-        players: [{ nickname: 'omga'}, { nickname: 'miltant' }, {nickname: 'f'}] as InitialPlayer[]
+        players: [{ nickname: '1'}, { nickname: '2' }] as InitialPlayer[]
     };
     const board = readIntialBoardIntoGameBoard(obj.board);
     const possiblePositions = board.flatMap(row => row.filter(tile => tile.canStartOnMe(board)).map(tile => tile.position));
