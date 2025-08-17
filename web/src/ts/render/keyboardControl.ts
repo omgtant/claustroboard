@@ -34,6 +34,8 @@ function renderSelection() {
 
     if (!_selectionElement) {
         board?.appendChild(getOrCreateSelectionElement());
+    } else {
+        FLIPBegin();
     }
 
     const tileElement = getElementByPos(_currentSelection);
@@ -53,6 +55,7 @@ function renderSelection() {
     if (_preserveFocus) {
         _selectionElement?.focus();
     }
+    FLIPEnd();
 }
 
 function attachControls(selEl: HTMLElement) {
@@ -104,5 +107,31 @@ function attachControls(selEl: HTMLElement) {
     _selectionElement?.addEventListener('focusout', () => {
         renderSelection();
         _preserveFocus = false;
+    });
+}
+
+function FLIPBegin() {
+    if (!_selectionElement) return;
+
+    const rect = _selectionElement.getBoundingClientRect();
+    _selectionElement.dataset.x = `${rect.left}px`;
+    _selectionElement.dataset.y = `${rect.top}px`;
+}
+
+function FLIPEnd() {
+    if (!_selectionElement) return;
+
+    const rect = _selectionElement.getBoundingClientRect();
+    const dX = rect.left - parseInt(_selectionElement.dataset.x!);
+    const dY = rect.top - parseInt(_selectionElement.dataset.y!);
+
+    _selectionElement.animate([
+        { transform: `translate(${-dX}px, ${-dY}px)` },
+        { transform: `translate(0, 0)` }
+    ], {
+        duration: 150,
+        easing: 'ease-in-out',
+        fill: 'forwards',
+        composite: 'add'
     });
 }
