@@ -5,6 +5,7 @@ import { Pos, TileColor } from "../types/util.ts";
 import { LayoutTile, TeleportTile, WildcardTile, ZeroTile } from "../game/tiles.ts";
 import { transform } from "typescript";
 import { _movePlayer, getPlayerElement } from "./playerMover.ts";
+import { setCurrentSelection } from "./keyboardControl.ts";
 
 const callbacks = {
     tryMoveTo: (pos: Pos) : void => {
@@ -45,6 +46,7 @@ function logTurn(turnNumber: number, player: Player, pos: Pos) {
         callbacks.jumpToHistory(turnNumber);
     });
 }
+
 
 export function logMessage(message: string): HTMLSpanElement {
     if (!log) throw new Error('Log element not found');
@@ -110,6 +112,7 @@ function suggestMoves(moves: ValidMove[], player: Player, choiceCallback?: (move
 
     clearHighlights();
     clearAllArrows();
+    setCurrentSelection(null);
 
     if (moves.length === 0) {
         console.warn("No valid moves available for player", player.nickname);
@@ -118,6 +121,7 @@ function suggestMoves(moves: ValidMove[], player: Player, choiceCallback?: (move
     highlightWinner(player);
     
     highlightTiles([player.position], TileHighlightFlags.SELECTION);
+    setCurrentSelection(player.position);
     
     highlightTiles(moves.map(move => move.to), TileHighlightFlags.VALID);
     const tileElements = moves.map(move => getElementByPos(move.to));
@@ -245,6 +249,12 @@ function renderState(state: GameState) {
     if (!board) throw new Error('Board element not found');
     board.innerHTML = '';
 
+    board.dataset.width = state.board.tiles.length.toString();
+    board.dataset.height = state.board.tiles[0].length.toString();
+
+    board.style.gridTemplateColumns = `repeat(${state.board.tiles.length}, 1fr)`;
+    board.style.gridTemplateRows = `repeat(${state.board.tiles[0].length}, 1fr)`;
+
     state.board.tiles.forEach(row => {
         row.forEach(tile => {
             board.appendChild(_createTile(tile));
@@ -327,6 +337,7 @@ function arrowOnHover(move: ValidMove) {
 
     const arrowElement = document.createElement('div');
     arrowElement.classList.add('move-arrow');
+    arrowElement.dataset.tileId = `${move.to.x}-${move.to.y}`;
     board?.appendChild(arrowElement);
     const pathPoints = move.path.map(pos => {
         const {xPercent, yPercent} = getCenterOfTileElementPercentRelToBoard(pos);
