@@ -33,7 +33,7 @@
 
 
     input {
-        @apply p-2 bg-gray-700 rounded-lg block min-w-4;
+        @apply p-2 bg-gray-700 rounded-lg block min-w-24;
     }
 
     button {
