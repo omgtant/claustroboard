@@ -88,6 +88,7 @@ export type DeckElement = {
 
 export type Config = {
     version: 1,
+    userDefined: boolean,
     width: number;
     height: number;
     maxPlayers: number;

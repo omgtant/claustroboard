@@ -6,7 +6,8 @@ export function getDefaultConfig(): Config {
         width: 4,
         height: 4,
         maxPlayers: 10,
-        deck: []
+        deck: [],
+        userDefined: false
     };
 }
 
@@ -31,6 +32,7 @@ export function getCountFor(tileSetup: TileSetup, config: Config): number | unde
 }
 
 export function saveConfig(config: Config) {
+    config.userDefined = true;
     localStorage.setItem('gameConfig', JSON.stringify(config));
 }
 
