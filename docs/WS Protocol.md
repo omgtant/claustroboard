@@ -28,14 +28,17 @@ Action `broadcast` (payload)
 
 
 ## Type spec
-### Deck
+### Config
 ```json
 {
-board: {width: int, height: int},
+width: int,
+height: int,
+maxPlayers: int,
 deck: [{
 	type: string (e.g. "Layout"),
+	data: {},
 	color?: int ([0;4], null means random),
-	count: int [1;inf)
+	count?: int ([1;inf), null means random),
 }]
 }
 ```
