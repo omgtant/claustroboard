@@ -16,3 +16,25 @@ type BoardTile struct {
 	Color enums.TileColor            `json:"color,omitempty"`
 	Data  map[string]json.RawMessage `json:"data,omitempty"`
 }
+
+func (bt *BoardTile) UnmarshalJSON(data []byte) error {
+    type Alias BoardTile
+    aux := &struct {
+        *Alias
+        Color *int `json:"color,omitempty"`
+    }{
+        Alias: (*Alias)(bt),
+    }
+
+    if err := json.Unmarshal(data, &aux); err != nil {
+        return err
+    }
+
+    if aux.Color == nil {
+        bt.Color = enums.UnspecifiedColor
+    } else {
+        bt.Color = enums.TileColor(*aux.Color)
+    }
+
+    return nil
+}
