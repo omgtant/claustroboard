@@ -73,6 +73,11 @@
     .tile-COLORLESS {
         filter: saturate(50%) brightness(100%);
     }
+
+    .tile-UNSPECIFIED {
+        animation: rainbowHue 5s linear infinite;
+    }
+
     .tile {
         background-image: var(--atlas-url);
         width: 68px;
@@ -208,5 +213,14 @@
         &.player-highlight {
             @apply animate-bounce;
         }
+    }
+}
+
+@keyframes rainbowHue {
+    0% {
+        filter: hue-rotate(0deg);
+    }
+    100% {
+        filter: hue-rotate(360deg);
     }
 }

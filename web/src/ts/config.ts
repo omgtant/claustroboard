@@ -37,7 +37,6 @@ export function saveConfig(config: Config) {
     // Check that deck is sufficiently large for the board
     const totalTiles = config.width * config.height;
     const deckSize = config.deck.reduce((sum, element) => {
-        console.log(sum, element);
         return sum + (element.count ?? Infinity);
     }, 0);
     if (deckSize < totalTiles) {
@@ -54,7 +53,7 @@ export function compareTileSetup(a: TileSetup, b: TileSetup): boolean {
  * Returns a list of all tile setups available in the game (no UI concerns, no counts).
  */
 export function generateAllTileSetups(): TileSetup[] {
-    const colors = [0, 1, 2, 3, 4];
+    const colors = [0, 1, 2, 3, 4, undefined];
     const energy = [1, 2, 3, 4];
 
     const layouts: TileSetup[] = energy
@@ -79,17 +78,17 @@ export function generateAllTileSetups(): TileSetup[] {
  * Mirrors the previous UI logic so there is a single source of truth.
  */
 export function getDefaultCountFor(tile: TileSetup): number {
-    const color = tile.color ?? 0;
+    if (tile.color === undefined) return 0;
     switch (tile.tile_type) {
         case 'Layout':
             // energy is in tile.data.energy (1..4); defaults depend only on color
-            return color !== 0 ? 1 : 0;
+            return tile.color !== 0 ? 1 : 0;
         case 'Teleport':
             return 1; // regardless of color
         case 'Zero':
-            return color !== 0 ? 1 : 0;
+            return tile.color !== 0 ? 1 : 0;
         case 'Wall':
-            return color !== 0 ? 2 : 0;
+            return tile.color !== 0 ? 2 : 0;
         case 'Wildcard':
             return 3; // colorless
         default:

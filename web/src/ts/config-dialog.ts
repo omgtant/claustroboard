@@ -7,6 +7,7 @@ const dialogEl = document.getElementById('config-dialog') as HTMLDialogElement;
 const closeBtn = document.getElementById('close-config-btn') as HTMLButtonElement;
 const openBtn = document.getElementById('open-config-btn') as HTMLButtonElement;
 const resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
+const allZerosBtn = document.getElementById('set-zeros') as HTMLButtonElement;
 const saveBtn = document.getElementById('save-config-btn') as HTMLButtonElement;
 const widthInput = document.getElementById('board-width') as HTMLInputElement;
 const heightInput = document.getElementById('board-height') as HTMLInputElement;
@@ -40,7 +41,7 @@ function _getEveryTileType(): TileType[] {
                 classes.push('tile-wildcard');
                 break;
         }
-        classes.push(`tile-${TileColor[tileSetup.color ?? 0]}`);
+        classes.push(`tile-${TileColor[tileSetup.color ?? -1]}`);
 
         return {
             tileSetup,
@@ -62,6 +63,14 @@ export function init() {
     resetBtn.addEventListener('click', () => {
         saveConfig(getDefaultConfig());
         readConfig();
+    });
+
+    allZerosBtn.addEventListener('click', () => {
+        Array.from(document.querySelectorAll('.tile-row')).forEach(row => {
+            if (!(row instanceof HTMLElement)) return;
+            row.dataset.count = '0';
+            row.querySelector('.count')!.textContent = '0';
+        });
     });
 
     saveBtn.addEventListener('click', () => {
@@ -143,9 +152,9 @@ function readConfig() {
             tileConfig.querySelector('.count')!.textContent = tileConfig.dataset.count;
         });
         // @ts-ignore
-        tileConfig.querySelector('.left-btn')?.firstChild!.classList.add(`tile-${TileColor[tileType.tileSetup.color!]}`);
-        // @ts-ignore        
-        tileConfig.querySelector('.right-btn')?.firstChild!.classList.add(`tile-${TileColor[tileType.tileSetup.color!]}`);
+        tileConfig.querySelector('.left-btn')?.firstChild!.classList.add(`tile-${TileColor[tileType.tileSetup.color ?? -1]}`);
+        // @ts-ignore
+        tileConfig.querySelector('.right-btn')?.firstChild!.classList.add(`tile-${TileColor[tileType.tileSetup.color ?? -1]}`);
 
         tileList?.appendChild(tileConfig);
     });
