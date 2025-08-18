@@ -476,7 +476,6 @@ func (b *Board) fillUsingDeck(deck *[]dtos.TileConfig) error {
 		rand.Shuffle(len(guaranteed), func(i, j int) { guaranteed[i], guaranteed[j] = guaranteed[j], guaranteed[i] })
 		guaranteed = guaranteed[:boardSize]
 		*deck = guaranteed
-		return nil
 	}
 
 	// Step 4: Shuffle final deck for unbiased placement later.
