@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/stylesheet.css">
+    <title>Claustroboard</title>
+</head>
+<body class="relative w-screen min-h-screen">
+    <div class="grid grid-rows-[1fr_6fr_1fr] lg:grid-rows-[1fr_3fr_2fr] h-full w-full">
+        <div></div>
+        <div class="flex flex-col items-center justify-center h-fit">
+            <div class="flex flex-col gap-4 w-full">
+                <div class="relative flex flex-col items-stretch w-fit mx-auto gap-4 h-full">
+                    <!-- Goto: Welcome card -->
+                    <div class="h-full bg-gray-800 p-4 rounded-lg flex flex-col justify-between">
+                        <h1 class="block w-min">Welcome to Claustroboard!</h1>
+                    </div>
+                    <!-- Goto: board wrapper -->
+                    <div class="board-wrapper">
+                        {{ template "board-overlay.html" }}
+                        <!-- Goto: board game -->
+                        <div class="board" id="board">
+                        </div>
+                    </div>
+                    <div id="log" class="log row-span-2">
+                        <h2>The log</h2>
+                        <span>...</span>
+                    </div>
+                    <!-- Goto: rules accordion -->
+                    {{ template "rules.html" }}
+                </div>
+            </div>
+        </div>
+        <div></div>
+    </div>
+    <!-- Goto: config -->
+    <template id="tile-configuration">
+        <div class="flex flex-col items-center tile-row">
+            <div class="flex gap-1 items-center">
+                <button class="left-btn"><div></div></button>
+                <div class="tile tile-type-1"></div>
+                <button class="right-btn"><div></div></button>
+            </div>
+            <p class="count">0</p>
+        </div>
+    </template>
+    <dialog closedby="any" id="config-dialog" class="config-dialog">
+        <button autofocus id="close-config-btn" class="close-config-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+            </svg>
+        </button>
+        <div class="flex mx-auto items-center gap-2 w-full justify-center">
+            <h2>Config</h2>
+            <button class="danger-btn" id="reset-btn">Reset</button>
+        </div>
+        <hr class="my-2 w-1/2 mx-auto"/>
+        <div class="tile-list">
+
+        </div>
+    </dialog>
+    <footer>
+        <a href="https://github.com/omgtant/claustroboard" class="block h-full">
+            <img src="./public/github.svg" alt="GitHub" class="h-full lg:size-12" />
+        </a>
+    </footer>
+    <script type="module" src="/static/js/main.js"></script>
+</body>
+</html>

@@ -18,8 +18,16 @@ var (
 func GetRouter(projectRoot string) *http.ServeMux {
 	mux := http.NewServeMux()
 
+	// init templates
+	if err := routers.InitTemplates(StaticFiles); err != nil {
+		panic(fmt.Sprintf("Failed to initialize templates: %v", err))
+	}
+
+	// template routes
+	mux.HandleFunc("/", routers.TemplateHandler("default", defaultTemplateDataFunc))
+
 	// static files
-	mux.Handle("/", routers.CreateFileServer(projectRoot, StaticFiles))
+	mux.Handle("/static/", routers.CreateFileServer(projectRoot, StaticFiles))
 
 	// API routes
 	apiMux := http.NewServeMux()
@@ -38,4 +46,10 @@ func GetRouter(projectRoot string) *http.ServeMux {
 func getPID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write([]byte(fmt.Sprintf("%d", os.Getpid())))
+}
+
+func defaultTemplateDataFunc(r *http.Request) any {
+	return map[string]any{
+		"test": "hello world",
+	}
 }

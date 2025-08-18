@@ -3,9 +3,13 @@
 @source not "*";
 @source "web/src/**/*";
 
+:root {
+    --atlas-url: url('/static/assets/img/atlas.png');
+}
+
 @font-face {
     font-family: 'Comic Mono';
-    src: url('../public/fonts/ComicMono.ttf') format('truetype');
+    src: url('/static/assets/fonts/ComicMono.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
 }
@@ -105,7 +109,7 @@
         @apply outline-none;
         > :first-child {
             @apply absolute top-1 left-0;
-            background-image: url('../public/atlas.png');
+            background-image: var(--atlas-url);
             background-position: 0px -80px;
             width: 32px;
             height: 48px;
@@ -118,14 +122,14 @@
         }
         &:focus {
             content: '';
-            background-image: url('../public/atlas.png');
+            background-image: var(--atlas-url);
             background-position: 0px -176px;
         }
     }
 
     .selection {
         @apply absolute z-40 opacity-0;
-        background-image: url('../public/atlas.png');
+        background-image: var(--atlas-url);
         background-position: -256px 0px;
         width: 68px;
         height: 68px;
@@ -207,14 +211,14 @@
         filter: saturate(50%) brightness(100%);
     }
     .tile {
-        background-image: url('../public/atlas.png');
+        background-image: var(--atlas-url);
         width: 68px;
         height: 68px;
         @apply transform-3d transition-[translate,opacity,rotate,transform] duration-500 ease-in-out relative perspective-distant;
 
         &::before {
             content: '';
-            background-image: url('../public/atlas.png');
+            background-image: var(--atlas-url);
             background-position: -184px 0px;
             width: 68px;
             height: 68px;
@@ -236,7 +240,7 @@
         &.tile-layout-1::after {
             content: '';
             display: block;
-            background-image: url('../public/atlas.png');
+            background-image: var(--atlas-url);
             background-position: -40px -72px;
             width: 68px;
             height: 68px;
@@ -245,7 +249,7 @@
         &.tile-layout-2::after {
             content: '';
             display: block;
-            background-image: url('../public/atlas.png');
+            background-image: var(--atlas-url);
             background-position: -112px -72px;
             width: 68px;
             height: 68px;
@@ -254,7 +258,7 @@
         &.tile-layout-3::after {
             content: '';
             display: block;
-            background-image: url('../public/atlas.png');
+            background-image: var(--atlas-url);
             background-position: -184px -72px;
             width: 68px;
             height: 68px;
@@ -263,7 +267,7 @@
         &.tile-layout-4::after {
             content: '';
             display: block;
-            background-image: url('../public/atlas.png');
+            background-image: var(--atlas-url);
             background-position: -256px -72px;
             width: 68px;
             height: 68px;
@@ -272,7 +276,7 @@
         &.tile-wildcard::after {
             content: '';
             display: block;
-            background-image: url('../public/atlas.png');
+            background-image: var(--atlas-url);
             background-position: -40px -144px;
             width: 68px;
             height: 68px;
@@ -280,7 +284,7 @@
         &.tile-teleport::after {
             content: '';
             display: block;
-            background-image: url('../public/atlas.png');
+            background-image: var(--atlas-url);
             background-position: -112px -144px;
             width: 68px;
             height: 68px;
@@ -288,7 +292,7 @@
         &.tile-zero::after {
             content: '';
             display: block;
-            background-image: url('../public/atlas.png');
+            background-image: var(--atlas-url);
             background-position: -184px -144px;
             width: 68px;
             height: 68px;
@@ -312,7 +316,7 @@
         @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30;
         .player {
             @apply drop-shadow-xl drop-shadow-black;
-            background-image: url('../public/atlas.png');
+            background-image: var(--atlas-url);
             width: 28px;
             height: 28px;
             &.player-1 {

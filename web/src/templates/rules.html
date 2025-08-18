@@ -1,0 +1,46 @@
+<div class="rules-accordion">
+	<input
+		type="checkbox"
+		id="rules-accordion-toggle"
+		class="hidden peer/checkbox"
+	/>
+	<label for="rules-accordion-toggle" tabindex="1" class="peer/label"
+		><h2>Rules</h2></label
+	>
+	<div class="accordion">
+		<div class="accordion-content">
+			<div class="grid grid-cols-[max-content_1fr] gap-2 items-center">
+				<div class="hover-tile-closed">
+					<div
+						class="tile tile-YELLOW tile-layout-2 tile-type-1"
+					></div>
+				</div>
+				<p>Walk <span class="text-amber-400">2</span> steps</p>
+				<div class="hover-tile-closed">
+					<div
+						class="tile tile-wildcard tile-COLORLESS tile-type-2"
+					></div>
+				</div>
+				<p>Walk up to 4 steps</p>
+				<div class="hover-tile-closed">
+					<div class="tile tile-RED tile-teleport tile-type-1"></div>
+				</div>
+				<p>Tp to any <span class="text-red-400">red</span> tile</p>
+				<div class="hover-tile-closed">
+					<div class="tile tile-GREEN tile-zero tile-type-1"></div>
+				</div>
+				<p><span class="text-green-300">Swap</span> all players</p>
+				<div class="not-hover-tile-closed">
+					<div class="tile tile-layout-3 tile-BLUE tile-type-1"></div>
+				</div>
+				<p>
+					Tiles <span class="text-blue-400">close</span> after leaving
+				</p>
+				<p class="col-span-2">The last to have moves wins</p>
+				<p class="col-span-2">
+					Press <kbd>Tab</kbd> to play using keyboard.
+				</p>
+			</div>
+		</div>
+	</div>
+</div>

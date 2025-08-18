@@ -8,8 +8,8 @@
 set -u -o pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
-INPUT="$ROOT_DIR/web/src/public/atlas-src.png"
-OUTPUT="$ROOT_DIR/web/src/public/atlas.png"
+INPUT="$ROOT_DIR/web/src/assets/img/atlas-src.png"
+OUTPUT="$ROOT_DIR/web/src/assets/img/atlas.png"
 WATCH_DIR="$(dirname "$INPUT")"
 BASENAME="$(basename "$INPUT")"
 
