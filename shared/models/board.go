@@ -51,6 +51,10 @@ func NewGameBoard(players []string, gameConfig dtos.GameConfig) (GameCode, error
 	}
 
 	board.Tiles = make([][]Tile, height)
+	for i := range board.Tiles {
+		board.Tiles[i] = make([]Tile, width)
+	}
+
 	board.fillUsingDeck(&gameConfig.Deck)
 
 	id := RandomGameCode()
@@ -483,15 +487,11 @@ func (b *Board) fillUsingDeck(deck *[]dtos.TileConfig) error {
 	// Assign the board tiles to this
 	for i := 0; i < int(b.Width); i++ {
 		for j := 0; j < int(b.Height); j++ {
-			tile, err := b.getTileAt(valueobjects.Point{X: uint16(i), Y: uint16(j)})
-			if err != nil || tile == nil {
-				continue
-			}
 			kind, success := enums.TileKindFromString(string(guaranteed[i*int(b.Height)+j].Tile.Name))
 			if !success {
 				return fmt.Errorf("invalid tile kind %s in deck", guaranteed[i*int(b.Height)+j].Tile.Name)
 			}
-			tile = &Tile{
+			tile := &Tile{
 				Pos:   valueobjects.Point{X: uint16(i), Y: uint16(j)},
 				Color: enums.TileColor(guaranteed[i*int(b.Height)+j].Tile.Color),
 				Open:  true,
