@@ -6,6 +6,7 @@ type DeckElement struct {
 	TileType string
 	Color    *int // was: int; now pointer to distinguish null vs number
 	Data     any
+	Count 	 *int
 }
 
 type GameConfig struct {
@@ -53,7 +54,7 @@ func (gc GameConfig) MarshalJSON() ([]byte, error) {
 				Color:    d.Color, // pass pointer through; nil => null, non-nil => number
 				Data:     d.Data,
 			},
-			// Count intentionally omitted (not represented in Go struct)
+			Count: d.Count,
 		})
 	}
 	return json.Marshal(out)
@@ -79,8 +80,9 @@ func (gc *GameConfig) UnmarshalJSON(b []byte) error {
 		}
 		gc.Deck = append(gc.Deck, DeckElement{
 			TileType: de.Tile.TileType,
-			Color:    colorPtr, // nil => JSON null (and distinct from integer)
+			Color:    colorPtr, // JSON null => nil
 			Data:     de.Tile.Data,
+			Count:    de.Count, // JSON null => nil
 		})
 	}
 	return nil
