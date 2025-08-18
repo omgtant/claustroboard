@@ -127,20 +127,21 @@ function readConfig() {
     _getEveryTileType().forEach(tileType => {
         // @ts-ignore
         const tileConfig: HTMLElement = document.getElementById('tile-configuration')!.content.cloneNode(true).querySelector('.tile-row');
+        const count = tileConfig.querySelector('.count');
         tileConfig.dataset.tileType = JSON.stringify(tileType.tileSetup);
         try {
             tileConfig.dataset.count = getCountFor(tileType.tileSetup, config)?.toString() ?? '?';
         } catch (err) {
             tileConfig.dataset.count = tileType.defaultCount.toString() ?? '0';
         }
-        tileConfig.querySelector('.count')!.textContent = tileConfig.dataset.count;
+        count!.textContent = tileConfig.dataset.count;
         tileConfig.querySelector('.tile')!.classList.add(...tileType.classes);
         tileConfig.querySelector('.left-btn')!.addEventListener('click', () => {
             tileConfig.dataset.count = Math.max(-1, parseInt(tileConfig.dataset.count!) - 1).toString();
             if (tileConfig.dataset.count === '-1') tileConfig.dataset.count = '?';
             tileConfig.querySelector<HTMLButtonElement>('.left-btn')!.disabled = tileConfig.dataset.count === '?';
             tileConfig.querySelector<HTMLButtonElement>('.right-btn')!.disabled = tileConfig.dataset.count === '99';
-            tileConfig.querySelector('.count')!.textContent = tileConfig.dataset.count;
+            count!.textContent = tileConfig.dataset.count;
         });
         tileConfig.querySelector('.right-btn')!.addEventListener('click', () => {
             if (tileConfig.dataset.count === '?') {
@@ -149,7 +150,23 @@ function readConfig() {
             tileConfig.dataset.count = Math.min(99, parseInt(tileConfig.dataset.count!) + 1).toString();
             tileConfig.querySelector<HTMLButtonElement>('.left-btn')!.disabled = tileConfig.dataset.count === '?';
             tileConfig.querySelector<HTMLButtonElement>('.right-btn')!.disabled = tileConfig.dataset.count === '99';
-            tileConfig.querySelector('.count')!.textContent = tileConfig.dataset.count;
+            count!.textContent = tileConfig.dataset.count;
+        });
+        count!.addEventListener('input', (e) => {
+            count!.textContent = count!.textContent!.replace(/[^0-9]/g, '');
+            tileConfig.dataset.count = count!.textContent!;
+        });
+        count!.addEventListener('focusout', (e) => {
+            if (parseInt(count!.textContent!) > 99) {
+                count!.textContent = '99';
+            }
+            if (parseInt(count!.textContent!) < 0) {
+                count!.textContent = '?';
+            }
+            if (count!.textContent === '') {
+                count!.textContent = '0';
+            }
+            tileConfig.dataset.count = count!.textContent!;
         });
         // @ts-ignore
         tileConfig.querySelector('.left-btn')?.firstChild!.classList.add(`tile-${TileColor[tileType.tileSetup.color ?? -1]}`);
