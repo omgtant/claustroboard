@@ -491,9 +491,15 @@ func (b *Board) fillUsingDeck(deck *[]dtos.TileConfig) error {
 			if !success {
 				return fmt.Errorf("invalid tile kind %s in deck", guaranteed[i*int(b.Height)+j].Tile.Name)
 			}
+
+			color := enums.TileColor(guaranteed[i*int(b.Height)+j].Tile.Color)
+			if color == enums.UnspecifiedColor {
+				color = enums.RandomColor(true)
+			}
+
 			tile := &Tile{
 				Pos:   valueobjects.Point{X: uint16(i), Y: uint16(j)},
-				Color: enums.TileColor(guaranteed[i*int(b.Height)+j].Tile.Color),
+				Color: color,
 				Open:  true,
 				Kind:  kind,
 				Data:  guaranteed[i*int(b.Height)+j].Tile.Data,
