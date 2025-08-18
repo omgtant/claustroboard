@@ -12,7 +12,7 @@ const gameCodeLen = 5
 
 func RandomGameCode() GameCode {
 	var result string
-	for i := 0; i < gameCodeLen; i++ {
+	for range gameCodeLen {
 		result += string(alphabet[rand.Intn(int(alphLen))])
 	}
 	return GameCode(result)
