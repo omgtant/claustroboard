@@ -80,3 +80,16 @@ export type MoveDelta = {
     turn: number,
     delta: Pos[]
 }
+
+export type DeckElement = {
+    tile: TileSetup,
+    count?: number
+}
+
+export type Config = {
+    version: 1,
+    width: number;
+    height: number;
+    maxPlayers: number;
+    deck: DeckElement[]
+}

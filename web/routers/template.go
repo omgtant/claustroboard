@@ -10,7 +10,10 @@ var templates *template.Template
 
 func InitTemplates(fs embed.FS) error {
 	var err error
-	templates, err = template.ParseFS(fs, "out/*.html")
+	
+	templates = &template.Template{}
+
+	templates, err = template.New("").Funcs(GetFuncMap()).ParseFS(fs, "out/*.html")
 	if err != nil {
 		return err
 	}
@@ -34,5 +37,20 @@ func TemplateHandler(name string, dataFunc func(*http.Request) any) http.Handler
 		if err := RenderTemplate(w, name, data); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
+	}
+}
+
+func GetFuncMap() template.FuncMap {
+	return template.FuncMap{
+		"loop": func(from, to int) <-chan int {
+			ch := make(chan int)
+			go func() {
+				for i := from; i <= to; i++ {
+					ch <- i
+				}
+				close(ch)
+			}()
+			return ch
+		},
 	}
 }
