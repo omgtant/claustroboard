@@ -1,18 +1,24 @@
 # Main Menu
 
 - Nickname input
-- ## Tabs:
+- [[#Tabs]]
+
+## Tabs
 ### Tab 1: Join
 - Text input for the game code and a join button
 
 - Real-time table of existing matchmaking lobbies with a way to view their playercount and options
-	- Click row to enter lobby
+	- Click row to enter [[#Lobby]]
 ### Tab 2: Create
-- Configuration button (opens config dialog)
-- Create button to create and immediately enter the lobby
+- Configuration button (opens [[#Config]]
+- Create button to create and immediately enter the [[#Lobby]]
 
 ### Tab 3: Offline
-Workflow of alternating between an option dialog (akin to the private game options) and a solo browser-based game.
+Workflow of alternating between [[#Config]] and a solo browser-based game.
+
+# Config
+- all tile types with ui to set their count to a number (0-99) or an indicator of random value
+- inputs for width, height of board and max player count
 
 # Lobby
 
