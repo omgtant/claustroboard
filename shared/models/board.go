@@ -54,16 +54,16 @@ func NewGameBoard(players []string, palette []enums.TileKind, width uint16, heig
 		}
 	}
 
-	id := GameCode(rand.Uint64())
+	id := RandomGameCode()
 	var attempts int
 	for attempts = 0; attempts < 10; attempts++ {
 		if _, exists := gameBoards[id]; !exists {
 			break
 		}
-		id = GameCode(rand.Uint64())
+		id = RandomGameCode()
 	}
 	if attempts == 10 {
-		return 0, errors.New("failed to generate unique board ID after 10 attempts")
+		return "", errors.New("failed to generate unique board ID after 10 attempts")
 	}
 
 	gameBoardsMu.Lock()
@@ -73,7 +73,7 @@ func NewGameBoard(players []string, palette []enums.TileKind, width uint16, heig
 	for _, p := range players {
 		err := Join(id, p)
 		if err != nil {
-			return 0, err
+			return "", err
 		}
 	}
 	return id, nil
@@ -82,7 +82,7 @@ func NewGameBoard(players []string, palette []enums.TileKind, width uint16, heig
 func NewDefaultGameBoard(nickname string) (GameCode, *Board, error) {
 	code, err := NewGameBoard([]string{nickname}, slices.Collect(maps.Keys(enums.TileKindNames)), 6, 6)
 	if err != nil {
-		return 0, nil, err
+		return "", nil, err
 	}
 	board, _ := GetBoard(code)
 	return code, board, nil

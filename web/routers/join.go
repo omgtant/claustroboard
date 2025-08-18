@@ -27,7 +27,7 @@ func StartGameWS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client.write("created", map[string]string{"code": code.Base62()})
+	client.write("created", map[string]string{"code": code.String()})
 	broadcastPlayerList(code)
 }
 
@@ -38,12 +38,7 @@ func JoinGameWS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	codeStr := r.PathValue("id")
-	code, err := models.ParseGameCode(codeStr)
-	if err != nil {
-		http.Error(w, "invalid code", http.StatusBadRequest)
-		return
-	}
+	code := models.GameCode(r.PathValue("id"))
 
 	board, err := models.GetBoard(code)
 	if err != nil {
@@ -80,7 +75,7 @@ func JoinGameWS(w http.ResponseWriter, r *http.Request) {
 	_ = wsjson.Write(context.Background(), client.conn, event{
 		Type: "joined",
 		Data: map[string]string{
-			"code": code.Base62(),
+			"code": code.String(),
 			"you":  nickname,
 		},
 	})

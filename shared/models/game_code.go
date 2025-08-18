@@ -1,48 +1,23 @@
 package models
 
-import "fmt"
+import (
+	"math/rand"
+)
 
-type GameCode uint64
+type GameCode string
 
-const base62Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+const alphabet = "2356789bcdfghjkmnpqrstwxyz"
+const alphLen = uint64(len(alphabet))
+const gameCodeLen = 5
 
-func (gc GameCode) Base62() string {
-	if gc == 0 {
-		return "0"
+func RandomGameCode() GameCode {
+	var result string
+	for i := 0; i < gameCodeLen; i++ {
+		result += string(alphabet[rand.Intn(int(alphLen))])
 	}
-	num := uint64(gc)
-	result := ""
-	for num > 0 {
-		result = string(base62Chars[num%62]) + result
-		num /= 62
-	}
-	return result
+	return GameCode(result)
 }
 
-// implements fmt.Stringer for GameCode
-func (gc GameCode) String() string {
-	return gc.Base62()
-}
-
-// parses a base62 string into a GameCode.
-func ParseGameCode(str string) (GameCode, error) {
-	var result uint64
-	var base uint64 = 1
-	for i := len(str) - 1; i >= 0; i-- {
-		ch := str[i]
-		var value uint64
-		switch {
-		case ch >= '0' && ch <= '9':
-			value = uint64(ch - '0')
-		case ch >= 'A' && ch <= 'Z':
-			value = uint64(ch - 'A' + 10)
-		case ch >= 'a' && ch <= 'z':
-			value = uint64(ch - 'a' + 36)
-		default:
-			return 0, fmt.Errorf("invalid base62 character: %q", ch)
-		}
-		result += value * base
-		base *= 62
-	}
-	return GameCode(result), nil
+func (code GameCode) String() string {
+	return string(code)
 }
