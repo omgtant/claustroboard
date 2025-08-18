@@ -12,13 +12,16 @@
         <div class="flex flex-col items-center justify-center h-fit">
             <div class="flex flex-col gap-4 w-full">
                 <div class="relative flex flex-col items-stretch w-fit mx-auto gap-4 h-full">
+                    <!-- Goto: Welcome card -->
                     <div class="h-full bg-gray-800 p-4 rounded-lg flex flex-col justify-between">
                         <h1 class="block w-min">Welcome to the Claustroboard!!!</h1>
                     </div>
+                    <!-- Goto: board wrapper -->
                     <div class="board-wrapper">
                         <div class="board-overlay" id="board-overlay">
                             <div id="create-join">
                                 <div class="flex flex-col gap-4 h-full justify-around">
+                                    <!-- Goto: board wrapper (nickname, create-join, singleplayer) -->
                                     <div>
                                         <p class="error" id="nickname-err">&NonBreakingSpace;</p>
                                         <label for="nickname" class="text-xl">Nickname</label>
@@ -48,6 +51,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- Goto: prep-stage (player list, kick, start game) -->
                             <div id="prep-stage" class="hidden flex flex-col gap-2">
                                 <div class="flex items-center gap-2">
                                     <a target="_blank" id="game-link" class="can-copy text-xs"></a>
@@ -81,6 +85,7 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Goto: board game -->
                         <div class="board" id="board">
                         </div>
                     </div>
@@ -88,6 +93,7 @@
                         <h2>The log</h2>
                         <span>...</span>
                     </div>
+                    <!-- Goto: rules accordion -->
                     <div class="rules-accordion">
                         <input type="checkbox" id="rules-accordion-toggle" class="hidden peer/checkbox" />
                         <label for="rules-accordion-toggle" tabindex="1" class="peer/label"><h2>Rules</h2></label>
@@ -129,6 +135,7 @@
         </div>
         <div></div>
     </div>
+    <!-- Goto: config -->
     <template id="tile-configuration">
         <div class="flex flex-col items-center tile-row">
             <div class="flex gap-1 items-center">
