@@ -18,13 +18,12 @@ type BoardTile struct {
 }
 
 func (bt *BoardTile) UnmarshalJSON(data []byte) error {
-    type Alias BoardTile
-    aux := &struct {
-        *Alias
-        Color *int `json:"color,omitempty"`
-    }{
-        Alias: (*Alias)(bt),
-    }
+	aux := &struct {
+		*BoardTile
+		Color *int `json:"color,omitempty"`
+	}{
+		BoardTile: (*BoardTile)(bt),
+	}
 
     if err := json.Unmarshal(data, &aux); err != nil {
         return err
