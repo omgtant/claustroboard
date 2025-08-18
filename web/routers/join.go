@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"omgtant/claustroboard/shared/dtos"
 	"omgtant/claustroboard/shared/models"
-	"omgtant/claustroboard/shared/valueobjects"
 
 	"github.com/coder/websocket/wsjson"
 )
@@ -17,7 +17,7 @@ func StartGameWS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	gameConfig := valueobjects.GameConfig{}
+	gameConfig := dtos.GameConfig{}
 	if r.URL.Query().Has("config") {
 		gameConfigJSON := r.URL.Query().Get("config")
 		if err := json.Unmarshal([]byte(gameConfigJSON), &gameConfig); err != nil {

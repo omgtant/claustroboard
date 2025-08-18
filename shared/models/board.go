@@ -39,7 +39,7 @@ var (
 func (b *Board) Lock()   { b.mu.Lock() }
 func (b *Board) Unlock() { b.mu.Unlock() }
 
-func NewGameBoard(players []string, gameConfig valueobjects.GameConfig) (GameCode, error) {
+func NewGameBoard(players []string, gameConfig dtos.GameConfig) (GameCode, error) {
 	width := uint16(gameConfig.Width)
 	height := uint16(gameConfig.Height)
 
