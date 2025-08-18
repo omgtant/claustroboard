@@ -131,7 +131,7 @@ func GetBoard(code GameCode) (*Board, error) {
 		return board, nil
 	}
 
-	return nil, fmt.Errorf("board with ID %d not found", code)
+	return nil, fmt.Errorf("board with ID %s not found", code)
 }
 
 func StartGame(code GameCode) (*Board, error) {
