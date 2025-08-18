@@ -3,7 +3,6 @@ package models
 import (
 	"errors"
 	"fmt"
-	"maps"
 	"math/rand"
 	"omgtant/claustroboard/shared/dtos"
 	"omgtant/claustroboard/shared/enums"
@@ -20,15 +19,16 @@ const (
 )
 
 type Board struct {
-	mu       sync.Mutex
-	Width    uint16
-	Height   uint16
-	Tiles    [][]Tile
-	Players  []string
-	Turn     uint32
-	Pos      []valueobjects.Point
-	IsActive []bool
-	Phase    BoardPhase
+	mu         sync.Mutex
+	Width      uint16
+	Height     uint16
+	MaxPlayers uint8
+	Tiles      [][]Tile
+	Players    []string
+	Turn       uint32
+	Pos        []valueobjects.Point
+	IsActive   []bool
+	Phase      BoardPhase
 }
 
 var (
@@ -39,11 +39,15 @@ var (
 func (b *Board) Lock()   { b.mu.Lock() }
 func (b *Board) Unlock() { b.mu.Unlock() }
 
-func NewGameBoard(players []string, palette []enums.TileKind, width uint16, height uint16) (GameCode, error) {
+func NewGameBoard(players []string, gameConfig valueobjects.GameConfig) (GameCode, error) {
+	width := uint16(gameConfig.Width)
+	height := uint16(gameConfig.Height)
+
 	board := Board{
-		Width:  width,
-		Height: height,
-		Phase:  PhaseLobby,
+		Width:      width,
+		Height:     height,
+		MaxPlayers: uint8(gameConfig.MaxPlayers),
+		Phase:      PhaseLobby,
 	}
 
 	board.Tiles = make([][]Tile, height)
@@ -79,15 +83,6 @@ func NewGameBoard(players []string, palette []enums.TileKind, width uint16, heig
 	return id, nil
 }
 
-func NewDefaultGameBoard(nickname string) (GameCode, *Board, error) {
-	code, err := NewGameBoard([]string{nickname}, slices.Collect(maps.Keys(enums.TileKindNames)), 6, 6)
-	if err != nil {
-		return "", nil, err
-	}
-	board, _ := GetBoard(code)
-	return code, board, nil
-}
-
 func Join(id GameCode, p string) error {
 	board, err := GetBoard(id)
 	if err != nil {
@@ -95,6 +90,9 @@ func Join(id GameCode, p string) error {
 	}
 	if board.Phase != PhaseLobby {
 		return errors.New("cannot join game that has already started")
+	}
+	if board.MaxPlayers > 0 && len(board.Players) >= int(board.MaxPlayers) {
+		return errors.New("game is full") // TODO specific error types so that backend knows what http code to return
 	}
 
 	board.Players = append(board.Players, p)

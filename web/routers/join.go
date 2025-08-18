@@ -2,8 +2,10 @@ package routers
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"omgtant/claustroboard/shared/models"
+	"omgtant/claustroboard/shared/valueobjects"
 
 	"github.com/coder/websocket/wsjson"
 )
@@ -15,7 +17,16 @@ func StartGameWS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	code, _, err := models.NewDefaultGameBoard(nickname)
+	gameConfig := valueobjects.GameConfig{}
+	if r.URL.Query().Has("config") {
+		gameConfigJSON := r.URL.Query().Get("config")
+		if err := json.Unmarshal([]byte(gameConfigJSON), &gameConfig); err != nil {
+			http.Error(w, "invalid config", http.StatusBadRequest)
+			return
+		}
+	}
+
+	code, err := models.NewGameBoard([]string{nickname}, gameConfig)
 	if err != nil {
 		http.Error(w, "create failed", http.StatusInternalServerError)
 		return
