@@ -14,6 +14,7 @@ const maxPlayerCountInput = document.getElementById('max-player-count') as HTMLI
 const preset4x4 = document.getElementById('preset-4x4') as HTMLDivElement;
 const preset6x6 = document.getElementById('preset-6x6') as HTMLDivElement;
 const preset8x8 = document.getElementById('preset-8x8') as HTMLDivElement;
+const error = document.querySelector('.error-message') as HTMLParagraphElement;
 //#endregion
 
 const tileList: HTMLDivElement = document.querySelector('.tile-list')!;
@@ -72,12 +73,25 @@ export function init() {
             if (!(row instanceof HTMLElement)) return;
             if (!(row.dataset.tileType)) return;
             const tileType = JSON.parse(row.dataset.tileType);
-            return {
-                tile: tileType,
-                count: parseInt(row.dataset.count!) || undefined
-            };
+            try {
+                return {
+                    tile: tileType,
+                    count: parseInt(row.dataset.count!) ?? undefined
+                };
+            } catch (err) {
+                error.textContent = err.message;
+            }
         }) as { tile: TileSetup, count: number | undefined }[];
-        saveConfig(config);
+        try {
+            saveConfig(config);
+            error.textContent = '';
+            saveBtn.classList.add('success-btn');
+            setTimeout(() => {
+                saveBtn.classList.remove('success-btn');
+            }, 2000);
+        } catch (err) {
+            error.textContent = err.message;
+        }
     });
 
     widthInput.addEventListener('input', updatePresetHighlights);
@@ -105,7 +119,11 @@ function readConfig() {
         // @ts-ignore
         const tileConfig: HTMLElement = document.getElementById('tile-configuration')!.content.cloneNode(true).querySelector('.tile-row');
         tileConfig.dataset.tileType = JSON.stringify(tileType.tileSetup);
-        tileConfig.dataset.count = getCountFor(tileType.tileSetup, config)?.toString() || tileType.defaultCount.toString();
+        try {
+            tileConfig.dataset.count = getCountFor(tileType.tileSetup, config)?.toString() ?? '?';
+        } catch (err) {
+            tileConfig.dataset.count = tileType.defaultCount.toString() ?? '0';
+        }
         tileConfig.querySelector('.count')!.textContent = tileConfig.dataset.count;
         tileConfig.querySelector('.tile')!.classList.add(...tileType.classes);
         tileConfig.querySelector('.left-btn')!.addEventListener('click', () => {

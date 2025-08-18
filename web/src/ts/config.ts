@@ -27,17 +27,22 @@ export function loadConfig(): Config {
 
 export function getCountFor(tileSetup: TileSetup, config: Config): number | undefined {
     const deckElement = config.deck.find(element => compareTileSetup(element.tile, tileSetup));
-    return deckElement?.count;
+    if (!deckElement) {
+        throw new Error(`Tile not found in deck: ${JSON.stringify(tileSetup)}`);
+    }
+    return deckElement.count;
 }
 
 export function saveConfig(config: Config) {
     // Check that deck is sufficiently large for the board
     const totalTiles = config.width * config.height;
-    const deckSize = config.deck.reduce((sum, element) => sum + (element.count || Infinity), 0);
+    const deckSize = config.deck.reduce((sum, element) => {
+        console.log(sum, element);
+        return sum + (element.count ?? Infinity);
+    }, 0);
     if (deckSize < totalTiles) {
         throw new Error(`Deck is too small: ${deckSize} < ${totalTiles}`);
     }
-
     localStorage.setItem('gameConfig', JSON.stringify(config));
 }
 
