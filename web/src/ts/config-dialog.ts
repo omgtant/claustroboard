@@ -1,4 +1,4 @@
-import { getCountFor, getDefaultConfig, loadConfig, saveConfig } from "./config";
+import { getCountFor, getDefaultConfig, loadConfig, saveConfig, generateAllTileSetups, getDefaultCountFor } from "./config";
 import { Tile, TileSetup } from "./types/types";
 import { TileColor } from "./types/util";
 
@@ -19,41 +19,34 @@ const preset8x8 = document.getElementById('preset-8x8') as HTMLDivElement;
 const tileList: HTMLDivElement = document.querySelector('.tile-list')!;
 type TileType = {tileSetup: TileSetup, classes: string[], defaultCount: number}
 function _getEveryTileType(): TileType[] {
-    const colors = [0, 1, 2, 3, 4];
-    const energy = [1, 2, 3, 4];
-    const result:TileType[] = [];
-    result.push(...energy.map((energy) => {
-            return colors.map((color) => {
-                return {
-                    tileSetup: {tile_type: 'Layout', color: color, data: {energy: energy}},
-                    classes: [`tile-layout-${energy}`, `tile-${TileColor[color]}`],
-                    defaultCount:  color != 0 ? 1 : 0
-                } as TileType
-            });
-        }).flat());
-    const types = [['Teleport', 'tile-teleport'], ['Zero', 'tile-zero'], ['Wall', 'tile-closed']];
-    result.push(...types.map(([name, className]) => {
-        return colors.map((color) => {
-            let count = 0;
-            if (color != 0 || name === 'Teleport') count = 1;
-            if (color != 0 && name === 'Wall') count = 2;
-            return {
-                tileSetup: {
-                    tile_type: name,
-                    color: color
-                },
-                classes: [className, `tile-${TileColor[color]}`],
-                defaultCount: count
-            } as TileType
-        }) as TileType[];
-    }).flat());
-    result.push({
-        tileSetup: {tile_type: 'Wildcard', color: 0},
-        classes: ['tile-wildcard', 'tile-COLORLESS'],
-        defaultCount: 3
-    });
+    // Build purely from shared game config logic; this function only adds UI classes.
+    return generateAllTileSetups().map(tileSetup => {
+        const classes: string[] = [];
+        switch (tileSetup.tile_type) {
+            case 'Layout':
+                classes.push(`tile-layout-${tileSetup.data?.energy}`);
+                break;
+            case 'Teleport':
+                classes.push('tile-teleport');
+                break;
+            case 'Zero':
+                classes.push('tile-zero');
+                break;
+            case 'Wall':
+                classes.push('tile-closed');
+                break;
+            case 'Wildcard':
+                classes.push('tile-wildcard');
+                break;
+        }
+        classes.push(`tile-${TileColor[tileSetup.color ?? 0]}`);
 
-    return result;
+        return {
+            tileSetup,
+            classes,
+            defaultCount: getDefaultCountFor(tileSetup)
+        } as TileType;
+    });
 }
 
 export function init() {
@@ -75,15 +68,15 @@ export function init() {
         config.width = parseInt(widthInput.value);
         config.height = parseInt(heightInput.value);
         config.maxPlayers = parseInt(maxPlayerCountInput.value);
-        document.querySelectorAll('.tile-row').forEach((row) => {
+        config.deck = Array.from(document.querySelectorAll('.tile-row')).map(row => {
             if (!(row instanceof HTMLElement)) return;
             if (!(row.dataset.tileType)) return;
             const tileType = JSON.parse(row.dataset.tileType);
-            config.deck.push({
+            return {
                 tile: tileType,
-                count: parseInt(row.querySelector('.count')!.textContent!) || 0
-            })
-        });
+                count: parseInt(row.dataset.count!) || undefined
+            };
+        }) as { tile: TileSetup, count: number | undefined }[];
         saveConfig(config);
     });
 
@@ -112,20 +105,24 @@ function readConfig() {
         // @ts-ignore
         const tileConfig: HTMLElement = document.getElementById('tile-configuration')!.content.cloneNode(true).querySelector('.tile-row');
         tileConfig.dataset.tileType = JSON.stringify(tileType.tileSetup);
-        tileConfig.querySelector('.count')!.textContent = getCountFor(tileType.tileSetup, config)?.toString() || tileType.defaultCount.toString();
-
+        tileConfig.dataset.count = getCountFor(tileType.tileSetup, config)?.toString() || tileType.defaultCount.toString();
+        tileConfig.querySelector('.count')!.textContent = tileConfig.dataset.count;
         tileConfig.querySelector('.tile')!.classList.add(...tileType.classes);
         tileConfig.querySelector('.left-btn')!.addEventListener('click', () => {
-            tileType.defaultCount = Math.max(0, tileType.defaultCount - 1);
-            tileConfig.querySelector<HTMLButtonElement>('.left-btn')!.disabled = tileType.defaultCount === 0;
-            tileConfig.querySelector<HTMLButtonElement>('.right-btn')!.disabled = tileType.defaultCount === 99;
-            tileConfig.querySelector('.count')!.textContent = tileType.defaultCount.toString();
+            tileConfig.dataset.count = Math.max(-1, parseInt(tileConfig.dataset.count!) - 1).toString();
+            if (tileConfig.dataset.count === '-1') tileConfig.dataset.count = '?';
+            tileConfig.querySelector<HTMLButtonElement>('.left-btn')!.disabled = tileConfig.dataset.count === '?';
+            tileConfig.querySelector<HTMLButtonElement>('.right-btn')!.disabled = tileConfig.dataset.count === '99';
+            tileConfig.querySelector('.count')!.textContent = tileConfig.dataset.count;
         });
         tileConfig.querySelector('.right-btn')!.addEventListener('click', () => {
-            tileType.defaultCount = Math.min(99, tileType.defaultCount + 1);
-            tileConfig.querySelector<HTMLButtonElement>('.left-btn')!.disabled = tileType.defaultCount === 0;
-            tileConfig.querySelector<HTMLButtonElement>('.right-btn')!.disabled = tileType.defaultCount === 99;
-            tileConfig.querySelector('.count')!.textContent = tileType.defaultCount.toString();
+            if (tileConfig.dataset.count === '?') {
+                tileConfig.dataset.count = '-1';
+            }
+            tileConfig.dataset.count = Math.min(99, parseInt(tileConfig.dataset.count!) + 1).toString();
+            tileConfig.querySelector<HTMLButtonElement>('.left-btn')!.disabled = tileConfig.dataset.count === '?';
+            tileConfig.querySelector<HTMLButtonElement>('.right-btn')!.disabled = tileConfig.dataset.count === '99';
+            tileConfig.querySelector('.count')!.textContent = tileConfig.dataset.count;
         });
         // @ts-ignore
         tileConfig.querySelector('.left-btn')?.firstChild!.classList.add(`tile-${TileColor[tileType.tileSetup.color!]}`);

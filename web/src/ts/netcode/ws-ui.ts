@@ -84,7 +84,7 @@ async function createGame(nickname: string) {
     })
 
     const config = loadConfig();
-    const configStr = !config.userDefined ? '' : `&config=${encodeURIComponent(JSON.stringify(config))}`;
+    const configStr = `&config=${encodeURIComponent(JSON.stringify(config))}`;
 
     netcode.ws.connect(`/api/v1/start-game?nickname=${encodeURIComponent(nickname)}${configStr}`).then(() => {
         netcode.myNickname = nickname;
