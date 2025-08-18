@@ -29,10 +29,10 @@ func (ss TileColor) String() string {
 	return TileColorNames[ss]
 }
 
-func RandomColor() TileColor {
+func RandomColor(withColorless bool) TileColor {
 	colors := slices.Collect(maps.Keys(TileColorNames))
 	colors = slices.DeleteFunc(colors, func(c TileColor) bool {
-		return c == ColorLess
+		return c == UnspecifiedColor || (!withColorless && c == ColorLess)
 	})
 	return colors[rand.Intn(len(colors))]
 }

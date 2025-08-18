@@ -45,13 +45,13 @@ func RandomizeTileKind(tk enums.TileKind, x, y uint16) *Tile {
 	switch tk {
 	case enums.Layout:
 		tile.setEnergy(1 + rand.Intn(4))
-		tile.Color = enums.RandomColor()
+		tile.Color = enums.RandomColor(false)
 	case enums.Teleport:
-		tile.Color = enums.RandomColor()
+		tile.Color = enums.RandomColor(true)
 	case enums.Wall:
 		tile.Open = false
 	case enums.Zero:
-		tile.Color = enums.RandomColor()
+		tile.Color = enums.RandomColor(false)
 	}
 
 	return tile
