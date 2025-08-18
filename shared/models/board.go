@@ -51,12 +51,7 @@ func NewGameBoard(players []string, gameConfig dtos.GameConfig) (GameCode, error
 	}
 
 	board.Tiles = make([][]Tile, height)
-	for y := uint16(0); y < height; y++ {
-		board.Tiles[y] = make([]Tile, width)
-		for x := uint16(0); x < width; x++ {
-			board.Tiles[y][x] = *RandomizeTile(x, y)
-		}
-	}
+	board.fillUsingDeck(&gameConfig.Deck)
 
 	id := RandomGameCode()
 	var attempts int
@@ -435,3 +430,76 @@ func (b *Board) dfs(me Tile, energy int, exact bool, visited map[valueobjects.Po
 	return result
 }
 
+func (b *Board) fillUsingDeck(deck *[]dtos.TileConfig) error {
+	if deck == nil {
+		return fmt.Errorf("deck is nil")
+	}
+
+	boardSize := int(b.Width) * int(b.Height)
+
+	// 1) Gather guaranteed tiles (with defined count), repeat as needed.
+	guaranteed := make([]dtos.TileConfig, 0, boardSize)
+	for _, d := range *deck {
+		if d.Count <= 0 {
+			continue
+		}
+		for i := 0; i < int(d.Count); i++ {
+			guaranteed = append(guaranteed, d)
+		}
+	}
+
+	// 2) If not enough guaranteed, fill remaining with random tiles chosen from "choice" tiles (count == nil).
+	if len(guaranteed) < boardSize {
+		choices := make([]dtos.TileConfig, 0)
+		for _, d := range *deck {
+			if d.Count < 0 {
+				choices = append(choices, d)
+			}
+		}
+		if len(choices) == 0 {
+			return fmt.Errorf("deck underfills the board (%d guaranteed < %d total) and has no random-choice tiles", len(guaranteed), boardSize)
+		}
+
+		missing := boardSize - len(guaranteed)
+		for i := 0; i < missing; i++ {
+			pick := choices[rand.Intn(len(choices))]
+			guaranteed = append(guaranteed, pick)
+		}
+	}
+
+	// 3) If guaranteed exceeds board size, remove random extras.
+	if len(guaranteed) > boardSize {
+		rand.Shuffle(len(guaranteed), func(i, j int) { guaranteed[i], guaranteed[j] = guaranteed[j], guaranteed[i] })
+		guaranteed = guaranteed[:boardSize]
+		*deck = guaranteed
+		return nil
+	}
+
+	// Step 4: Shuffle final deck for unbiased placement later.
+	rand.Shuffle(len(guaranteed), func(i, j int) { guaranteed[i], guaranteed[j] = guaranteed[j], guaranteed[i] })
+
+	*deck = guaranteed
+
+	// Assign the board tiles to this
+	for i := 0; i < int(b.Width); i++ {
+		for j := 0; j < int(b.Height); j++ {
+			tile, err := b.getTileAt(valueobjects.Point{X: uint16(i), Y: uint16(j)})
+			if err != nil || tile == nil {
+				continue
+			}
+			kind, success := enums.TileKindFromString(string(guaranteed[i*int(b.Height)+j].Tile.Name))
+			if !success {
+				return fmt.Errorf("invalid tile kind %s in deck", guaranteed[i*int(b.Height)+j].Tile.Name)
+			}
+			tile = &Tile{
+				Pos:   valueobjects.Point{X: uint16(i), Y: uint16(j)},
+				Color: enums.TileColor(guaranteed[i*int(b.Height)+j].Tile.Color),
+				Open:  true,
+				Kind:  kind,
+				Data:  guaranteed[i*int(b.Height)+j].Tile.Data,
+			}
+			b.Tiles[j][i] = *tile
+		}
+	}
+	return nil
+}

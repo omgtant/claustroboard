@@ -34,6 +34,15 @@ var TileKindNames = map[TileKind]TileKindName{
 	Zero:     kindZero,
 }
 
+func TileKindFromString(s string) (TileKind, bool) {
+	for k, v := range TileKindNames {
+		if v == TileKindName(s) {
+			return k, true
+		}
+	}
+	return 0, false
+}
+
 func (ss TileKind) String() string {
 	return string(TileKindNames[ss])
 }
