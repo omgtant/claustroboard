@@ -1,3 +1,4 @@
+import { loadConfig } from "../config";
 import { startMultiplayer } from "../game/game";
 import { readInitialStateIntoGameState, validateNickname } from "../helpers/helpers";
 import { logMessage } from "../render/render";
@@ -82,7 +83,10 @@ async function createGame(nickname: string) {
         initPrepState();
     })
 
-    netcode.ws.connect(`/api/v1/start-game?nickname=${encodeURIComponent(nickname)}`).then(() => {
+    const config = loadConfig();
+    const configStr = !config.userDefined ? '' : `&config=${encodeURIComponent(JSON.stringify(config))}`;
+
+    netcode.ws.connect(`/api/v1/start-game?nickname=${encodeURIComponent(nickname)}${configStr}`).then(() => {
         netcode.myNickname = nickname;
     });
 }
