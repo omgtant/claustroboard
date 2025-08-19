@@ -1,5 +1,5 @@
 import { getCountFor, getDefaultConfig, loadConfig, saveConfig, generateAllTileSetups, getDefaultCountFor } from "./config";
-import { Tile, TileSetup } from "./types/types";
+import { Config, Tile, TileSetup } from "./types/types";
 import { TileColor } from "./types/util";
 
 //#region DOM Elements
@@ -61,8 +61,7 @@ export function init() {
     });
 
     resetBtn.addEventListener('click', () => {
-        saveConfig(getDefaultConfig());
-        readConfig();
+        readConfig(getDefaultConfig());
     });
 
     allZerosBtn.addEventListener('click', () => {
@@ -118,9 +117,8 @@ export function init() {
     updatePresetHighlights();
 }
 
-function readConfig() {
+function readConfig(config: Config = loadConfig()) {
     tileList.innerHTML = '';
-    const config = loadConfig();
     widthInput.value = config.width.toString();
     heightInput.value = config.height.toString();
     maxPlayerCountInput.value = config.maxPlayers.toString();
