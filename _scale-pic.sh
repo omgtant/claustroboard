@@ -8,8 +8,13 @@
 set -u -o pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
-INPUT="$ROOT_DIR/web/src/assets/img/atlas-src.png"
-OUTPUT="$ROOT_DIR/web/src/assets/img/atlas.png"
+INPUT_PFX="$ROOT_DIR/web/src/static/assets/img"
+INPUT_FILE="${IN:-atlas-src.png}"
+INPUT="$INPUT_PFX/$INPUT_FILE"
+OUTPUT_PFX="$INPUT_PFX"
+OUTPUT_FILE="${OUT:-atlas.png}"
+OUTPUT="$OUTPUT_PFX/$OUTPUT_FILE"
+SCALE_FACTOR="${SCALE:-4}"
 WATCH_DIR="$(dirname "$INPUT")"
 BASENAME="$(basename "$INPUT")"
 
@@ -30,7 +35,7 @@ build_once() {
   fi
   tmp="${OUTPUT}.tmp.$$"
   # Use point filter to preserve pixel-art crispness
-  "${IM_CMD[@]}" "$INPUT" -filter point -resize 400% +repage "$tmp" && mv -f "$tmp" "$OUTPUT"
+  "${IM_CMD[@]}" "$INPUT" -filter point -resize "$((SCALE_FACTOR*100))%" +repage "$tmp" && mv -f "$tmp" "$OUTPUT"
   echo "Wrote $OUTPUT"
 }
 
