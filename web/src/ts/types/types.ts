@@ -78,7 +78,7 @@ export type Netcode = {
 
 export type MoveDelta = {
     turn: number,
-    delta: Pos[]
+    move: Pos
 }
 
 export type DeckElement = {

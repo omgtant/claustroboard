@@ -7,8 +7,8 @@ import (
 )
 
 type Delta struct {
-	Turn  uint32 `json:"turn"`
-	Delta []Move `json:"delta"`
+	Turn  uint32 	`json:"turn"`
+	Move  Move 		`json:"move"`
 }
 
 type moveType uint8

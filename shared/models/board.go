@@ -26,6 +26,7 @@ type Board struct {
 	Tiles      [][]Tile
 	Players    []string
 	Turn       uint32
+	CheckTurn  uint32 // Used in netcode to ensure clients are in sync
 	Pos        []valueobjects.Point
 	IsActive   []bool
 	Phase      BoardPhase
@@ -241,58 +242,52 @@ func (b *Board) GetCurrent() (t *Tile, index int, internalError error) {
 	return t, index, internalError
 }
 
-func (b *Board) Move(moves []dtos.Move) (*dtos.Delta, error) {
+func (b *Board) Move(move dtos.Move) (*dtos.Delta, error) {
 	if b.Phase != PhaseStarted {
 		return nil, errors.New("game has not started")
 	}
-	type MoveData struct {
-		from *Tile
-		to   *Tile
-		move dtos.Move
-	}
-	moveData := []MoveData{}
 
-	for _, m := range moves {
-		t, _, err := b.GetCurrent()
-		if t == nil || err != nil {
-			continue
-		}
-
-		validMoves := t.AvailableMoves(b)
-		destPoint, err := m.GetPoint()
-		if err != nil {
-			return nil, fmt.Errorf("invalid move %v: %v", m, err)
-		}
-		destTile, err := b.getTileAt(destPoint)
-
-		if !slices.Contains(validMoves, destPoint) || err != nil || destTile == nil {
-			return nil, fmt.Errorf("invalid move %v: %v", m, err)
-		}
-
-		moveData = append(moveData, MoveData{to: destTile, from: t, move: m})
-
-		// we don't want to move a different player!
-		if destTile.CanLand() {
-			break
-		}
+	from, _, err := b.GetCurrent()
+	if err != nil {
+		return nil, err
 	}
 
-	delta := dtos.Delta{
-		Turn: b.Turn,
+	to, err := move.GetPoint()
+	if err != nil {
+		return nil, err
 	}
-	for _, m := range moveData {
-		if m.from.applyMove(b, m.to) {
+
+	toTile, err := b.getTileAt(to)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := b.checkMoveValidity(from, toTile); err != nil {
+		return nil, err
+	}
+	
+	b.CheckTurn++
+	if from.applyMove(b, toTile) {
+		b.Turn++
+		// Skip dead players' moves
+		for !b.IsActive[(b.Turn)%uint32(len(b.Pos))] {
 			b.Turn++
-			// Skip dead players' moves
-			for !b.IsActive[(b.Turn)%uint32(len(b.Pos))] {
-				b.Turn++
-			}
-			// Kill the next player now if it can't move
-			checkNextForDeadness(b)
 		}
-		delta.Delta = append(delta.Delta, m.move)
+		// Kill the next player now if it can't move
+		checkNextForDeadness(b)
 	}
-	return &delta, nil
+	return &dtos.Delta{Turn: b.CheckTurn, Move: move}, nil
+}
+
+func (b *Board) checkMoveValidity(from *Tile, to *Tile) error {
+	validMoves := from.AvailableMoves(b)
+	destPoint := to.Pos
+	destTile, err := b.getTileAt(destPoint)
+	if !slices.Contains(validMoves, destPoint) || err != nil || destTile == nil {
+		return fmt.Errorf("invalid move from %v to %v: %v", from.Pos, destPoint, err)
+	}
+
+	return nil
 }
 
 func (b *Board) getPlayerAt(p valueobjects.Point) int {

@@ -86,7 +86,7 @@ func handleMove(c *wsClient, data json.RawMessage) {
 		c.writeError(err)
 		return
 	}
-	delta, err := board.Move(inputDelta.Delta)
+	delta, err := board.Move(inputDelta.Move)
 
 	if err != nil {
 		c.writeError(err)

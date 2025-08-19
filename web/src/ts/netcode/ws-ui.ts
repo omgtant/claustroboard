@@ -179,7 +179,7 @@ let turnNumber = 0;
 const afterMyMove = async (pos: Pos) => {
     console.log('After my move:', pos);
     return new Promise<boolean>((resolve) => {
-        netcode.ws.send('my-move', {turn: turnNumber, delta: [pos]});
+        netcode.ws.send('my-move', {turn: turnNumber, move: pos});
         const onError = () => {
             netcode.ws.off('error', onError);
             resolve(false);
@@ -199,9 +199,7 @@ function start(data: InitialState) {
     
     netcode.ws.on('they-moved', (moveDelta: MoveDelta) => {
         console.log('They moved:', moveDelta);
-        moveDelta.delta.forEach((pos) => {
-            gameHandlers.otherMove(pos);
-        });
+        gameHandlers.otherMove(moveDelta.move);
         turnNumber = moveDelta.turn+1;
     });
 }
