@@ -74,20 +74,50 @@ func (t1 Tile) CopyFor(p valueobjects.Point) (t2 Tile) {
 	return
 }
 
-func (t Tile) CanLand() bool {
-	return t.Kind == enums.Wildcard || t.Kind == enums.Layout || t.Kind == enums.Zero
+func (t Tile) CanLand(b *Board, p int) bool {
+	if !t.Open || b.getPlayerAt(t.Pos) != -1 {
+		return false
+	}
+	switch t.Kind {
+	case enums.Wildcard, enums.Layout, enums.Zero:
+		return true
+	case enums.Wall:
+		return false
+	case enums.Teleport:
+		hasDestinations := false
+		for _, row := range b.Tiles {
+			for _, tile := range row {
+				if tile.Kind != enums.Teleport && tile.CanLand(b, p) && (t.Color == enums.ColorLess || tile.Color == t.Color) {
+					hasDestinations = true
+					break
+				}
+			}
+		}
+		playerOnTeleport := false
+		tile, err := b.getTileAt(b.Pos[p])
+		if err != nil {
+			return false
+		}
+		if tile.Kind == enums.Teleport {
+			playerOnTeleport = true
+		}
+
+		return hasDestinations && !playerOnTeleport
+	default:
+		return false
+	}
 }
 
 func (t Tile) CanStart() bool {
 	return t.Kind == enums.Wildcard || t.Kind == enums.Layout
 }
 
-func (from Tile) AvailableMoves(b *Board) (result []valueobjects.Point) {
+func (from Tile) AvailableMoves(b *Board, p int) (result []valueobjects.Point) {
 	switch from.Kind {
 	case enums.Layout:
-		return b.dfs(from, int(from.getEnergy()), true, make(map[valueobjects.Point]bool))
+		return b.dfs(from, p, int(from.getEnergy()), true, make(map[valueobjects.Point]bool))
 	case enums.Wildcard:
-		return b.dfs(from, 4, false, make(map[valueobjects.Point]bool))
+		return b.dfs(from, p, 4, false, make(map[valueobjects.Point]bool))
 	case enums.Teleport:
 		for _, row := range b.Tiles {
 			for _, tile := range row {
@@ -114,7 +144,7 @@ func (from Tile) AvailableMoves(b *Board) (result []valueobjects.Point) {
 func (from *Tile) applyMove(b *Board, dest *Tile) (land bool) {
 	from.Open = false
 
-	player := int(b.Turn) % len(b.Pos)
+	player := b.CurPlayer()
 	b.Pos[player] = dest.Pos
 
 	fmt.Printf("Turn %d: Player moved from %s (%s) to %s (%s)\n",
@@ -122,7 +152,7 @@ func (from *Tile) applyMove(b *Board, dest *Tile) (land bool) {
 		from.Pos.String(), from.Kind.String(),
 		dest.Pos.String(), dest.Kind.String())
 
-	if dest.CanLand() {
+	if dest.Kind == enums.Wildcard || dest.Kind == enums.Layout || dest.Kind == enums.Zero {
 		land = true
 		println("(and landed)")
 	}

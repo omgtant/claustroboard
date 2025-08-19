@@ -242,6 +242,10 @@ func (b *Board) GetCurrent() (t *Tile, index int, internalError error) {
 	return t, index, internalError
 }
 
+func (b *Board) CurPlayer() int {
+	return int(b.Turn) % len(b.Pos);
+}
+
 func (b *Board) Move(move dtos.Move) (*dtos.Delta, error) {
 	if b.Phase != PhaseStarted {
 		return nil, errors.New("game has not started")
@@ -280,7 +284,7 @@ func (b *Board) Move(move dtos.Move) (*dtos.Delta, error) {
 }
 
 func (b *Board) checkMoveValidity(from *Tile, to *Tile) error {
-	validMoves := from.AvailableMoves(b)
+	validMoves := from.AvailableMoves(b, b.CurPlayer())
 	destPoint := to.Pos
 	destTile, err := b.getTileAt(destPoint)
 	if !slices.Contains(validMoves, destPoint) || err != nil || destTile == nil {
@@ -300,12 +304,12 @@ func (b *Board) getPlayerAt(p valueobjects.Point) int {
 }
 
 func checkNextForDeadness(b *Board) {
-	nextPlayerPos := b.Pos[(b.Turn)%uint32(len(b.Pos))]
+	nextPlayerPos := b.Pos[b.CurPlayer()]
 	nextPlayerTile, err := b.getTileAt(nextPlayerPos)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to get tile at %s: %v", nextPlayerPos.String(), err))
 	}
-	moves := nextPlayerTile.AvailableMoves(b)
+	moves := nextPlayerTile.AvailableMoves(b, b.CurPlayer())
 	length := len(moves)
 	if length == 0 {
 		b.IsActive[(b.Turn)%uint32(len(b.Pos))] = false
@@ -383,7 +387,7 @@ func (b *Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, 
 	return nil, false
 }
 
-func (b *Board) dfs(me Tile, energy int, exact bool, visited map[valueobjects.Point]bool) (result []valueobjects.Point) {
+func (b *Board) dfs(me Tile, player int, energy int, exact bool, visited map[valueobjects.Point]bool) (result []valueobjects.Point) {
 	if energy == 0 {
 		return []valueobjects.Point{me.Pos}
 	}
@@ -403,11 +407,11 @@ func (b *Board) dfs(me Tile, energy int, exact bool, visited map[valueobjects.Po
 		}
 
 		tile, err := b.getTileAt(*him)
-		if err != nil || tile == nil || !tile.Open || b.getPlayerAt(*him) != -1 {
+		if err != nil || !tile.CanLand(b, player) {
 			continue
 		}
 
-		for _, p := range b.dfs(*tile, energy-1, exact, visited) {
+		for _, p := range b.dfs(*tile, player, energy-1, exact, visited) {
 			if !slices.Contains(result, p) {
 				result = append(result, p)
 			}

@@ -101,7 +101,7 @@ Internally has access to the game state, possibly via injection.
 **Implementations**
 - available moves - panic
 - on player landing - let the player choose any card such that `(my.color == 0 || my.color == candidate.color) && can land on candidate`. teleport the player to that tile, and trigger the `on player landing` of that tile
-- can land on me? - not if the player is standing on another teleport tile rn
+- can land on me? - not if (there are no non-occupied non-teleports of this color around or the player is standing on another teleport tile rn)
 - can start on me? - false
 
 ## Wall tile (inherits Abstract tile)

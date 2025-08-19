@@ -10,7 +10,7 @@ type TileColor int
 
 const (
 	UnspecifiedColor TileColor = -1
-	ColorLess        TileColor = iota
+	ColorLess        TileColor = iota - 1
 	Red
 	Yellow
 	Green
