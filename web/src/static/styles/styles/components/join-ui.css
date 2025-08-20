@@ -1,4 +1,5 @@
 .join-ui {
+    @apply flex flex-col gap-2 py-2 bg-gray-700;
     table {
         @apply w-full;
     }
@@ -7,5 +8,8 @@
     }
     th,td {
         @apply p-1;
+    }
+    input {
+        @apply flex-1;
     }
 }

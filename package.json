@@ -17,7 +17,7 @@
   },
   "scripts": {
     "build:postcss": "postcss ./web/src/static/styles/in.css -o ./web/out/static/stylesheet.css --verbose",
-    "watch:postcss": "npx watch 'npm run build:postcss' web/src/static/styles",
+    "watch:postcss": "npx watch 'npm run build:postcss' web/src",
     "build:ts": "esbuild $(find web/src/ts -name '*.ts' -type f) --bundle --outdir=web/out/static/js --sourcemap --format=esm --splitting --minify",
     "watch:ts": "esbuild $(find web/src/ts -name '*.ts' -type f) --bundle --outdir=web/out/static/js --sourcemap --format=esm --splitting --watch",
     "build:html": "cpx \"web/src/templates/**/*.html\" web/out",

@@ -1,11 +1,10 @@
 .tabs {
     @apply flex;
     > label {
-        @apply flex-1 cursor-pointer block bg-gray-700 p-2 transition-colors;
-        @apply border-b-2 border-gray-500;
+        @apply flex-1 cursor-pointer block bg-gray-800 p-2 transition-colors;
         @apply hover:bg-gray-600;
         &:has(input:checked) {
-            @apply bg-gray-800;
+            @apply bg-gray-700;
         }
         > input {
             @apply hidden;
@@ -14,6 +13,7 @@
 }
 
 .tabs-control {
+    @apply w-full;
     &:not(:has(input[value=join]:checked)) .show-if-join {
         @apply hidden;
     }

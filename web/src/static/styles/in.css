@@ -1,7 +1,8 @@
 @import "tailwindcss";
 @import-glob './styles/**/*.css';
 
-@source not "*";
+@custom-variant lighter (&:where(.lighter, .lighter *));
+
 @source "web/src/**/*";
 
 :root {

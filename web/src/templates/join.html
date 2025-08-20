@@ -1,20 +1,35 @@
-<div class="join-ui">
-    <table>
-    	<thead>
-    		<tr>
-    			<th>Host</th>
-    			<th>Players</th>
-    			<th>Board</th>
-    			<th></th>
-    		</tr>
-    	</thead>
-    	<tbody>
-            <tr>
-                <td>omga</td>
-                <td>2/4</td>
-                <td>4x4</td>
-                <td><button>Join</button></td>
-            </tr>
-        </tbody>
-    </table>
+<div class="join-ui lighter">
+	<div class="flex flex-col lg:flex-row gap-1 w-full px-1">
+		<input
+			type="text"
+			name="game-code"
+			id="game-code"
+			placeholder="abcd1234"
+			size="1"
+			title="Game code"
+		/>
+		<button id="join">Join</button>
+	</div>
+	<hr />
+	<table>
+		<caption>
+			Public games
+		</caption>
+		<thead>
+			<tr>
+				<th>Host</th>
+				<th>Players</th>
+				<th>Board</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>omga</td>
+				<td>2/4</td>
+				<td>4x4</td>
+				<td><button>Join</button></td>
+			</tr>
+		</tbody>
+	</table>
 </div>

@@ -15,10 +15,13 @@
     }
     input {
         @apply p-2 bg-gray-700 rounded-lg block min-w-24;
+        @apply lighter:bg-gray-600;
     }
 
     button {
-        @apply p-2 bg-gray-700 hover:bg-gray-600 transition-colors duration-100 rounded-lg block cursor-pointer;
+        @apply p-2 bg-gray-700 hover:bg-gray-600 block;
+        @apply transition-colors duration-100 rounded-lg cursor-pointer;
+        @apply lighter:bg-gray-600 hover:bg-gray-500;
     }
 
     hr {
