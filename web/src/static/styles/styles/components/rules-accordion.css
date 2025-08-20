@@ -1,0 +1,17 @@
+.rules-accordion {
+    @apply w-full lg:w-auto lg:absolute right-full mr-4 bg-gray-800 overflow-hidden;
+    @apply p-2 rounded-lg z-40 h-full flex flex-col lg:flex-row-reverse;
+    > .rules-label {
+        @apply cursor-pointer -m-2 z-50 p-2;
+        h2 {
+            @apply lg:wrap-anywhere lg:w-min block h-full lg:uppercase;
+        }
+    }
+    .accordion {
+        @apply w-full;
+        @apply lg:peer-checked/checkbox:w-64 lg:peer-focus-visible/label:w-64 lg:w-0 lg:overflow-hidden lg:transition-[width] lg:duration-100;
+    }
+    .accordion-content {
+        @apply w-full lg:w-64 p-1;
+    }
+}

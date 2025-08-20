@@ -1,0 +1,59 @@
+/* Tile focusing */
+.board:has(.tile-valid, .tile-selected)
+	.tile-parent:not(:has(.tile-valid)):not(:has(.tile-selected)) {
+	@apply brightness-50 saturate-[77%] opacity-50;
+}
+.tile-parent:has(.tile-selected) {
+	@apply brightness-125 -translate-y-1;
+}
+.tile-parent:has(.tile-valid) {
+	@apply brightness-105;
+	> .tile-valid::after {
+		@apply drop-shadow-lg drop-shadow-blue-200;
+	}
+}
+/* Tile focusing end */
+
+.tile-grandparent {
+	@apply relative;
+	.tile-parent {
+		@apply transition-[filter,translate] duration-100;
+	}
+}
+.tile.tile-closed,
+.not-hover-tile-closed:not(:hover) .tile,
+.hover-tile-closed:hover .tile {
+	@apply rotate-x-180 opacity-50;
+
+	&::before {
+		@apply rotate-x-0;
+	}
+}
+
+.tile {
+	background-image: var(--atlas-url);
+	width: 68px;
+	height: 68px;
+	@apply transform-3d transition-[translate,opacity,rotate,transform] duration-500 ease-in-out relative perspective-distant;
+
+	&::before {
+		content: "";
+		background-image: var(--atlas-url);
+		background-position: -184px 0px;
+		width: 68px;
+		height: 68px;
+		@apply absolute block rotate-x-180 -translate-z-1 delay-[170ms];
+		backface-visibility: hidden;
+	}
+	&::after {
+		@apply transition-[filter] duration-100;
+	}
+
+	&.tile-type-1 {
+		background-position: -40px 0px;
+	}
+
+	&.tile-type-2 {
+		background-position: -112px 0px;
+	}
+}

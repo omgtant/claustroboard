@@ -1,0 +1,17 @@
+@layer components {
+	.board-wrapper {
+		@apply relative min-w-xs min-h-48 bg-gray-800 p-2 rounded-lg;
+	}
+
+	.board-overlay {
+		@apply z-40 flex flex-col gap-2 h-full;
+		.error {
+			@apply block text-red-500;
+		}
+	}
+
+	.board {
+		@apply relative grid grid-cols-6 w-fit p-2 *:-ml-1 *:-mt-1;
+		@apply max-sm:scale-90 max-sm:-mx-8 max-sm:-my-2;
+	}
+}

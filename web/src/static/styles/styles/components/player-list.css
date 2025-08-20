@@ -1,0 +1,9 @@
+.player-list {
+    @apply flex flex-col gap-2;
+    .player-entry {
+        @apply flex items-center justify-between gap-2 text-lg;
+        button {
+            @apply p-1;
+        }
+    }
+}

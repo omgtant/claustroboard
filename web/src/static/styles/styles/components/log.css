@@ -1,0 +1,17 @@
+@layer components {
+    
+    .log-entry {
+        @apply border-b border-gray-600 p-2;
+        &:last-child {
+            @apply border-b-0;
+        }
+    }
+
+    .log {
+        @apply block w-full text-left overflow-y-scroll bg-gray-800 p-2 rounded-lg;
+        @apply lg:absolute lg:left-full lg:ml-4 lg:w-64 lg:h-full;
+        span {
+            @apply block w-full bg-transparent hover:bg-white/10 transition-colors duration-75;
+        }
+    }
+}

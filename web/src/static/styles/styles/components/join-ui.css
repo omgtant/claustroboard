@@ -1,0 +1,11 @@
+.join-ui {
+    table {
+        @apply w-full;
+    }
+    thead {
+        @apply bg-gray-600 text-left;
+    }
+    th,td {
+        @apply p-1;
+    }
+}

@@ -1,0 +1,65 @@
+.tile {
+	&.tile-layout-1::after {
+		content: "";
+		display: block;
+		background-image: var(--atlas-url);
+		background-position: -40px -72px;
+		width: 68px;
+		height: 68px;
+	}
+
+	&.tile-layout-2::after {
+		content: "";
+		display: block;
+		background-image: var(--atlas-url);
+		background-position: -112px -72px;
+		width: 68px;
+		height: 68px;
+	}
+
+	&.tile-layout-3::after {
+		content: "";
+		display: block;
+		background-image: var(--atlas-url);
+		background-position: -184px -72px;
+		width: 68px;
+		height: 68px;
+	}
+
+	&.tile-layout-4::after {
+		content: "";
+		display: block;
+		background-image: var(--atlas-url);
+		background-position: -256px -72px;
+		width: 68px;
+		height: 68px;
+	}
+
+	&.tile-wildcard::after {
+		content: "";
+		display: block;
+		background-image: var(--atlas-url);
+		background-position: -40px -144px;
+		width: 68px;
+		height: 68px;
+	}
+	&.tile-teleport::after {
+		content: "";
+		display: block;
+		background-image: var(--atlas-url);
+		background-position: -112px -144px;
+		width: 68px;
+		height: 68px;
+	}
+	&.tile-zero::after {
+		content: "";
+		display: block;
+		background-image: var(--atlas-url);
+		background-position: -184px -144px;
+		width: 68px;
+		height: 68px;
+	}
+
+	&.tile-wall::after {
+	}
+}

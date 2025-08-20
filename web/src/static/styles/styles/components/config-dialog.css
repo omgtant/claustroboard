@@ -1,0 +1,31 @@
+.config-dialog {
+    @apply relative m-auto bg-gray-800 rounded-xl min-w-40 min-h-40 px-4 py-8;
+    .close-config-btn {
+        @apply absolute top-2 right-2 p-1 bg-gray-700 hover:bg-gray-600 transition-colors duration-100 rounded-full;
+    }
+    .tile-list {
+        @apply grid grid-cols-6 gap-3 gap-x-2;
+    }
+    .config-width-height {
+        @apply grid grid-cols-2 w-full gap-2;
+    }
+    .presets {
+        @apply flex justify-between;
+        > div {
+            @apply bg-gray-700 rounded-lg grid gap-0.5 p-2 w-24 h-24 transition-[background-color,translate,transform];
+            @apply hover:bg-gray-600 hover:*:bg-gray-500;
+            &.highlight {
+                @apply -translate-y-1 bg-gray-600 *:bg-gray-500;
+            }
+            > div {
+                @apply bg-gray-600 rounded-sm transition-colors;
+            }
+        }
+    }
+    input[type="number"] {
+        @apply w-full;
+    }
+    h3 {
+        @apply text-center text-xl;
+    }
+}

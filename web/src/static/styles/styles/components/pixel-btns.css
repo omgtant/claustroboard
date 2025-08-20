@@ -1,0 +1,24 @@
+.right-btn, .left-btn {
+    width: 32px;
+    height: 52px;
+    @apply relative bg-transparent hover:bg-transparent p-0;
+    @apply outline-none;
+    > :first-child {
+        @apply absolute top-1 left-0;
+        background-image: var(--atlas-url);
+        background-position: 0px -80px;
+        width: 32px;
+        height: 48px;
+    }
+    &:disabled > :first-child{
+        background-position: 0px -128px;
+    }
+    &.left-btn {
+        @apply -scale-x-100;
+    }
+    &:focus-visible {
+        content: '';
+        background-image: var(--atlas-url);
+        background-position: 0px -176px;
+    }
+}

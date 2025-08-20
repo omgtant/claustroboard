@@ -1,0 +1,34 @@
+.player-parent {
+	@apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30;
+	.player {
+		@apply drop-shadow-xl drop-shadow-black;
+		background-image: var(--atlas-url);
+		width: 28px;
+		height: 28px;
+		&.player-1 {
+			background-position: 0px 0px;
+		}
+		&.player-2 {
+			background-position: 0px -28px;
+		}
+		&.player-3 {
+			background-position: 0px 0px;
+			filter: hue-rotate(120deg) brightness(110%);
+		}
+		&.player-4 {
+			background-position: 0px -28px;
+			filter: hue-rotate(180deg) brightness(110%);
+		}
+	}
+
+	&.player-lost {
+		@apply saturate-0;
+	}
+
+	&.player-won {
+		@apply animate-bounce;
+	}
+	&.player-highlight {
+		@apply animate-bounce;
+	}
+}

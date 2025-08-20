@@ -1,0 +1,23 @@
+.tile-RED {
+	filter: hue-rotate(-260deg) brightness(90%) saturate(120%);
+}
+
+.tile-YELLOW {
+	filter: brightness(110%) hue-rotate(-200deg) saturate(110%);
+}
+
+.tile-GREEN {
+	filter: brightness(110%) saturate(70%) hue-rotate(-120deg);
+}
+
+.tile-BLUE {
+	filter: hue-rotate(-20deg) brightness(90%) saturate(200%);
+}
+
+.tile-COLORLESS {
+	filter: saturate(50%) brightness(100%);
+}
+
+.tile-UNSPECIFIED {
+	animation: rainbowHue 5s linear infinite;
+}

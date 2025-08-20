@@ -1,8 +1,14 @@
 {
   "dependencies": {
     "@tailwindcss/cli": "^4.1.11",
-    "tailwindcss": "^4.1.11",
-    "typescript": "^5.9.2"
+    "@tailwindcss/postcss": "^4.1.12",
+    "postcss": "^8.5.6",
+    "postcss-cli": "^11.0.1",
+    "postcss-import": "^16.1.1",
+    "postcss-import-ext-glob": "^2.1.1",
+    "tailwindcss": "^4.1.12",
+    "typescript": "^5.9.2",
+    "watch": "^1.0.2"
   },
   "devDependencies": {
     "concurrently": "^9.2.0",
@@ -10,16 +16,16 @@
     "esbuild": "^0.25.9"
   },
   "scripts": {
-    "build:css": "npx @tailwindcss/cli -i ./web/src/static/styles/in.css -o ./web/out/static/stylesheet.css --minify",
-    "watch:css": "npx @tailwindcss/cli -i ./web/src/static/styles/in.css -o ./web/out/static/stylesheet.css --watch --minify",
+    "build:postcss": "postcss ./web/src/static/styles/in.css -o ./web/out/static/stylesheet.css --verbose",
+    "watch:postcss": "npx watch 'npm run build:postcss' web/src/static/styles",
     "build:ts": "esbuild $(find web/src/ts -name '*.ts' -type f) --bundle --outdir=web/out/static/js --sourcemap --format=esm --splitting --minify",
     "watch:ts": "esbuild $(find web/src/ts -name '*.ts' -type f) --bundle --outdir=web/out/static/js --sourcemap --format=esm --splitting --watch",
     "build:html": "cpx \"web/src/templates/**/*.html\" web/out",
     "watch:html": "cpx \"web/src/templates/**/*.html\" web/out --watch --verbose",
     "build:assets": "cpx \"web/src/static/assets/**/*\" web/out/static/assets",
     "watch:assets": "cpx \"web/src/static/assets/**/*\" web/out/static/assets --watch --verbose",
-    "build": "npm run build:html && npm run build:ts && npm run build:css && npm run build:assets",
-    "dev": "concurrently -k -n html,ts,css,assets \"npm:watch:html\" \"npm:watch:ts\" \"npm:watch:css\" \"npm:watch:assets\"",
+    "build": "npm run build:html && npm run build:ts && npm run build:postcss && npm run build:assets",
+    "dev": "concurrently -k -n html,ts,css,assets \"npm:watch:html\" \"npm:watch:ts\" \"npm:watch:postcss\" \"npm:watch:assets\"",
     "serve": "go run .",
     "godev": "wgo run -file=out/ -file=src/ .",
     "dev:all": "concurrently -k -n assets,server \"npm:dev\" \"npm:godev\""
