@@ -82,6 +82,34 @@
         }
     }
 
+    .tabs {
+        @apply flex;
+        > label {
+            @apply flex-1 cursor-pointer block bg-gray-700 p-2 transition-colors;
+            @apply border-b-2 border-gray-500;
+            @apply hover:bg-gray-600;
+            &:has(input:checked) {
+                @apply bg-gray-800;
+            }
+            > input {
+                @apply hidden;
+            }
+        }
+    }
+
+    .tabs-control {
+        &:not(:has(input[value=join]:checked)) .show-if-join {
+            @apply hidden;
+        }
+        &:not(:has(input[value=create]:checked)) .show-if-create {
+            @apply hidden;
+        }
+        &:not(:has(input[value=offline]:checked)) .show-if-offline {
+            @apply hidden;
+        }
+    }
+
+
     .rules-accordion {
         @apply w-full lg:w-auto lg:absolute right-full mr-4 bg-gray-800 overflow-hidden;
         @apply p-2 rounded-lg z-40 h-full flex flex-col lg:flex-row-reverse;
