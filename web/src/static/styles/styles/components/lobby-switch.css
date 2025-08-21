@@ -1,0 +1,55 @@
+.lobby-switch {
+    @apply w-fit;
+}
+
+.lobby-switch .switch {
+    @apply flex gap-2 bg-gray-700 w-fit rounded-full relative h-10;
+}
+
+.lobby-switch .switch > label {
+    @apply rounded-full size-10 p-2 z-20 transition-[filter] duration-200 ease-in-out;
+
+    &:not(:has(:checked)) {
+        @apply invert-100;
+    }
+}
+
+.lobby-switch input {
+    @apply hidden;
+}
+.lobby-switch p {
+    @apply hidden text-center;
+}
+
+.lobby-switch .switch::after {
+    content: '';
+    @apply bg-white size-10 rounded-full;
+    @apply absolute top-0 z-10 transition-[left,transform,translate] duration-200 ease-in-out;
+}
+
+.lobby-switch {
+    &:has(label:nth-child(1) :checked), &:not(:has(label :checked)) {
+        .switch::after {
+            @apply left-0;
+        }
+        p:nth-child(1) {
+            @apply block;
+        }
+    }
+    &:has(label:nth-child(2) :checked) {
+        .switch::after {
+            @apply left-1/2 -translate-x-1/2;
+        }
+        p:nth-child(2) {
+            @apply block;
+        }
+    }
+    &:has(label:nth-child(3) :checked) {
+        .switch::after {
+            @apply left-full -translate-x-full;
+        }
+        p:nth-child(3) {
+            @apply block;
+        }
+    }
+}
