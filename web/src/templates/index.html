@@ -31,13 +31,27 @@
                     </div>
                     <!-- Goto: rules accordion -->
                     {{ template "rules.html" }}
+                    <!-- Goto: feedback prompt -->
+                    <div class="bg-gray-800 p-4 rounded-lg flex flex-col gap-1">
+                        <p>
+                            Claustroboard is a rather new project.
+                            <br />
+                            We enjoy making it better.
+                        </p>
+                        <div class="flex gap-1 w-full justify-stretch *:flex-1">
+                            <button id="show-feedback-dialog">Leave feedback</button>
+                            <a href="https://github.com/omgtant/claustroboard" target="_blank" class="block"><button class="w-full">Look at source</button></a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div></div>
     </div>
-    <!-- Goto: config -->
+    <!-- Goto: config dialog -->
     {{ template "config-dialog.html" }}
+    <!-- Goto: feedback dialog -->
+    {{ template "feedback-dialog.html" }}
     <footer>
         <a href="https://github.com/omgtant/claustroboard" class="block h-full">
             <img src="/static/assets/img/github.svg" alt="GitHub" class="h-full lg:size-12" />

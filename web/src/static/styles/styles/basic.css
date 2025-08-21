@@ -1,57 +1,65 @@
 @layer base {
-    *, pre {
-        font-family: 'Comic Mono', monospace;
-        @apply text-white;
-    }
-    body {
-        image-rendering: pixelated;
-        @apply bg-gray-900 overflow-x-hidden;
-    }
-    h1 {
-        @apply text-3xl text-slate-100;
-    }
-    h2 {
-        @apply text-2xl;
-    }
-    input {
-        @apply p-2 bg-gray-700 rounded-lg block min-w-24;
-        @apply lighter:bg-gray-600;
-    }
+	*,
+	pre {
+		font-family: "Comic Mono", monospace;
+		@apply text-white;
+	}
+	body {
+		image-rendering: pixelated;
+		@apply bg-gray-900 overflow-x-hidden;
+	}
+	h1 {
+		@apply text-3xl text-slate-100;
+	}
+	h2 {
+		@apply text-2xl;
+	}
+	input, textarea {
+		@apply p-2 bg-gray-700 rounded-lg block min-w-24;
+		@apply lighter:bg-gray-600;
+	}
 
-    button {
-        @apply p-2 bg-gray-700 hover:bg-gray-600 block;
-        @apply transition-colors duration-100 rounded-lg cursor-pointer;
-        @apply lighter:bg-gray-600 hover:bg-gray-500;
-    }
+	button {
+		@apply p-2 bg-gray-700 hover:bg-gray-600 block;
+		@apply transition-colors duration-100 rounded-lg cursor-pointer;
+		@apply lighter:bg-gray-600 hover:bg-gray-500;
+	}
 
-    hr {
-        @apply border-t border-gray-600;
-    }
-    .vr {
-        @apply border-l border-gray-600;
-    }
+	hr {
+		@apply border-t border-gray-600;
+	}
+	.vr {
+		@apply border-l border-gray-600;
+	}
 
-    footer {
-        @apply lg:fixed lg:bottom-0 lg:left-0 lg:right-0;
-        @apply flex h-20 max-lg:bg-gray-800 flex-col items-center justify-end p-4;
-        @apply lg:flex-row lg:bottom-0 lg:p-2 lg:w-full lg:justify-start lg:gap-8 lg:h-auto;
-    }
+	dialog {
+		@apply relative m-auto bg-gray-800 rounded-xl min-w-40 min-h-40 px-4 py-8;
+		.close-dialog-btn {
+			@apply absolute top-2 right-2 p-1 bg-gray-700 hover:bg-gray-600 transition-colors duration-100 rounded-full;
+		}
+	}
+
+	footer {
+		@apply lg:fixed lg:bottom-0 lg:left-0 lg:right-0;
+		@apply flex h-20 max-lg:bg-gray-800 flex-col items-center justify-end p-4;
+		@apply lg:flex-row lg:bottom-0 lg:p-2 lg:w-full lg:justify-start lg:gap-8 lg:h-auto;
+	}
 }
 
 @layer components {
-    .primary-btn {
-        @apply bg-blue-500 hover:bg-blue-600;
-    }
-    .danger-btn {
-        @apply bg-red-100 hover:bg-red-200 text-red-500;
-    }
-    .success-btn {
-        @apply bg-green-300 hover:bg-green-200 text-green-600;
-    }
-    .can-copy {
-        @apply cursor-pointer text-slate-500 hover:text-slate-600 transition-colors duration-100;
-        &:hover {
-            @apply underline;
-        }
-    }
+	.primary-btn {
+		@apply bg-blue-500 hover:bg-blue-600;
+	}
+	.danger-btn {
+		@apply bg-red-100 hover:bg-red-200 text-red-500;
+	}
+	.success-btn {
+		@apply bg-green-300 hover:bg-green-200 text-green-600;
+	}
+	.can-copy {
+		@apply cursor-pointer text-slate-500 hover:text-slate-600 transition-colors duration-100;
+		&:hover {
+			@apply underline;
+		}
+	}
 }
