@@ -27,7 +27,7 @@ export function validateConfig(config: Config): void {
 	if (!Array.isArray(config.deck)) {
 		throw new Error("Deck must be an array.");
 	}
-	// Add range-specific validations
+	// Range-specific validations
 	validateMaxPlayersRange(config);
 	validateBoardSizeLimits(config);
 	for (const element of config.deck) {
@@ -114,7 +114,7 @@ export function compareTileSetup(a: TileSetup, b: TileSetup): boolean {
 }
 
 /**
- * Returns a list of all tile setups available in the game (no UI concerns, no counts).
+ * Generates all possible tile setups
  */
 export function generateAllTileSetups(): TileSetup[] {
 	const colors = [0, 1, 2, 3, 4, undefined];
