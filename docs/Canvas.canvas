@@ -1,21 +1,21 @@
 {
 	"nodes":[
-		{"id":"ef059515b4f10a10","x":195,"y":-200,"width":250,"height":60,"type":"text","text":"- [ ] Player -> struct refactor"},
-		{"id":"9bd0978d04a7f4dd","x":525,"y":-420,"width":160,"height":60,"type":"text","text":"Todo dependencies"},
+		{"id":"ef059515b4f10a10","type":"text","text":"- [ ] Player -> struct refactor","x":195,"y":-200,"width":250,"height":60,"color":"5"},
+		{"id":"9bd0978d04a7f4dd","type":"text","text":"Todo dependencies","x":525,"y":-420,"width":160,"height":60},
 		{"id":"3ceb4b84ab40c23f","type":"text","text":"Board phase flow","x":-340,"y":120,"width":180,"height":60},
 		{"id":"56c67ce852143d95","type":"text","text":"Lobby","x":-340,"y":220,"width":180,"height":60},
 		{"id":"3d130c9452239bab","type":"text","text":"[[Game Logic | Game]]","x":-340,"y":320,"width":180,"height":60},
 		{"id":"a987b0990ae832a0","type":"text","text":"Rematch Vote","x":-340,"y":420,"width":180,"height":60},
-		{"id":"d860cf991b900b8d","x":195,"y":-55,"width":250,"height":60,"type":"text","text":"- [ ] Rematch functionality"},
-		{"id":"c19c511d697e144d","x":1080,"y":-200,"width":250,"height":350,"type":"text","text":"- [ ] Board lobby privacy levels\n\t- Public: displayed in the table, anyone can join\n\t- Unlisted: anyone can join using the code\n\t- Private: no one can join\n- [ ] A tech spec file describing these"},
-		{"id":"4e0340ebcab0340c","x":355,"y":87,"width":250,"height":60,"color":"5","type":"text","text":"- [x] Better error display for users"},
-		{"id":"0fd30ff674797c43","x":1140,"y":-522,"width":250,"height":132,"color":"5","type":"text","text":"- [ ] Fix bug with a nonexistent lobby join when spamming join button"},
-		{"id":"67363f38744c7513","x":635,"y":189,"width":250,"height":133,"type":"text","text":"- [ ] Update the WS protocol to include real time tables"},
-		{"id":"39f73abfc364e45c","x":935,"y":450,"width":250,"height":190,"type":"text","text":"- [ ] Public boards real time table"},
-		{"id":"5f44a016ef8cb00a","x":1330,"y":380,"width":250,"height":260,"type":"text","text":"- [ ] Update WS protocol to allow changing the lobby privacy level mid-lobby phase \n- [ ] Add a query parameter for game creation that reflects the lobby privacy level"},
-		{"id":"d3a040548e972795","x":1390,"y":-320,"width":250,"height":60,"color":"5","type":"text","text":"- [x] Lobby privacy level switch"},
-		{"id":"2b8f437ce05bc882","x":700,"y":-170,"width":250,"height":60,"color":"5","type":"text","text":"- [x] Feedback form frontend"},
-		{"id":"46da6bb15ba0ccf6","x":760,"y":-25,"width":250,"height":60,"color":"2","type":"text","text":"- [ ] Setup a webhook"}
+		{"id":"d860cf991b900b8d","type":"text","text":"- [ ] Rematch functionality","x":195,"y":-55,"width":250,"height":60},
+		{"id":"c19c511d697e144d","type":"text","text":"- [ ] Board lobby privacy levels\n\t- Public: displayed in the table, anyone can join\n\t- Unlisted: anyone can join using the code\n\t- Private: no one can join\n- [ ] A tech spec file describing these","x":1080,"y":-200,"width":250,"height":350},
+		{"id":"4e0340ebcab0340c","type":"text","text":"- [x] Better error display for users","x":355,"y":87,"width":250,"height":60,"color":"5"},
+		{"id":"0fd30ff674797c43","type":"text","text":"- [x] Fix bug with a nonexistent lobby join when spamming join button","x":1140,"y":-522,"width":250,"height":132,"color":"5"},
+		{"id":"67363f38744c7513","type":"text","text":"- [ ] Update the WS protocol to include real time tables","x":635,"y":189,"width":250,"height":133},
+		{"id":"39f73abfc364e45c","type":"text","text":"- [ ] Public boards real time table","x":935,"y":450,"width":250,"height":190},
+		{"id":"5f44a016ef8cb00a","type":"text","text":"- [ ] Update WS protocol to allow changing the lobby privacy level mid-lobby phase \n- [ ] Add a query parameter for game creation that reflects the lobby privacy level","x":1330,"y":380,"width":250,"height":260},
+		{"id":"d3a040548e972795","type":"text","text":"- [x] Lobby privacy level switch","x":1390,"y":-320,"width":250,"height":60,"color":"5"},
+		{"id":"2b8f437ce05bc882","type":"text","text":"- [x] Feedback form frontend","x":700,"y":-170,"width":250,"height":60,"color":"5"},
+		{"id":"46da6bb15ba0ccf6","type":"text","text":"- [ ] Setup a webhook","x":760,"y":-25,"width":250,"height":60,"color":"2"}
 	],
 	"edges":[
 		{"id":"f13d0bdcae66849a","fromNode":"3ceb4b84ab40c23f","fromSide":"bottom","toNode":"56c67ce852143d95","toSide":"top"},
