@@ -173,6 +173,7 @@ function readConfig(config: Config = loadConfig()) {
 
         tileList?.appendChild(tileConfig);
     });
+    updatePresetHighlights();
 }
 
 function updatePresetHighlights() {
