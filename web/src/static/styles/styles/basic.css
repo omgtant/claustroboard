@@ -5,7 +5,7 @@
     }
     body {
         image-rendering: pixelated;
-        @apply bg-gray-900;
+        @apply bg-gray-900 overflow-x-hidden;
     }
     h1 {
         @apply text-3xl text-slate-100;
