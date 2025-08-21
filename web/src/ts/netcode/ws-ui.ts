@@ -46,8 +46,14 @@ export function init() {
     if (newGame) newGame.addEventListener('click', newGameBtn);
     else throw new Error('No new game button found');
 
-    const join = document.getElementById('join');
-    if (join) join.addEventListener('click', joinBtn);
+    const join: HTMLButtonElement = document.getElementById('join')! as HTMLButtonElement;
+    if (join) join.addEventListener('click', () => {
+        joinBtn();
+        join.disabled = true;
+        setTimeout(() => {
+            join.disabled = false;
+        }, 1000);
+    });
     else throw new Error('No join button found');
 
     const searchQuery = new URLSearchParams(window.location.search);
@@ -94,6 +100,7 @@ async function createGame(nickname: string) {
     });
 }
 function joinBtn() {
+    
     const plData = getNickname();
     if (!plData) return;
 
@@ -211,6 +218,10 @@ function start(data: InitialState) {
     });
 }
 
-netcode.ws.on('close', () => {
+netcode.ws.on('connection:close', () => {
     window.location.reload();
 });
+
+netcode.ws.on('close', () => {
+    window.location.reload();
+})

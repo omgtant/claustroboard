@@ -23,6 +23,10 @@
 		@apply p-2 bg-gray-700 hover:bg-gray-600 block;
 		@apply transition-colors duration-100 rounded-lg cursor-pointer;
 		@apply lighter:bg-gray-600 hover:bg-gray-500;
+
+		:disabled {
+			@apply opacity-50;
+		}
 	}
 
 	hr {
