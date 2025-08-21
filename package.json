@@ -1,5 +1,8 @@
 {
-  "dependencies": {
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "cpx2": "^8.0.0",
+    "esbuild": "^0.25.9",
     "@tailwindcss/cli": "^4.1.11",
     "@tailwindcss/postcss": "^4.1.12",
     "postcss": "^8.5.6",
@@ -8,12 +11,7 @@
     "postcss-import-ext-glob": "^2.1.1",
     "tailwindcss": "^4.1.12",
     "typescript": "^5.9.2",
-    "watch": "^1.0.2"
-  },
-  "devDependencies": {
-    "concurrently": "^9.2.0",
-    "cpx2": "^8.0.0",
-    "esbuild": "^0.25.9"
+    "watch": "^0.13.0"
   },
   "scripts": {
     "build:postcss": "postcss ./web/src/static/styles/in.css -o ./web/out/static/stylesheet.css --verbose",
