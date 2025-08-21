@@ -1,23 +1,14 @@
- 
-### Introduction
- **version:** v1.7
-Let's call "actions" websocket payloads sent to the server by a client, and "events" payloads sent by the server to a client. An event sent to all clients at once can be qualified of "broadcast".
-
-## Network
-### HTTP
-HTTP GET (WS) `/api/v1/start-game?nickname=$NICK&deck=$DECK`
-	-> event `created` `{"code": "game code (i.e. ABC123)"}`
-	-> broadcast `playerlist-changed`: `["nickname"]`
-HTTP GET (WS) `/api/v1/join/<code>?nickname=$NICK`
-	| errors: 409 already used nickname, 410 game already started
-	-> broadcast `playerlist-changed`: `["nickname1", "nickname2", ...]`
-### Actions
+[[Terminology]]
+## Actions
 Action `start`: stop accepting joins and set up (create the board, the player turn order)
 	-> broadcast `started`: `{...}`
 
 Action `my-move` (delta) -> error, yes: the player makes some moves. Note that an error means the whole delta was cancelled, atomically.
 	-> broadcast `they-moved` (delta)
+	
 Action `come-again` -> \[delta\]
+
+Action `lobby-privacy` (`"private" | "unlisted" | "public"`) -> broadcast `lobby-privacy`
 
 Upon ending the game, the server broadcasts `close`.
 
@@ -25,9 +16,8 @@ If the environment variable `ENVIRONMENT` is set to `"development"`, the followi
 
 Action `broadcast` (payload)
 	-> broadcast `broadcast`: (payload)
-
-
-## Type spec
+	## Type spec
+## Type definitions
 ### Config
 ```json
 {
