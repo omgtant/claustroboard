@@ -18,3 +18,7 @@ Event `update` (table)
 	]	
 }
 ```
+Contains only games that are:
+1. Public
+2. In lobby phase
+3. Not at maximum capacity
