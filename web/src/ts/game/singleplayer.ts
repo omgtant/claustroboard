@@ -1,6 +1,8 @@
 import { loadConfig } from "../config";
 import { Config, InitialState, DeckElement, TileSetup } from "../types/types";
-import { bakeTile } from "../helpers/helpers";
+import { bakeTile, readInitialStateIntoGameState } from "../helpers/helpers";
+import { startSingleplayer } from "./game";
+import { showError } from "../helpers/showError";
 
 export function createStateFromConfig(
 	playerCount: number,
@@ -96,4 +98,30 @@ export function createStateFromConfig(
 		board,
 		players,
 	};
+}
+
+
+export function singleplayerInit() {
+	document.getElementById("single-player")?.addEventListener("click", () => {
+		try {
+			const playerCount = parseInt(
+				(
+					document.getElementById(
+						"player-count-singleplayer"
+					) as HTMLInputElement
+				).value
+			);
+			if (isNaN(playerCount)) throw Error("Invalid player count");
+			if (playerCount <= 1)
+				throw Error("Number of players must be greater than 1");
+			document.getElementById("board-overlay")?.remove();
+			startSingleplayer(
+				readInitialStateIntoGameState(
+					createStateFromConfig(playerCount)
+				)
+			);
+		} catch (error) {
+			showError(error.message || error);
+		}
+	});
 }
