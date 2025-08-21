@@ -1,6 +1,7 @@
 import { loadConfig } from "../config";
 import { startMultiplayer } from "../game/game";
 import { readInitialStateIntoGameState, validateNickname } from "../helpers/helpers";
+import { hideError, showError } from "../helpers/showError";
 import { logMessage } from "../render/render";
 import { EventMap, InitialState, MoveDelta, Netcode } from "../types/types";
 import { Pos } from "../types/util";
@@ -88,6 +89,8 @@ async function createGame(nickname: string) {
 
     netcode.ws.connect(`/api/v1/start-game?nickname=${encodeURIComponent(nickname)}${configStr}`).then(() => {
         netcode.myNickname = nickname;
+    }).catch((error) => {
+        showError("try again later");
     });
 }
 function joinBtn() {
@@ -107,8 +110,12 @@ async function joinGame(nickname: string, gameCode: string) {
     netcode.ws.connect(`/api/v1/join/${encodeURIComponent(gameCode)}?nickname=${encodeURIComponent(nickname)}`).then(() => {
         netcode.myNickname = nickname;
         netcode.gameCode = gameCode;
+        hideError();
         initPrepState();
-    })
+    }).catch((error) => {
+        console.log(error);
+        showError("game not found");
+    });
 }
 
 function initPrepState() {
