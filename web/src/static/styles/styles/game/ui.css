@@ -7,6 +7,7 @@
     &:focus {
         @apply opacity-100;
     }
+    @apply max-md:hidden;
 }
 
 .move-arrow {
@@ -15,5 +16,5 @@
 }
 .move-arrow-hover,
 .move-arrow-shown {
-    @apply block;
+    @apply md:block;
 }
