@@ -13,7 +13,7 @@
 		{"id":"67363f38744c7513","x":635,"y":189,"width":250,"height":133,"type":"text","text":"- [ ] Update the WS protocol to include real time tables"},
 		{"id":"39f73abfc364e45c","x":935,"y":450,"width":250,"height":190,"type":"text","text":"- [ ] Public boards real time table"},
 		{"id":"5f44a016ef8cb00a","x":1330,"y":380,"width":250,"height":260,"type":"text","text":"- [ ] Update WS protocol to allow changing the lobby privacy level mid-lobby phase \n- [ ] Add a query parameter for game creation that reflects the lobby privacy level"},
-		{"id":"d3a040548e972795","x":1390,"y":-320,"width":250,"height":60,"color":"5","type":"text","text":"- [ ] Lobby privacy level switch"},
+		{"id":"d3a040548e972795","x":1390,"y":-320,"width":250,"height":60,"color":"5","type":"text","text":"- [x] Lobby privacy level switch"},
 		{"id":"2b8f437ce05bc882","x":700,"y":-170,"width":250,"height":60,"color":"5","type":"text","text":"- [x] Feedback form frontend"},
 		{"id":"46da6bb15ba0ccf6","x":760,"y":-25,"width":250,"height":60,"color":"2","type":"text","text":"- [ ] Setup a webhook"}
 	],
