@@ -4,7 +4,7 @@
         @apply w-full border-t border-gray-500;
     }
     thead {
-        @apply bg-gray-600 text-left;
+        @apply bg-gray-500 text-left;
     }
     th,td {
         @apply p-1;
