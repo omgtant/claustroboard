@@ -24,8 +24,7 @@ func GetRouter(projectRoot string) *http.ServeMux {
 	}
 
 	// template routes
-	mux.HandleFunc("GET /", routers.TemplateHandler("index.html", defaultTemplateDataFunc))
-	mux.HandleFunc("GET /demo", routers.TemplateHandler("demo.html", defaultTemplateDataFunc))
+	mux.HandleFunc("GET /{$}", routers.TemplateHandler("index.html", defaultTemplateDataFunc))
 
 	// static files
 	mux.Handle("GET /static/", routers.CreateFileServer(projectRoot, StaticFiles))

@@ -13,7 +13,7 @@ func InitTemplates(fs embed.FS) error {
 	
 	templates = &template.Template{}
 
-	templates, err = template.New("").Funcs(GetFuncMap()).ParseFS(fs, "out/*.html")
+	templates, err = template.New("").Funcs(GetFuncMap()).ParseFS(fs, "out/*.html", "out/**/*.html")
 	if err != nil {
 		return err
 	}
