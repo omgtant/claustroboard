@@ -87,7 +87,7 @@ export class WebSocketManager<TEventMap extends Record<string, any> = {}>
   private config: Required<WebSocketConfig> = {
     maxReconnectAttempts: 5,
     heartbeatInterval: 30000, // 30 seconds
-    connectionTimeout: 45000, // 45 seconds
+    connectionTimeout: 300000, // 5 minutes
     enableLogging: false
   };
 
