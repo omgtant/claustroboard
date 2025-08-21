@@ -3,7 +3,7 @@
     @apply bg-rose-700/80 text-white font-bold text-center;
     @apply transition-transform duration-500 ease-in-out;
 
-    &.whide {
+    &.hide {
         @apply -translate-y-full;
     }
 }
