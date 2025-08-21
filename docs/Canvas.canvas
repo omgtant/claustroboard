@@ -1,6 +1,6 @@
 {
 	"nodes":[
-		{"id":"ef059515b4f10a10","type":"text","text":"- [ ] Player -> struct refactor","x":195,"y":-200,"width":250,"height":60,"color":"5"},
+		{"id":"ef059515b4f10a10","type":"text","text":"- [x] Player -> struct refactor","x":195,"y":-200,"width":250,"height":60,"color":"5"},
 		{"id":"9bd0978d04a7f4dd","type":"text","text":"Todo dependencies","x":525,"y":-420,"width":160,"height":60},
 		{"id":"3ceb4b84ab40c23f","type":"text","text":"Board phase flow","x":-340,"y":120,"width":180,"height":60},
 		{"id":"56c67ce852143d95","type":"text","text":"Lobby","x":-340,"y":220,"width":180,"height":60},
