@@ -1,0 +1,3 @@
+- Public: displayed in the table, anyone can join
+- Unlisted: anyone can join using the code
+- Private: no one can join
