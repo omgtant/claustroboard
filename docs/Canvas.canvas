@@ -1,14 +1,33 @@
 {
 	"nodes":[
-		{"id":"3ceb4b84ab40c23f","type":"text","text":"Board phase flow","x":-380,"y":-200,"width":180,"height":60},
-		{"id":"56c67ce852143d95","type":"text","text":"Lobby","x":-380,"y":-100,"width":180,"height":60},
-		{"id":"3d130c9452239bab","type":"text","text":"[[Game Logic | Game]]","x":-380,"y":0,"width":180,"height":60},
-		{"id":"a987b0990ae832a0","type":"text","text":"Rematch Vote","x":-380,"y":100,"width":180,"height":60}
+		{"id":"ef059515b4f10a10","x":195,"y":-200,"width":250,"height":60,"type":"text","text":"- [ ] Player -> struct refactor"},
+		{"id":"2b8f437ce05bc882","x":760,"y":-200,"width":250,"height":60,"color":"5","type":"text","text":"- [ ] Feedback form frontend"},
+		{"id":"9bd0978d04a7f4dd","x":525,"y":-420,"width":160,"height":60,"type":"text","text":"Todo dependencies"},
+		{"id":"3ceb4b84ab40c23f","type":"text","text":"Board phase flow","x":-340,"y":120,"width":180,"height":60},
+		{"id":"56c67ce852143d95","type":"text","text":"Lobby","x":-340,"y":220,"width":180,"height":60},
+		{"id":"3d130c9452239bab","type":"text","text":"[[Game Logic | Game]]","x":-340,"y":320,"width":180,"height":60},
+		{"id":"a987b0990ae832a0","type":"text","text":"Rematch Vote","x":-340,"y":420,"width":180,"height":60},
+		{"id":"d3a040548e972795","x":-80,"y":-200,"width":250,"height":60,"color":"5","type":"text","text":"- [ ] Lobby privacy level switch"},
+		{"id":"4e0340ebcab0340c","x":480,"y":-200,"width":250,"height":60,"color":"5","type":"text","text":"- [ ] Better error display for users"},
+		{"id":"39f73abfc364e45c","x":1205,"y":255,"width":250,"height":190,"type":"text","text":"- [ ] Public boards real time table\n\t- [ ] Update WS protocol\n\t- [ ] Implement the protocol"},
+		{"id":"5f44a016ef8cb00a","x":1520,"y":255,"width":250,"height":227,"type":"text","text":"- [ ] Update WS protocol to allow changing the lobby privacy level mid-lobby phase \n- [ ] Add a query parameter for game creation that reflects the lobby privacy level"},
+		{"id":"d860cf991b900b8d","x":195,"y":-55,"width":250,"height":60,"type":"text","text":"- [ ] Rematch functionality"},
+		{"id":"46da6bb15ba0ccf6","x":760,"y":-55,"width":250,"height":60,"color":"2","type":"text","text":"- [ ] Setup a webhook"},
+		{"id":"c19c511d697e144d","x":1080,"y":-200,"width":250,"height":350,"type":"text","text":"- [ ] Board lobby privacy levels\n\t- Public: displayed in the table, anyone can join\n\t- Unlisted: anyone can join using the code\n\t- Private: no one can join\n- [ ] A tech spec file describing these"}
 	],
 	"edges":[
 		{"id":"f13d0bdcae66849a","fromNode":"3ceb4b84ab40c23f","fromSide":"bottom","toNode":"56c67ce852143d95","toSide":"top"},
 		{"id":"edcd0d685430c07c","fromNode":"56c67ce852143d95","fromSide":"bottom","toNode":"3d130c9452239bab","toSide":"top"},
 		{"id":"5fff77e95e6f9eb5","fromNode":"3d130c9452239bab","fromSide":"bottom","toNode":"a987b0990ae832a0","toSide":"top"},
-		{"id":"8bcb85f986e4b288","fromNode":"a987b0990ae832a0","fromSide":"right","toNode":"3d130c9452239bab","toSide":"right"}
+		{"id":"8bcb85f986e4b288","fromNode":"a987b0990ae832a0","fromSide":"right","toNode":"3d130c9452239bab","toSide":"right"},
+		{"id":"d2e8b60fb2c88c08","fromNode":"9bd0978d04a7f4dd","fromSide":"bottom","toNode":"ef059515b4f10a10","toSide":"top"},
+		{"id":"b907f526abfd867d","fromNode":"9bd0978d04a7f4dd","fromSide":"bottom","toNode":"4e0340ebcab0340c","toSide":"top"},
+		{"id":"4fb1d902ea81a12e","fromNode":"c19c511d697e144d","fromSide":"bottom","toNode":"39f73abfc364e45c","toSide":"top"},
+		{"id":"3a40d3364e0970d1","fromNode":"9bd0978d04a7f4dd","fromSide":"bottom","toNode":"2b8f437ce05bc882","toSide":"top"},
+		{"id":"4b654c8c2c8be4ff","fromNode":"2b8f437ce05bc882","fromSide":"bottom","toNode":"46da6bb15ba0ccf6","toSide":"top"},
+		{"id":"3a39852cced61a4c","fromNode":"c19c511d697e144d","fromSide":"bottom","toNode":"5f44a016ef8cb00a","toSide":"top"},
+		{"id":"92723138f50a00bb","fromNode":"9bd0978d04a7f4dd","fromSide":"bottom","toNode":"d3a040548e972795","toSide":"top"},
+		{"id":"0d018ba46c7ae7e3","fromNode":"9bd0978d04a7f4dd","fromSide":"bottom","toNode":"c19c511d697e144d","toSide":"top"},
+		{"id":"50030020eb22207d","fromNode":"ef059515b4f10a10","fromSide":"bottom","toNode":"d860cf991b900b8d","toSide":"top"}
 	]
 }
