@@ -1,9 +1,10 @@
 import { loadConfig } from "../config";
 import { Config, InitialState, DeckElement, TileSetup } from "../types/types";
+import { bakeTile } from "../helpers/helpers";
 
 export function createStateFromConfig(
-    playerCount: number,
-	config: Config = loadConfig(),
+	playerCount: number,
+	config: Config = loadConfig()
 ): InitialState {
 	// Helpers
 	const randInt = (max: number) => Math.floor(Math.random() * max);
@@ -66,17 +67,28 @@ export function createStateFromConfig(
 		}
 	}
 
-	// Create players with unique random positions
+	// Bake tiles to evaluate canStartOnMe and collect valid starting positions
+	const bakedBoard = board.map((row, y) =>
+		row.map((tileSetup, x) => bakeTile(tileSetup, { x, y }))
+	);
+	const validStartPositions = bakedBoard.flatMap((row, y) =>
+		row
+			.filter((tile) => tile.canStartOnMe(bakedBoard))
+			.map((tile) => tile.position)
+	);
+
+	// Create players with unique random positions on valid starting tiles only
 	const totalCells = width * height;
 	const nPlayers = Math.min(playerCount, totalCells);
-	const allPositions = Array.from({ length: totalCells }, (_, i) => ({
-		x: i % width,
-		y: Math.floor(i / width),
-	}));
-	shuffleInPlace(allPositions);
+	if (validStartPositions.length < nPlayers) {
+		throw new Error(
+			`not enough valid starting positions (${validStartPositions.length}) for ${nPlayers} players`
+		);
+	}
+	shuffleInPlace(validStartPositions);
 	const players = Array.from({ length: nPlayers }, (_, i) => ({
 		nickname: `Player ${i + 1}`,
-		position: allPositions[i],
+		position: validStartPositions[i],
 	}));
 
 	return {
