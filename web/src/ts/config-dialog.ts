@@ -125,7 +125,7 @@ function readConfig(config: Config = loadConfig()) {
     _getEveryTileType().forEach(tileType => {
         // @ts-ignore
         const tileConfig: HTMLElement = document.getElementById('tile-configuration')!.content.cloneNode(true).querySelector('.tile-row');
-        const count = tileConfig.querySelector('.count');
+        const count: HTMLParagraphElement = tileConfig.querySelector('.count')!;
         tileConfig.dataset.tileType = JSON.stringify(tileType.tileSetup);
         try {
             tileConfig.dataset.count = getCountFor(tileType.tileSetup, config)?.toString() ?? '?';
@@ -150,11 +150,8 @@ function readConfig(config: Config = loadConfig()) {
             tileConfig.querySelector<HTMLButtonElement>('.right-btn')!.disabled = tileConfig.dataset.count === '99';
             count!.textContent = tileConfig.dataset.count;
         });
-        count!.addEventListener('input', (e) => {
-            count!.textContent = count!.textContent!.replace(/[^0-9]/g, '');
-            tileConfig.dataset.count = count!.textContent!;
-        });
         count!.addEventListener('focusout', (e) => {
+            count!.textContent = count!.textContent!.replace(/[^0-9]/g, "");
             if (parseInt(count!.textContent!) > 99) {
                 count!.textContent = '99';
             }
