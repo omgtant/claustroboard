@@ -1,11 +1,10 @@
-import { rnd } from "../helpers/helpers.ts";
-import { TileHighlightFlags, RenderInterface, PlayerHighlightFlags } from "../types/renderInterface.ts";
-import type { GameState, Player, Tile, ValidMove } from "../types/types.ts";
-import { Pos, TileColor } from "../types/util.ts";
-import { LayoutTile, TeleportTile, WildcardTile, ZeroTile } from "../game/tiles.ts";
-import { transform } from "typescript";
-import { _movePlayer, getPlayerElement } from "./playerMover.ts";
-import { setCurrentSelection } from "./keyboardControl.ts";
+import { rnd } from "../helpers/helpers";
+import { TileHighlightFlags, RenderInterface } from "../types/renderInterface";
+import type { GameState, Player, Tile, ValidMove } from "../types/types";
+import { Pos, TileColor } from "../types/util";
+import { LayoutTile, TeleportTile, WildcardTile, ZeroTile } from "../game/tiles";
+import { _movePlayer, getPlayerElement } from "./playerMover";
+import { setCurrentSelection } from "./keyboardControl";
 
 const callbacks = {
     tryMoveTo: (pos: Pos) : void => {
