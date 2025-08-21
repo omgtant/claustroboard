@@ -8,7 +8,7 @@
 		{"id":"a987b0990ae832a0","type":"text","text":"Rematch Vote","x":-340,"y":420,"width":180,"height":60},
 		{"id":"d860cf991b900b8d","x":195,"y":-55,"width":250,"height":60,"type":"text","text":"- [ ] Rematch functionality"},
 		{"id":"c19c511d697e144d","x":1080,"y":-200,"width":250,"height":350,"type":"text","text":"- [ ] Board lobby privacy levels\n\t- Public: displayed in the table, anyone can join\n\t- Unlisted: anyone can join using the code\n\t- Private: no one can join\n- [ ] A tech spec file describing these"},
-		{"id":"4e0340ebcab0340c","x":355,"y":87,"width":250,"height":60,"color":"5","type":"text","text":"- [ ] Better error display for users"},
+		{"id":"4e0340ebcab0340c","x":355,"y":87,"width":250,"height":60,"color":"5","type":"text","text":"- [x] Better error display for users"},
 		{"id":"0fd30ff674797c43","x":1140,"y":-522,"width":250,"height":132,"color":"5","type":"text","text":"- [ ] Fix bug with a nonexistent lobby join when spamming join button"},
 		{"id":"67363f38744c7513","x":635,"y":189,"width":250,"height":133,"type":"text","text":"- [ ] Update the WS protocol to include real time tables"},
 		{"id":"39f73abfc364e45c","x":935,"y":450,"width":250,"height":190,"type":"text","text":"- [ ] Public boards real time table"},
