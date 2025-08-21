@@ -1,5 +1,5 @@
 .join-ui {
-    @apply flex flex-col gap-2 py-2 bg-gray-700;
+    @apply flex flex-col gap-2 py-2;
     table {
         @apply w-full;
     }
