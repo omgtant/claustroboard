@@ -25,7 +25,9 @@ func broadcastPlayerList(gameCode models.GameCode) {
 	}
 
 	players := make([]string, len(board.Players))
-	copy(players, board.Players)
+	for i, p := range board.Players {
+		players[i] = p.Nickname
+	}
 
 	broadcastEvent(gameCode, event{
 		Type: "playerlist-changed",
@@ -74,12 +76,12 @@ func handleMove(c *wsClient, data json.RawMessage) {
 	}
 
 	currentPlayer := board.Players[idx]
-	if currentPlayer != c.nickname {
+	if currentPlayer.Nickname != c.nickname {
 		c.writeError(errors.New("it is not your turn"))
 		return
 	}
 
-	println("turn", currentPlayer)
+	println("turn", currentPlayer.Nickname)
 
 	var inputDelta dtos.Delta
 	if err := json.Unmarshal(data, &inputDelta); err != nil {

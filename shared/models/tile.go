@@ -94,7 +94,7 @@ func (t Tile) CanLand(b *Board, p int) bool {
 			}
 		}
 		playerOnTeleport := false
-		tile, err := b.getTileAt(b.Pos[p])
+		tile, err := b.getTileAt(b.Players[p].Pos)
 		if err != nil {
 			return false
 		}
@@ -145,7 +145,7 @@ func (from *Tile) applyMove(b *Board, dest *Tile) (land bool) {
 	from.Open = false
 
 	player := b.CurPlayer()
-	b.Pos[player] = dest.Pos
+	b.Players[player].Pos = dest.Pos
 
 	fmt.Printf("Turn %d: Player moved from %s (%s) to %s (%s)\n",
 		b.Turn,
@@ -158,12 +158,12 @@ func (from *Tile) applyMove(b *Board, dest *Tile) (land bool) {
 	}
 
 	if dest.Kind == enums.Zero {
-		n := len(b.Pos)
+		n := len(b.Players)
 
 		activePlayers := make([]int, 0, n)
 		currentActivePlayer := -1
 		for i := range b.Players {
-			if b.IsActive[i] {
+			if b.Players[i].IsActive {
 				activePlayers = append(activePlayers, i)
 				if i == player {
 					currentActivePlayer = len(activePlayers) - 1
@@ -174,20 +174,20 @@ func (from *Tile) applyMove(b *Board, dest *Tile) (land bool) {
 		m := len(activePlayers)
 
 		nextActivePlayer := (currentActivePlayer + 1) % m
-		nextPlayerTile, _ := b.getTileAt(b.Pos[activePlayers[nextActivePlayer]])
+		nextPlayerTile, _ := b.getTileAt(b.Players[activePlayers[nextActivePlayer]].Pos)
 		b.Tiles[dest.Pos.Y][dest.Pos.X] = nextPlayerTile.CopyFor(dest.Pos)
 
-		playerPos := b.Pos[activePlayers[0]]
+		playerPos := b.Players[activePlayers[0]].Pos
 		for i, cur := range activePlayers {
 			if i == len(activePlayers)-1 {
 				continue
 			}
-			oldPos := b.Pos[activePlayers[cur]]
-			b.Pos[activePlayers[cur]] = b.Pos[activePlayers[i+1]]
-			fmt.Printf("Player %d swapped from position %s to position %s\n", cur, oldPos, b.Pos[activePlayers[i+1]].String())
+			oldPos := b.Players[activePlayers[cur]].Pos
+			b.Players[activePlayers[cur]].Pos = b.Players[activePlayers[i+1]].Pos
+			fmt.Printf("Player %d swapped from position %s to position %s\n", cur, oldPos, b.Players[activePlayers[i+1]].Pos.String())
 		}
-		oldPos := b.Pos[activePlayers[len(activePlayers)-1]]
-		b.Pos[activePlayers[len(activePlayers)-1]] = playerPos
+		oldPos := b.Players[activePlayers[len(activePlayers)-1]].Pos
+		b.Players[activePlayers[len(activePlayers)-1]].Pos = playerPos
 		fmt.Printf("Last step: Player %d swapped from position %s to position %s\n", activePlayers[len(activePlayers)-1], oldPos, playerPos.String())
 	}
 

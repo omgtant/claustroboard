@@ -24,11 +24,9 @@ type Board struct {
 	Height     uint16
 	MaxPlayers uint8
 	Tiles      [][]Tile
-	Players    []string
+	Players    []Player
 	Turn       uint32
 	CheckTurn  uint32 // Used in netcode to ensure clients are in sync
-	Pos        []valueobjects.Point
-	IsActive   []bool
 	Phase      BoardPhase
 }
 
@@ -95,7 +93,12 @@ func Join(id GameCode, p string) error {
 		return errors.New("game is full") // TODO specific error types so that backend knows what http code to return
 	}
 
-	board.Players = append(board.Players, p)
+	board.Players = append(board.Players, Player{
+		Nickname:       p,
+		IsActive:       true,
+		ShouldThrowOut: false,
+		Pos:            valueobjects.Point{},
+	})
 	gameBoardsMu.Lock()
 	gameBoards[id] = board
 	gameBoardsMu.Unlock()
@@ -109,7 +112,7 @@ func Leave(id GameCode, p string) error {
 	}
 
 	for i, player := range board.Players {
-		if player == p {
+		if player.Nickname == p {
 			board.Players = append(board.Players[:i], board.Players[i+1:]...)
 			break
 		}
@@ -147,8 +150,6 @@ func StartGame(code GameCode) (*Board, error) {
 		return nil, errors.New("not enough tiles for players")
 	}
 
-	used := make(map[valueobjects.Point]bool, len(board.Players))
-	board.Pos = board.Pos[:0]
 	// Find valid starting positions
 	validPositions := []valueobjects.Point{}
 	for y := uint16(0); y < board.Height; y++ {
@@ -165,17 +166,15 @@ func StartGame(code GameCode) (*Board, error) {
 	}
 
 	// Randomly assign positions to players
-	for range board.Players {
+	for i := range board.Players {
 		idx := rand.Intn(len(validPositions))
-		board.Pos = append(board.Pos, validPositions[idx])
-		used[validPositions[idx]] = true
+		board.Players[i].Pos = validPositions[idx]
 		validPositions = append(validPositions[:idx], validPositions[idx+1:]...)
 	}
 
 	// Mark all players as active
-	board.IsActive = make([]bool, len(board.Players))
-	for i := range board.IsActive {
-		board.IsActive[i] = true
+	for i := range board.Players {
+		board.Players[i].IsActive = true
 	}
 
 	board.Phase = PhaseStarted
@@ -191,10 +190,10 @@ func Snapshot(code GameCode) (*dtos.Board, error) {
 		return nil, err
 	}
 	cpPlayers := make([]dtos.Player, len(b.Players))
-	for i, playerName := range b.Players {
+	for i, player := range b.Players {
 		cpPlayers[i] = dtos.Player{
-			Name: playerName,
-			Pos:  b.Pos[i],
+			Name: player.Nickname,
+			Pos:  player.Pos,
 		}
 	}
 
@@ -233,17 +232,17 @@ func (b *Board) getTileAt(p valueobjects.Point) (t *Tile, internalError error) {
 }
 
 func (b *Board) GetCurrent() (t *Tile, index int, internalError error) {
-	if len(b.Pos) <= 0 {
+	if len(b.Players) <= 0 {
 		return nil, 0, errors.New("game has not started")
 	}
-	index = int(b.Turn) % len(b.Pos)
-	player := b.Pos[index]
-	t, internalError = b.getTileAt(player)
+	index = int(b.Turn) % len(b.Players)
+	player := b.Players[index]
+	t, internalError = b.getTileAt(player.Pos)
 	return t, index, internalError
 }
 
 func (b *Board) CurPlayer() int {
-	return int(b.Turn) % len(b.Pos);
+	return int(b.Turn) % len(b.Players)
 }
 
 func (b *Board) Move(move dtos.Move) (*dtos.Delta, error) {
@@ -269,12 +268,12 @@ func (b *Board) Move(move dtos.Move) (*dtos.Delta, error) {
 	if err := b.checkMoveValidity(from, toTile); err != nil {
 		return nil, err
 	}
-	
+
 	b.CheckTurn++
 	if from.applyMove(b, toTile) {
 		b.Turn++
 		// Skip dead players' moves
-		for !b.IsActive[(b.Turn)%uint32(len(b.Pos))] {
+		for !b.Players[(b.Turn)%uint32(len(b.Players))].IsActive {
 			b.Turn++
 		}
 		// Kill the next player now if it can't move
@@ -295,8 +294,8 @@ func (b *Board) checkMoveValidity(from *Tile, to *Tile) error {
 }
 
 func (b *Board) getPlayerAt(p valueobjects.Point) int {
-	for i, pos := range b.Pos {
-		if pos == p {
+	for i, player := range b.Players {
+		if player.Pos == p {
 			return i
 		}
 	}
@@ -304,7 +303,7 @@ func (b *Board) getPlayerAt(p valueobjects.Point) int {
 }
 
 func checkNextForDeadness(b *Board) {
-	nextPlayerPos := b.Pos[b.CurPlayer()]
+	nextPlayerPos := b.Players[b.CurPlayer()].Pos
 	nextPlayerTile, err := b.getTileAt(nextPlayerPos)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to get tile at %s: %v", nextPlayerPos.String(), err))
@@ -312,11 +311,11 @@ func checkNextForDeadness(b *Board) {
 	moves := nextPlayerTile.AvailableMoves(b, b.CurPlayer())
 	length := len(moves)
 	if length == 0 {
-		b.IsActive[(b.Turn)%uint32(len(b.Pos))] = false
-		fmt.Printf("Player %d is out of the game\n", (b.Turn)%uint32(len(b.Pos)))
+		b.Players[b.CurPlayer()].IsActive = false
+		fmt.Printf("Player %d is out of the game\n", (b.Turn)%uint32(len(b.Players)))
 		activeCount := 0
-		for _, active := range b.IsActive {
-			if active {
+		for _, player := range b.Players {
+			if player.IsActive {
 				activeCount++
 			}
 		}

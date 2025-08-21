@@ -59,7 +59,7 @@ func JoinGameWS(w http.ResponseWriter, r *http.Request) {
 
 	already := false
 	for _, p := range board.Players {
-		if p == nickname {
+		if p.Nickname == nickname {
 			already = true
 			break
 		}
