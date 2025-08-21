@@ -24,3 +24,7 @@
         @apply hidden;
     }
 }
+
+.tabs-content {
+    @apply bg-gray-700;
+}
