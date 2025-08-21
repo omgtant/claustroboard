@@ -1,7 +1,7 @@
 .join-ui {
-    @apply flex flex-col py-2;
+    @apply flex flex-col;
     table {
-        @apply w-full;
+        @apply w-full border-t border-gray-500;
     }
     thead {
         @apply bg-gray-600 text-left;
@@ -10,6 +10,12 @@
         @apply p-1;
     }
     input {
-        @apply flex-1;
+        @apply flex-1 rounded-none outline-none border border-transparent;
+        &:focus-visible {
+            @apply border-orange-500
+        }
+    }
+    button {
+        @apply rounded-none;
     }
 }
