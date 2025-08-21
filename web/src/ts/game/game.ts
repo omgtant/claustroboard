@@ -30,6 +30,18 @@ export function startMultiplayer(someGameState: t.GameState = gameState, someRen
     suggestMoving(someGameState, someRenderInterface, false, myNickname, afterMyMove);
     return {
         otherMove: (pos: Pos) => playMove(pos, someGameState, someRenderInterface, myNickname, afterMyMove),
+        playerLeft: (nickname: string) => {
+            const playerIndex = someGameState.players.findIndex(p => p.nickname === nickname);
+            if (playerIndex !== -1) {
+                someGameState.players[playerIndex].is_active = false;
+                someRenderInterface?.playerLost(someGameState.players[playerIndex]);
+                if (someGameState.players.filter(p => p.is_active).length <= 1) {
+                    someRenderInterface?.renderWin(someGameState, _getCurrentPlayer(someGameState));
+                }
+            } else {
+                someRenderInterface?.complain(`Player ${nickname} not found`);
+            }
+        }
     }
 }
 

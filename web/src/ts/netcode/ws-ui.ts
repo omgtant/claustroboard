@@ -216,6 +216,13 @@ function start(data: InitialState) {
         gameHandlers.otherMove(moveDelta.move);
         turnNumber = moveDelta.turn+1;
     });
+    let curPlayers = [...netcode.players]; // A copy because the other handler might run first
+    netcode.ws.on("playerlist-changed", (newPlayers) => {
+        const leftPlayers = curPlayers.filter(nick => !newPlayers.includes(nick));
+        leftPlayers.forEach(nick => gameHandlers.playerLeft(nick));
+        curPlayers = newPlayers;
+    });
+
 }
 
 netcode.ws.on('connection:close', () => {

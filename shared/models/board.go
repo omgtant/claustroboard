@@ -111,18 +111,40 @@ func Leave(id GameCode, p string) error {
 		return err
 	}
 
-	for i, player := range board.Players {
-		if player.Nickname == p {
-			board.Players = append(board.Players[:i], board.Players[i+1:]...)
-			break
+	if board.Phase == PhaseLobby {
+		board.RemovePlayer(p);
+	} else {
+		player, err := board.GetPlayerByNickname(p);
+		if err != nil {
+			return err
 		}
+		player.ShouldThrowOut = true
+		player.IsActive = false
 	}
-
 	gameBoardsMu.Lock()
 	gameBoards[id] = board
 	gameBoardsMu.Unlock()
 
 	return nil
+}
+
+func (b *Board) RemovePlayer(p string) error {
+	for i, player := range b.Players {
+		if player.Nickname == p {
+			b.Players = append(b.Players[:i], b.Players[i+1:]...)
+			break
+		}
+	}
+	return nil
+}
+
+func (b *Board) GetPlayerByNickname(p string) (*Player, error) {
+	for i, player := range b.Players {
+		if player.Nickname == p {
+			return &b.Players[i], nil
+		}
+	}
+	return nil, fmt.Errorf("player %s not found", p)
 }
 
 func GetBoard(code GameCode) (*Board, error) {

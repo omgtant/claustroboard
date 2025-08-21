@@ -24,9 +24,12 @@ func broadcastPlayerList(gameCode models.GameCode) {
 		return
 	}
 
-	players := make([]string, len(board.Players))
-	for i, p := range board.Players {
-		players[i] = p.Nickname
+	players := []string{}
+	for _, p := range board.Players {
+		if p.ShouldThrowOut {
+			continue
+		}
+		players = append(players, p.Nickname)
 	}
 
 	broadcastEvent(gameCode, event{
