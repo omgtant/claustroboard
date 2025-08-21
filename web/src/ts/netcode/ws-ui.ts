@@ -203,3 +203,7 @@ function start(data: InitialState) {
         turnNumber = moveDelta.turn+1;
     });
 }
+
+netcode.ws.on('close', () => {
+    window.location.reload();
+});
