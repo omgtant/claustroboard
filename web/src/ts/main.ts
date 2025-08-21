@@ -9,20 +9,24 @@ try {
 	configDialogInit();
 	document.getElementById("single-player")?.addEventListener("click", () => {
 		try {
-            const playerCount = parseInt(
-            			(
-            				document.getElementById(
-            					"player-count-singleplayer"
-            				) as HTMLInputElement
-            			).value
-            		);
-            		document.getElementById("board-overlay")?.remove();
-            		startSingleplayer(
-            			readInitialStateIntoGameState(createStateFromConfig(playerCount))
-            		);
-        } catch (error) {
-            showError(error.message || error);
-        }
+			const playerCount = parseInt(
+				(
+					document.getElementById(
+						"player-count-singleplayer"
+					) as HTMLInputElement
+				).value
+			);
+			if (isNaN(playerCount)) throw Error("Invalid player count");
+			if (playerCount <= 1) throw Error("Number of players must be greater than 1");
+			document.getElementById("board-overlay")?.remove();
+			startSingleplayer(
+				readInitialStateIntoGameState(
+					createStateFromConfig(playerCount)
+				)
+			);
+		} catch (error) {
+			showError(error.message || error);
+		}
 	});
 } catch (error) {
 	showError(error.message || error);
