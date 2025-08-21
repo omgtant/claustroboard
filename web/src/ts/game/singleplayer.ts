@@ -93,9 +93,18 @@ export function createStateFromConfig(
 		position: validStartPositions[i],
 	}));
 
+	const coloredBoard = board.map((row, y) =>
+		row.map((tileSetup, x) => {
+			if (tileSetup.color === undefined) {
+				return {...tileSetup, color: randInt(5)}
+			}
+			return tileSetup;
+		})
+	);
+
 	return {
 		palette: [],
-		board,
+		board: coloredBoard,
 		players,
 	};
 }
