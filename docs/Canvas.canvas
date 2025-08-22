@@ -7,17 +7,17 @@
 		{"id":"a987b0990ae832a0","type":"text","text":"Rematch Vote","x":-340,"y":420,"width":180,"height":60},
 		{"id":"c19c511d697e144d","type":"text","text":"- [ ] Board lobby privacy levels\n\t- Public: displayed in the table, anyone can join\n\t- Unlisted: anyone can join using the code\n\t- Private: no one can join\n- [x] A tech spec file describing these","x":1080,"y":-200,"width":250,"height":350},
 		{"id":"67363f38744c7513","type":"text","text":"- [x] Update the WS protocol to include real time tables","x":635,"y":189,"width":250,"height":133,"color":"5"},
-		{"id":"39f73abfc364e45c","type":"text","text":"- [ ] Public boards real time table","x":935,"y":450,"width":250,"height":190,"color":"2"},
+		{"id":"39f73abfc364e45c","type":"text","text":"- [ ] Public boards real time table","x":935,"y":450,"width":250,"height":70,"color":"2"},
 		{"id":"46da6bb15ba0ccf6","type":"text","text":"- [ ] Setup a feedback discord webhook","x":760,"y":-25,"width":250,"height":60,"color":"2"},
 		{"id":"9c61019580f63250","type":"text","text":"- [ ] nginx","x":710,"y":-603,"width":250,"height":60,"color":"2"},
 		{"id":"3273a3106cf59707","type":"text","text":"- [ ] dockerization","x":525,"y":-800,"width":250,"height":60,"color":"2"},
-		{"id":"2709a9dbdfa869d6","type":"text","text":"- [x] make a more fun background for body than solid color","x":1080,"y":-420,"width":250,"height":106,"color":"5"},
 		{"id":"d860cf991b900b8d","type":"text","text":"- [ ] Rematch WS spec","x":320,"y":-100,"width":250,"height":60},
-		{"id":"bbbb4182070ffab3","type":"text","text":"- [ ] Config import/export","x":355,"y":-633,"width":250,"height":60,"color":"5"},
 		{"id":"2d5d3c1bd29c1632","type":"text","text":"- [ ] Rematch functionality","x":320,"y":90,"width":250,"height":60},
 		{"id":"5f44a016ef8cb00a","type":"text","text":"- [x] Update WS protocol to allow changing the lobby privacy level mid-lobby phase \n- [x] Add a query parameter for game creation that reflects the lobby privacy level to the spec","x":1440,"y":62,"width":250,"height":260,"color":"5"},
 		{"id":"52f619b26ed713e7","type":"text","text":"- [ ] Implement privacy changes","x":1280,"y":545,"width":250,"height":60},
-		{"id":"be441543c6d523c5","type":"text","text":"- [ ] don't let non-hosts start a game","x":40,"y":-543,"width":250,"height":60}
+		{"id":"436f9b206e0cfca2","x":659,"y":-934,"width":250,"height":60,"type":"text","text":"- [ ] Prometheus"},
+		{"id":"e76e14b35a9b230f","x":1030,"y":-758,"width":250,"height":60,"type":"text","text":"- [ ] api/v1/metrics endpoint"},
+		{"id":"1ab9dba2481a5c9b","x":1030,"y":-633,"width":250,"height":60,"type":"text","text":"- [ ] /api/v1/metrics spec"}
 	],
 	"edges":[
 		{"id":"f13d0bdcae66849a","fromNode":"3ceb4b84ab40c23f","fromSide":"bottom","toNode":"56c67ce852143d95","toSide":"top"},
@@ -32,12 +32,13 @@
 		{"id":"132847a191b29809","fromNode":"9c61019580f63250","fromSide":"top","toNode":"3273a3106cf59707","toSide":"bottom"},
 		{"id":"488497df128d32b6","fromNode":"9bd0978d04a7f4dd","fromSide":"left","toNode":"d860cf991b900b8d","toSide":"top"},
 		{"id":"a93f43f3e5f9264c","fromNode":"9bd0978d04a7f4dd","fromSide":"bottom","toNode":"46da6bb15ba0ccf6","toSide":"top"},
-		{"id":"a7e90d48a4ac20ea","fromNode":"9bd0978d04a7f4dd","fromSide":"right","toNode":"2709a9dbdfa869d6","toSide":"left"},
-		{"id":"90d62023d0675061","fromNode":"9bd0978d04a7f4dd","fromSide":"top","toNode":"bbbb4182070ffab3","toSide":"bottom"},
 		{"id":"363f433b54c59551","fromNode":"d860cf991b900b8d","fromSide":"bottom","toNode":"2d5d3c1bd29c1632","toSide":"top"},
 		{"id":"8f02dafe51f519f0","fromNode":"5f44a016ef8cb00a","fromSide":"bottom","toNode":"52f619b26ed713e7","toSide":"top"},
 		{"id":"64e39a8f497dd784","fromNode":"9bd0978d04a7f4dd","fromSide":"bottom","toNode":"5f44a016ef8cb00a","toSide":"top"},
 		{"id":"7066a3a36cad469e","fromNode":"c19c511d697e144d","fromSide":"bottom","toNode":"52f619b26ed713e7","toSide":"top"},
-		{"id":"5efdcfcbeaf8a026","fromNode":"9bd0978d04a7f4dd","fromSide":"left","toNode":"be441543c6d523c5","toSide":"bottom"}
+		{"id":"e189c07012bf4dd0","fromNode":"3273a3106cf59707","fromSide":"top","toNode":"436f9b206e0cfca2","toSide":"bottom"},
+		{"id":"22c5b5be8b8587e1","fromNode":"e76e14b35a9b230f","fromSide":"top","toNode":"436f9b206e0cfca2","toSide":"bottom"},
+		{"id":"33d81b67d76e8a29","fromNode":"9bd0978d04a7f4dd","fromSide":"right","toNode":"1ab9dba2481a5c9b","toSide":"bottom"},
+		{"id":"da7089db354b7fbc","fromNode":"1ab9dba2481a5c9b","fromSide":"top","toNode":"e76e14b35a9b230f","toSide":"bottom"}
 	]
 }
