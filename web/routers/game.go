@@ -12,10 +12,10 @@ import (
 
 var (
 	inboundHandlers = map[string]func(*wsClient, json.RawMessage){
-		"start":         handleStartGame,
-		"broadcast":     handleBroadcast,
-		"my-move":       handleMove,
-		"come-again":    handleBroadcast,
+		"start":           handleStartGame,
+		"broadcast":       handleBroadcast,
+		"my-move":         handleMove,
+		"come-again":      handleBroadcast,
 		"lobby-publicity": handleLobbyPublicity,
 	}
 )
@@ -28,7 +28,7 @@ func broadcastPlayerList(gameCode models.GameCode) {
 
 	players := []string{}
 	for _, p := range board.Players {
-		if p.ShouldThrowOut {
+		if p.Deleted {
 			continue
 		}
 		players = append(players, p.Nickname)
@@ -38,10 +38,6 @@ func broadcastPlayerList(gameCode models.GameCode) {
 		Type: "playerlist-changed",
 		Data: players,
 	})
-	broadcastEvent(gameCode, event{
-		Type: "lobby-publicity-changed",
-		Data: board.Publicity,
-	}) // Lazy fix
 }
 
 func handleStartGame(c *wsClient, _ json.RawMessage) {
