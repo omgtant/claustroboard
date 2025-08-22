@@ -14,18 +14,19 @@ export default function init() {
 	);
 
 	const maxLayers = 15;
-	const elCount = 15;
+	const elCount = 10;
 
 	const squares: HTMLDivElement[] = [];
 	for (let i = 0; i < elCount; i++) {
 		const square = document.createElement("div");
 		const tile = document.createElement("div");
-		tile.className = `tile 
-        tile-layout-${Math.floor(Math.random() * 3) + 1} tile-${
-			["RED", "GREEN", "BLUE", "YELLOW"][Math.floor(Math.random() * 4)]
-		} tile-type-2 bg-animated:opacity-100 opacity-0 transition-opacity`;
+		
+		const kind = getRandomKindClass();
+		const color = getRandomColorClass(kind);
+
+		tile.className = `tile ${color} ${kind} tile-type-2 bg-animated:opacity-100 opacity-0 transition-opacity`;
 		square.appendChild(tile);
-		square.className = `!fixed`;
+		square.className = `!fixed transform-3d max-md:hidden`;
 
 		const layer = Math.floor(Math.random() * maxLayers);
 		square.dataset.layer = layer.toString();
@@ -68,11 +69,44 @@ export default function init() {
 
 			// Rotation
 			square.style.rotate =
-				parseFloat(square.style.rotate!) + 0.01 + "deg";
+				"1 1 1 " + Math.cos(time * 0.1 + layer * 0.7) * 360 + "deg";
 		});
 
 		requestAnimationFrame(floatSquares);
 	}
 
 	floatSquares();
+}
+
+function getColorClasses(kind: string) {
+	if (kind.startsWith("tile-layout"))
+		return ["tile-RED", "tile-GREEN", "tile-BLUE", "tile-YELLOW"];
+	if (kind === "tile-wildcard") {
+		return ["tile-COLORLESS"];
+	}
+	return [
+		"tile-RED",
+		"tile-GREEN",
+		"tile-BLUE",
+		"tile-YELLOW",
+		"tile-COLORLESS",
+	];
+}
+
+function getRandomColorClass(kind: string) {
+	const classes = getColorClasses(kind);
+	return classes[Math.floor(Math.random() * classes.length)];
+}
+
+function getRandomKindClass() {
+	const kinds = [
+		"tile-layout-1",
+		"tile-layout-2",
+		"tile-layout-3",
+		"tile-layout-4",
+		"tile-zero",
+		"tile-teleport",
+		"tile-wildcard",
+	];
+	return kinds[Math.floor(Math.random() * kinds.length)];
 }

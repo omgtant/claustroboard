@@ -42,7 +42,7 @@
 		background-position: -184px 0px;
 		width: 68px;
 		height: 68px;
-		@apply absolute block rotate-x-180 -translate-z-1 delay-[170ms];
+		@apply absolute block rotate-x-180 -translate-z-1 delay-[170ms] transform-3d;
 		backface-visibility: hidden;
 	}
 	&::after {
