@@ -20,7 +20,7 @@ const rttwsManager = new WebSocketManager<RTTEventMap>({
     heartbeatInterval: 10000,
     connectionTimeout: 60000,
     enableLogging: true,
-    maxReconnectAttempts: 10
+    maxReconnectAttempts: 3
 });
 
 export default function init() {
