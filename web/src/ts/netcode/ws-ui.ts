@@ -67,7 +67,7 @@ export function init() {
     }
     if (gameCode && nickname) {
         if (searchQuery.get('start')) {
-            joinGame(nickname, gameCode);
+            joinGame(gameCode);
             console.log('Starting game automatically');
             document.getElementById('prep-stage')?.remove();
             netcode.ws.send('start', undefined);
@@ -100,20 +100,20 @@ async function createGame(nickname: string) {
     });
 }
 function joinBtn() {
-    
-    const plData = getNickname();
-    if (!plData) return;
-
     const gameCode = getGameCode();
     if (!gameCode) {
         console.warn('No game code provided');
         return;
     }
 
-    joinGame(plData.nickname, gameCode);
+    joinGame(gameCode);
 }
 
-async function joinGame(nickname: string, gameCode: string) {
+export async function joinGame(gameCode: string) {
+    const plData = getNickname();
+	if (!plData) return;
+    const {nickname} = plData;
+
     netcode.ws.connect(`/api/v1/join/${encodeURIComponent(gameCode)}?nickname=${encodeURIComponent(nickname)}`).then(() => {
         netcode.myNickname = nickname;
         netcode.gameCode = gameCode;

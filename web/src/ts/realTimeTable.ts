@@ -1,5 +1,6 @@
 import { showError } from "./helpers/showError";
 import { WebSocketManager } from "./netcode/lib";
+import { joinGame } from "./netcode/ws-ui";
 import { Config } from "./types/types";
 
 type Game = {
@@ -13,6 +14,7 @@ interface RTTEventMap {
 }
 
 const realTimeTable = document.getElementById("real-time-table") as HTMLTableElement;
+const joinBtnTemplate = document.getElementById("join-btn-template") as HTMLTemplateElement;
 
 const rttwsManager = new WebSocketManager<RTTEventMap>({
     heartbeatInterval: 10000,
@@ -42,5 +44,11 @@ function updateTable(games: Game[]) {
         row.insertCell(0).innerText = game.code;
         row.insertCell(1).innerText = game.players.toString();
         row.insertCell(2).innerText = JSON.stringify(game.config);
+        const cell = row.insertCell(3);
+        const joinBtn = (joinBtnTemplate.content.cloneNode(true) as HTMLElement).querySelector('button')!;
+        cell.appendChild(joinBtn);
+        joinBtn.addEventListener('click', () => {
+            joinGame(game.code);
+        });
     });
 }
