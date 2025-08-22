@@ -23,8 +23,8 @@ func (e *EnvLoader) Load(c *config) error {
 	}
 
 	c.APP_ADDRESS = envFile["APP_ADDRESS"]
-	c.ENVIRONMENT = envFile["ENVIROMENT"]
+	c.ENVIRONMENT = envFile["ENVIRONMENT"]
 	c.DATABASE_CONNECTION_STRING = envFile["DATABASE_CONNECTION_STRING"]
-
+	c.DISCORD_FEEDBACK_WEBHOOK_URL = envFile["DISCORD_FEEDBACK_WEBHOOK_URL"]
 	return nil
 }
