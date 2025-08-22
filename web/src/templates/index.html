@@ -11,11 +11,16 @@
     {{ template "error.html" }}
     <div class="grid min-h-screen">
         <div class="flex flex-col place-self-center h-fit">
-            <div class="flex flex-col gap-4 w-full">
+            <div class="flex flex-col gap-4 w-full mb-4">
                 <div class="relative flex flex-col items-stretch w-fit mx-auto gap-4 h-full">
                     <!-- Goto: Welcome card -->
-                    <div class="h-full bg-gray-800 p-4 rounded-lg flex flex-col justify-between">
+                    <div class="h-full card flex flex-col justify-between">
                         <h1 class="block w-min">Welcome to Claustroboard!</h1>
+                    </div>
+                    <!-- Goto: log -->
+                    <div id="log" class="log row-span-2 card">
+                        <h2>The log</h2>
+                        <span>...</span>
                     </div>
                     <!-- Goto: board wrapper / main menu -->
                     <div class="board-wrapper">
@@ -24,14 +29,10 @@
                         <div class="board" id="board">
                         </div>
                     </div>
-                    <div id="log" class="log row-span-2">
-                        <h2>The log</h2>
-                        <span>...</span>
-                    </div>
                     <!-- Goto: rules accordion -->
                     {{ template "rules.html" }}
                     <!-- Goto: feedback prompt -->
-                    <div class="bg-gray-800 p-4 rounded-lg flex flex-col gap-1">
+                    <div class="card flex flex-col gap-1 lg:-mt-4">
                         <p>
                             Claustroboard is a rather new project.
                             <br />
