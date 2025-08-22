@@ -38,70 +38,58 @@
 		<div>
 			<h3>Settings</h3>
 			<div class="flex flex-col gap-2 h-full">
-                <div class="presets">
-					<div
-                        tabindex="0"
-						class="grid-cols-4"
-                        id="preset-4x4"
-					>
+				<div class="presets">
+					<button class="grid-cols-4 card" id="preset-4x4">
 						{{ range $x := loop 1 16 }}
 						<div></div>
 						{{ end }}
-					</div>
-					<div
-                        tabindex="0"
-						class="grid-cols-6"
-                        id="preset-6x6"
-					>
+					</button>
+					<button class="grid-cols-6 card" id="preset-6x6">
 						{{ range $x := loop 1 36 }}
 						<div></div>
 						{{ end }}
-					</div>
-					<div
-                        tabindex="0"
-						class="grid-cols-8"
-                        id="preset-8x8"
-					>
+					</button>
+					<button class="grid-cols-8 card" id="preset-8x8">
 						{{ range $x := loop 1 64 }}
 						<div></div>
 						{{ end }}
+					</button>
+				</div>
+				<div class="config-width-height">
+					<div>
+						<label for="board-width">Width</label>
+						<input
+							type="number"
+							id="board-width"
+							min="1"
+							value="6"
+							max="8"
+						/>
+					</div>
+					<div>
+						<label for="board-height">Height</label>
+						<input
+							type="number"
+							id="board-height"
+							min="1"
+							value="6"
+							max="8"
+						/>
 					</div>
 				</div>
-                <div class="config-width-height">
-				    <div>
-    					<label for="board-width">Width</label>
-    					<input
-    						type="number"
-    						id="board-width"
-    						min="1"
-    						value="6"
-    						max="8"
-    					/>
-    				</div>
-    				<div>
-    					<label for="board-height">Height</label>
-    					<input
-    						type="number"
-    						id="board-height"
-    						min="1"
-    						value="6"
-    						max="8"
-    					/>
-    				</div>
+				<hr class="my-2" />
+				<div>
+					<label for="max-player-count">Max players</label>
+					<input
+						type="number"
+						id="max-player-count"
+						min="2"
+						value="16"
+						max="16"
+					/>
 				</div>
 				<hr class="my-2" />
-                <div>
-                    <label for="max-player-count">Max players</label>
-                    <input
-                        type="number"
-                        id="max-player-count"
-                        min="2"
-                        value="16"
-                        max="16"
-                    />
-                </div>
-                <hr class="my-2" />
-                <button id="save-config-btn" class="primary-btn">Save</button>
+				<button id="save-config-btn" class="primary-btn">Save</button>
 				<p class="error-message text-red-600"></p>
 			</div>
 		</div>
