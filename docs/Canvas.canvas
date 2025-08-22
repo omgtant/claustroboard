@@ -11,13 +11,13 @@
 		{"id":"46da6bb15ba0ccf6","type":"text","text":"- [ ] Setup a feedback discord webhook","x":760,"y":-25,"width":250,"height":60,"color":"2"},
 		{"id":"9c61019580f63250","type":"text","text":"- [ ] nginx","x":710,"y":-603,"width":250,"height":60,"color":"2"},
 		{"id":"3273a3106cf59707","type":"text","text":"- [ ] dockerization","x":525,"y":-800,"width":250,"height":60,"color":"2"},
-		{"id":"2709a9dbdfa869d6","type":"text","text":"- [ ] make a more fun background for body than solid color","x":1080,"y":-420,"width":250,"height":106,"color":"5"},
+		{"id":"2709a9dbdfa869d6","type":"text","text":"- [x] make a more fun background for body than solid color","x":1080,"y":-420,"width":250,"height":106,"color":"5"},
 		{"id":"d860cf991b900b8d","type":"text","text":"- [ ] Rematch WS spec","x":320,"y":-100,"width":250,"height":60},
 		{"id":"bbbb4182070ffab3","type":"text","text":"- [ ] Config import/export","x":355,"y":-633,"width":250,"height":60,"color":"5"},
 		{"id":"2d5d3c1bd29c1632","type":"text","text":"- [ ] Rematch functionality","x":320,"y":90,"width":250,"height":60},
 		{"id":"5f44a016ef8cb00a","type":"text","text":"- [x] Update WS protocol to allow changing the lobby privacy level mid-lobby phase \n- [x] Add a query parameter for game creation that reflects the lobby privacy level to the spec","x":1440,"y":62,"width":250,"height":260,"color":"5"},
 		{"id":"52f619b26ed713e7","type":"text","text":"- [ ] Implement privacy changes","x":1280,"y":545,"width":250,"height":60},
-		{"id":"be441543c6d523c5","x":40,"y":-543,"width":250,"height":60,"type":"text","text":"- [ ] don't let non-hosts start a game"}
+		{"id":"be441543c6d523c5","type":"text","text":"- [ ] don't let non-hosts start a game","x":40,"y":-543,"width":250,"height":60}
 	],
 	"edges":[
 		{"id":"f13d0bdcae66849a","fromNode":"3ceb4b84ab40c23f","fromSide":"bottom","toNode":"56c67ce852143d95","toSide":"top"},
