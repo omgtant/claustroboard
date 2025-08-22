@@ -1,5 +1,5 @@
 .selection {
-    @apply absolute z-40 opacity-0;
+    @apply absolute z-40 opacity-0 pointer-events-none;
     background-image: var(--atlas-url);
     background-position: -256px 0px;
     width: 68px;
