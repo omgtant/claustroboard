@@ -26,6 +26,6 @@
     "dev": "concurrently -k -n html,ts,css,assets \"npm:watch:html\" \"npm:watch:ts\" \"npm:watch:postcss\" \"npm:watch:assets\"",
     "serve": "go run .",
     "godev": "wgo run -file=out/ -file=src/ .",
-    "dev:all": "concurrently -k -n assets,server \"npm:dev\" \"npm:godev\""
+    "start": "concurrently -k -n assets,server \"npm:dev\" \"npm:godev\""
   }
 }
