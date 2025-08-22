@@ -27,7 +27,7 @@ export function initFeedbackDialog() {
         const feedback = feedbackFeedback.value;
     
         // Send feedback to the server
-        fetch("/api/feedback", {
+        fetch("/api/v1/feedback", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
