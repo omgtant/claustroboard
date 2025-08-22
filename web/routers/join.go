@@ -39,6 +39,10 @@ func StartGameWS(w http.ResponseWriter, r *http.Request) {
 	}
 
 	client.write("created", map[string]string{"code": code.String()})
+	client.write(string(code), event{
+		Type: "lobby-publicity-changed",
+		Data: gameConfig.Publicity,
+	})
 	broadcastPlayerList(code)
 }
 
@@ -92,4 +96,8 @@ func JoinGameWS(w http.ResponseWriter, r *http.Request) {
 	})
 
 	broadcastPlayerList(code)
+	client.write(string(code), event{
+		Type: "lobby-publicity-changed",
+		Data: board.Publicity,
+	})
 }

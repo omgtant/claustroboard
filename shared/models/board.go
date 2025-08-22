@@ -99,10 +99,10 @@ func Join(id GameCode, p string) error {
 	}
 
 	board.Players = append(board.Players, Player{
-		Nickname:       p,
-		IsActive:       true,
-		ShouldThrowOut: false,
-		Pos:            valueobjects.Point{},
+		Nickname: p,
+		IsActive: true,
+		Deleted:  false,
+		Pos:      valueobjects.Point{},
 	})
 	gameBoardsMu.Lock()
 	gameBoards[id] = board
@@ -123,7 +123,7 @@ func Leave(id GameCode, p string) error {
 		if err != nil {
 			return err
 		}
-		player.ShouldThrowOut = true
+		player.Deleted = true
 		player.IsActive = false
 	}
 	gameBoardsMu.Lock()
