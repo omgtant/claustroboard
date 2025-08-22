@@ -158,13 +158,11 @@ function readConfig(config: Config = loadConfig()) {
             if (parseInt(count!.textContent!) > 99) {
                 count!.textContent = '99';
             }
-            if (parseInt(count!.textContent!) < 0) {
+            if (count!.textContent === '') {
                 count!.textContent = '?';
             }
-            if (count!.textContent === '') {
-                count!.textContent = '0';
-            }
             tileConfig.dataset.count = count!.textContent!;
+            updateArrows(tileConfig);
         });
         // @ts-ignore
         tileConfig.querySelector('.left-btn')?.firstChild!.classList.add(`tile-${TileColor[tileType.tileSetup.color ?? -1]}`);
