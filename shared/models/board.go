@@ -117,9 +117,9 @@ func Leave(id GameCode, p string) error {
 	}
 
 	if board.Phase == PhaseLobby {
-		board.RemovePlayer(p);
+		board.RemovePlayer(p)
 	} else {
-		player, err := board.GetPlayerByNickname(p);
+		player, err := board.GetPlayerByNickname(p)
 		if err != nil {
 			return err
 		}
