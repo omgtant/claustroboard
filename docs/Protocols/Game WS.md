@@ -16,7 +16,6 @@ If the environment variable `ENVIRONMENT` is set to `"development"`, the followi
 
 Action `broadcast` (payload)
 	-> broadcast `broadcast`: (payload)
-	## Type spec
 ## Type definitions
 ### Config
 ```json
