@@ -15,29 +15,28 @@
 		@apply text-2xl;
 	}
 	input,
-	textarea {
+	textarea,
+	button,
+	.button {
 		@apply p-2 bg-gray-700 rounded-lg block min-w-24;
-		@apply lighter:bg-gray-600;
+	}
+	input,
+	textarea {
+		@apply lighter:bg-gray-600 hover:bg-gray-600;
+	}
+	button,
+	.button {
+		@apply text-center transition-colors duration-100 cursor-pointer hover:bg-gray-500;
+	}
+	:disabled, .disabled {
+		@apply opacity-50;
 	}
 
-	button {
-		@apply p-2 bg-gray-700 hover:bg-gray-600 block;
-		@apply transition-colors duration-100 rounded-lg cursor-pointer;
-		@apply lighter:bg-gray-600 hover:bg-gray-500;
-
-		:disabled {
-			@apply opacity-50;
-		}
+	hr, .vr {
+		@apply lighter:border-gray-500 border-gray-600;
 	}
-
-	hr {
-		@apply border-t border-gray-600;
-		@apply lighter:border-gray-500;
-	}
-	.vr {
-		@apply border-l border-gray-600;
-		@apply lighter:border-gray-500;
-	}
+	hr  { @apply border-t }
+	.vr { @apply border-l }
 
 	dialog {
 		@apply relative m-auto bg-gray-800 rounded-xl min-w-40 min-h-40 px-4 py-8;
@@ -50,9 +49,9 @@
 	}
 
 	footer {
-		@apply lg:fixed lg:bottom-0 lg:left-0 lg:right-0;
-		@apply flex h-fit max-lg:bg-gray-800 flex-col items-center lg:items-end justify-end p-4;
-		@apply lg:flex-row lg:bottom-0 lg:p-2 w-full lg:justify-start gap-8 lg:h-auto;
+		@apply lg:fixed lg:bottom-0 lg:left-0 lg:h-auto;
+		@apply flex flex-col items-center lg:flex-row;
+		@apply p-4 lg:p-2 gap-8 max-lg:bg-gray-800;
 	}
 }
 

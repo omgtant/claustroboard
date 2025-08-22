@@ -7,7 +7,7 @@
 }
 
 .lobby-switch .switch > label {
-    @apply rounded-full size-10 p-2 z-20 transition-[filter] duration-200 ease-in-out;
+    @apply rounded-full size-10 p-2 z-20 transition-[filter] duration-200 ease-in-out cursor-pointer;
     @apply invert-100;
 }
 
