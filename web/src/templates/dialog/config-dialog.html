@@ -25,6 +25,16 @@
 
 	<div class="flex mx-auto items-center gap-2 w-full justify-center">
 		<h2>Config</h2>
+		<button 
+			class="primary-btn p-0">
+			<label class="w-full h-full block p-2 cursor-pointer"
+				><input
+					type="file"
+					class="hidden"
+					accept=".json"
+					id="import-config-input"
+				/>Import</label>
+		</button>
 		<button class="danger-btn" id="reset-btn">Reset</button>
 		<button class="danger-btn" id="set-zeros">All Zeros</button>
 	</div>
@@ -89,7 +99,20 @@
 					/>
 				</div>
 				<hr class="my-2" />
-				<button id="save-config-btn" class="primary-btn">Save</button>
+				<div class="flex gap-2">
+					<button id="save-config-btn" class="primary-btn w-full">
+						Save
+					</button>
+					<button
+						id="export-config-btn"
+						class="primary-btn aspect-square"
+					>
+						<img
+							src="/static/assets/img/heroicons/download.svg"
+							class="invert-100"
+						/>
+					</button>
+				</div>
 				<p class="error-message text-red-600"></p>
 			</div>
 		</div>

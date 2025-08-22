@@ -6,6 +6,8 @@ import { TileColor } from "./types/util";
 const dialogEl = document.getElementById('config-dialog') as HTMLDialogElement;
 const closeBtn = document.getElementById('close-config-btn') as HTMLButtonElement;
 const openBtn = document.getElementById('open-config-btn') as HTMLButtonElement;
+const exportBtn = document.getElementById('export-config-btn') as HTMLButtonElement;
+const importBtn = document.getElementById('import-config-input') as HTMLInputElement;
 const resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
 const allZerosBtn = document.getElementById('set-zeros') as HTMLButtonElement;
 const saveBtn = document.getElementById('save-config-btn') as HTMLButtonElement;
@@ -73,24 +75,8 @@ export function init() {
     });
 
     saveBtn.addEventListener('click', () => {
-        const config = loadConfig();
-        config.width = parseInt(widthInput.value);
-        config.height = parseInt(heightInput.value);
-        config.maxPlayers = parseInt(maxPlayerCountInput.value);
-        config.deck = Array.from(document.querySelectorAll('.tile-row')).map(row => {
-            if (!(row instanceof HTMLElement)) return;
-            if (!(row.dataset.tileType)) return;
-            const tileType = JSON.parse(row.dataset.tileType);
-            try {
-                return {
-                    tile: tileType,
-                    count: parseInt(row.dataset.count!) ?? undefined
-                };
-            } catch (err) {
-                error.textContent = err.message;
-            }
-        }) as { tile: TileSetup, count: number | undefined }[];
         try {
+            const config = getCurrentConfig();
             saveConfig(config);
             error.textContent = '';
             saveBtn.classList.add('success-btn');
@@ -99,6 +85,21 @@ export function init() {
             }, 2000);
         } catch (err) {
             error.textContent = err.message;
+        }
+    });
+
+    exportBtn.addEventListener('click', exportConfig);
+
+    importBtn.addEventListener('change', (event) => {
+        const file = (event.target as HTMLInputElement).files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const config = JSON.parse(e.target?.result as string);
+                readConfig(config);
+                alert("Success! Don't forget to Save.");
+            };
+            reader.readAsText(file);
         }
     });
 
@@ -191,4 +192,39 @@ function updatePresetHighlights() {
     } else {
         preset8x8.classList.remove('highlight');
     }
+}
+
+function getCurrentConfig() {
+    const config = loadConfig();
+	config.width = parseInt(widthInput.value);
+	config.height = parseInt(heightInput.value);
+	config.maxPlayers = parseInt(maxPlayerCountInput.value);
+	config.deck = Array.from(document.querySelectorAll(".tile-row")).map(
+		(row) => {
+			if (!(row instanceof HTMLElement)) return;
+			if (!row.dataset.tileType) return;
+			const tileType = JSON.parse(row.dataset.tileType);
+			try {
+				return {
+					tile: tileType,
+					count: parseInt(row.dataset.count!) ?? undefined,
+				};
+			} catch (err) {
+				error.textContent = err.message;
+			}
+		}
+	) as { tile: TileSetup; count: number | undefined }[];
+    return config;
+}
+
+function exportConfig() {
+	const config = getCurrentConfig();
+	const json = JSON.stringify(config, null, 2);
+	const blob = new Blob([json], { type: "application/json" });
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement("a");
+	a.href = url;
+	a.download = "config.json";
+	a.click();
+	URL.revokeObjectURL(url);
 }
