@@ -1,7 +1,7 @@
 
 ## Endpoints
 
-HTTP GET `/api/v1/start-game?nickname=$NICK&config=$CONFIG&lobby=$PRIVACY`
+HTTP GET `/api/v1/start-game?nickname=$NICK&config=$CONFIG
 	-> [[Game WS]]
 	-> event `created` `{"code": "game code (i.e. ABC123)"}`
 	-> broadcast `playerlist-changed`: `["nickname"]`
@@ -16,5 +16,4 @@ HTTP POST `/api/v1/feedback` (contact, feedback) -> [[Feedback]]
 
 ## Type Definitions
 
-### $PRIVACY
-[[Privacy levels]] one of `private`, `unlisted`, `public`.
+### $CONFIG

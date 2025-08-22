@@ -28,6 +28,7 @@ type Board struct {
 	Turn       uint32
 	CheckTurn  uint32 // Used in netcode to ensure clients are in sync
 	Phase      BoardPhase
+	Publicity  enums.LobbyPublicity
 }
 
 var (
@@ -47,6 +48,7 @@ func NewGameBoard(players []string, gameConfig dtos.GameConfig) (GameCode, error
 		Height:     height,
 		MaxPlayers: uint8(gameConfig.MaxPlayers),
 		Phase:      PhaseLobby,
+		Publicity:  gameConfig.Publicity,
 	}
 
 	board.Tiles = make([][]Tile, height)
@@ -85,6 +87,9 @@ func Join(id GameCode, p string) error {
 	board, err := GetBoard(id)
 	if err != nil {
 		return err
+	}
+	if board.Publicity == enums.LobbyPublicityPrivate {
+		return errors.New("cannot join private game")
 	}
 	if board.Phase != PhaseLobby {
 		return errors.New("cannot join game that has already started")

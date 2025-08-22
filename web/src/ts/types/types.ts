@@ -86,8 +86,15 @@ export type DeckElement = {
     count?: number
 }
 
+export enum LobbyPublicity {
+    Public  = "public",
+    Private = "private",
+    Unlisted = "unlisted"
+}
+
 export type Config = {
-    version: 1,
+    version: 2,
+    publicity: LobbyPublicity,
     width: number;
     height: number;
     maxPlayers: number;

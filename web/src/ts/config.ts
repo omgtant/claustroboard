@@ -1,8 +1,9 @@
-import { Config, DeckElement, TileSetup } from "./types/types";
+import { Config, DeckElement, LobbyPublicity, TileSetup } from "./types/types";
 
 export function getDefaultConfig(): Config {
 	return {
-		version: 1,
+		version: 2,
+		publicity: LobbyPublicity.Public,
 		width: 4,
 		height: 4,
 		maxPlayers: 10,
@@ -14,7 +15,7 @@ export function getDefaultConfig(): Config {
  * Centralized validation for Config. Throws on invalidity.
  */
 export function validateConfig(config: Config): void {
-	if (config.version !== 1) {
+	if (config.version !== 2) {
 		throw new Error(`Unsupported config version: ${config.version}`);
 	}
 	const isPosInt = (n: number) => Number.isInteger(n) && n > 0;
@@ -26,6 +27,10 @@ export function validateConfig(config: Config): void {
 	}
 	if (!Array.isArray(config.deck)) {
 		throw new Error("Deck must be an array.");
+	}
+	// Validate lobby publicity
+	if (!Object.values(LobbyPublicity).includes(config.publicity)) {
+		throw new Error(`Invalid lobby publicity: ${config.publicity}`);
 	}
 	// Range-specific validations
 	validateMaxPlayersRange(config);

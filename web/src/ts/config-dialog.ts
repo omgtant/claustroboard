@@ -1,5 +1,5 @@
 import { getCountFor, getDefaultConfig, loadConfig, saveConfig, generateAllTileSetups, getDefaultCountFor } from "./config";
-import { Config, Tile, TileSetup } from "./types/types";
+import { Config, LobbyPublicity, Tile, TileSetup } from "./types/types";
 import { TileColor } from "./types/util";
 
 //#region DOM Elements
@@ -123,6 +123,8 @@ function readConfig(config: Config = loadConfig()) {
     widthInput.value = config.width.toString();
     heightInput.value = config.height.toString();
     maxPlayerCountInput.value = config.maxPlayers.toString();
+    console.log(config.publicity);
+    (dialogEl.querySelector(`input[value=${config.publicity}]`)! as HTMLInputElement).checked = true
     _getEveryTileType().forEach(tileType => {
         // @ts-ignore
         const tileConfig: HTMLElement = document.getElementById('tile-configuration')!.content.cloneNode(true).querySelector('.tile-row');
@@ -199,6 +201,7 @@ function getCurrentConfig() {
 	config.width = parseInt(widthInput.value);
 	config.height = parseInt(heightInput.value);
 	config.maxPlayers = parseInt(maxPlayerCountInput.value);
+    config.publicity = (dialogEl.querySelector('input[name="lobby-publicity"]:checked') as HTMLInputElement).value as LobbyPublicity;
 	config.deck = Array.from(document.querySelectorAll(".tile-row")).map(
 		(row) => {
 			if (!(row instanceof HTMLElement)) return;

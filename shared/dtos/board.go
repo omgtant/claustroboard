@@ -1,6 +1,9 @@
 package dtos
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"omgtant/claustroboard/shared/enums"
+)
 
 type Board struct {
     Palette Palette       `json:"palette"`
@@ -12,6 +15,7 @@ type Board struct {
 
 type GameConfig struct {
     Version    int          `json:"version"`
+    Publicity  enums.LobbyPublicity `json:"publicity"`
     Width      int          `json:"width"`
     Height     int          `json:"height"`
     MaxPlayers int          `json:"maxPlayers"`
