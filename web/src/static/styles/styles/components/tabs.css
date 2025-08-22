@@ -1,13 +1,23 @@
+@import "tailwindcss";
+
 .tabs {
     @apply flex;
     > label {
-        @apply flex-1 cursor-pointer block bg-gray-800 p-2 transition-colors border border-transparent;
+        @apply flex-1 cursor-pointer block bg-gray-800 p-2;
+        @apply transition-colors;
+        @apply border border-transparent border-b-0;
         @apply hover:bg-gray-600;
         &:has(input:checked) {
             @apply bg-gray-700 border-gray-500 border-b-transparent z-20;
         }
         > input {
-            @apply hidden;
+            @apply opacity-0 size-0 pointer-events-none;
+            &:focus-visible {
+                @apply outline-none;
+            }
+        }
+        &:has(:focus-visible) {
+            border-image: linear-gradient(to bottom, var(--color-orange-500), var(--color-gray-500)) 1;
         }
     }
 }
@@ -26,5 +36,5 @@
 }
 
 .tabs-content {
-    @apply relative z-10 bg-gray-700 -mt-[1.5px] border border-gray-500;
+    @apply relative z-10 bg-gray-700 -mt-[1px] border border-gray-500;
 }

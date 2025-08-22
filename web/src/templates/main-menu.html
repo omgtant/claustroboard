@@ -15,21 +15,32 @@
 			<hr />
 			<div class="tabs-control">
 				<nav class="tabs">
-					<label tabindex="0">
+					<label>
 						<input
 							type="radio"
 							name="game-type"
 							value="join"
 							checked
+							
 						/>
 						Join
 					</label>
-					<label tabindex="0">
-						<input type="radio" name="game-type" value="create" />
+					<label>
+						<input
+							type="radio"
+							name="game-type"
+							value="create"
+							
+						/>
 						Create
 					</label>
-					<label tabindex="0">
-						<input type="radio" name="game-type" value="offline" />
+					<label>
+						<input
+							type="radio"
+							name="game-type"
+							value="offline"
+							
+						/>
 						Offline
 					</label>
 				</nav>
@@ -50,27 +61,36 @@
 		<div class="flex items-center justify-center w-full gap-2">
 			<a target="_blank" id="game-link" class="can-copy text-xs"></a>
 			<button id="copy-link" class="primary-btn p-0.5 hidden">
-                <img src="/static/assets/img/heroicons/clipboard.svg" class="invert-100 size-6 peer hide-on-copy" />
-				<img src="/static/assets/img/heroicons/clipboard-ok.svg" class="invert-100 size-6 peer-[:not(.hidden)]:hidden" />
+				<img
+					src="/static/assets/img/heroicons/clipboard.svg"
+					class="invert-100 size-6 peer hide-on-copy"
+				/>
+				<img
+					src="/static/assets/img/heroicons/clipboard-ok.svg"
+					class="invert-100 size-6 peer-[:not(.hidden)]:hidden"
+				/>
 			</button>
 		</div>
 		<div class="flex flex-col gap-2 w-full">
-            <div class="w-full">
-                <div class="w-fit mx-auto">{{ template "lobby-switch.html" }}</div>
-            </div>
+			<div class="w-full">
+				<div class="w-fit mx-auto">
+					{{ template "lobby-switch.html" }}
+				</div>
+			</div>
 			<div class="w-full max-h-screen xl:max-h-[50vh] overflow-y-scroll">
-				<table class="w-full **:[td,th]:p-2 **:[tr_:first-child]:text-left **:[tr_:last-child]:text-right">
+				<table
+					class="w-full **:[td,th]:p-2 **:[tr_:first-child]:text-left **:[tr_:last-child]:text-right"
+				>
 					<thead>
 						<tr>
 							<th>Nickname</th>
 							<th class="w-12">Actions</th>
 						</tr>
 					</thead>
-					<tbody id="player-list" class="player-list">
-					</tbody>
+					<tbody id="player-list" class="player-list"></tbody>
 				</table>
 			</div>
-            <hr class="my-2" />
+			<hr class="my-2" />
 			<div>
 				<button class="w-full h-full primary-btn" id="start-btn">
 					Start
