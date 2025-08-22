@@ -17,7 +17,9 @@
 		{"id":"52f619b26ed713e7","type":"text","text":"- [x] Implement privacy changes","x":1280,"y":545,"width":250,"height":60,"color":"5"},
 		{"id":"436f9b206e0cfca2","type":"text","text":"- [ ] Prometheus","x":659,"y":-934,"width":250,"height":60},
 		{"id":"e76e14b35a9b230f","type":"text","text":"- [ ] api/v1/metrics endpoint","x":1030,"y":-758,"width":250,"height":60},
-		{"id":"1ab9dba2481a5c9b","type":"text","text":"- [ ] /api/v1/metrics spec","x":1030,"y":-633,"width":250,"height":60}
+		{"id":"1ab9dba2481a5c9b","type":"text","text":"- [ ] /api/v1/metrics spec","x":1030,"y":-633,"width":250,"height":60},
+		{"id":"bccf213849aece56","x":160,"y":-663,"width":250,"height":60,"type":"text","text":"- [ ] Only host can start the game"},
+		{"id":"4a14b711793a147b","x":-20,"y":-543,"width":250,"height":60,"type":"text","text":"- [ ] Only-host kick functionality"}
 	],
 	"edges":[
 		{"id":"f13d0bdcae66849a","fromNode":"3ceb4b84ab40c23f","fromSide":"bottom","toNode":"56c67ce852143d95","toSide":"top"},
@@ -39,6 +41,8 @@
 		{"id":"e189c07012bf4dd0","fromNode":"3273a3106cf59707","fromSide":"top","toNode":"436f9b206e0cfca2","toSide":"bottom"},
 		{"id":"22c5b5be8b8587e1","fromNode":"e76e14b35a9b230f","fromSide":"top","toNode":"436f9b206e0cfca2","toSide":"bottom"},
 		{"id":"33d81b67d76e8a29","fromNode":"9bd0978d04a7f4dd","fromSide":"right","toNode":"1ab9dba2481a5c9b","toSide":"bottom"},
-		{"id":"da7089db354b7fbc","fromNode":"1ab9dba2481a5c9b","fromSide":"top","toNode":"e76e14b35a9b230f","toSide":"bottom"}
+		{"id":"da7089db354b7fbc","fromNode":"1ab9dba2481a5c9b","fromSide":"top","toNode":"e76e14b35a9b230f","toSide":"bottom"},
+		{"id":"b1243c3f1271d237","fromNode":"9bd0978d04a7f4dd","fromSide":"left","toNode":"bccf213849aece56","toSide":"bottom"},
+		{"id":"87ab9d013aa3de51","fromNode":"9bd0978d04a7f4dd","fromSide":"left","toNode":"4a14b711793a147b","toSide":"bottom"}
 	]
 }
