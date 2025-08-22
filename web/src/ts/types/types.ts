@@ -64,6 +64,8 @@ export interface EventMap {
     'my-move': MoveDelta,
     'they-moved': MoveDelta,
     'come-again': MoveDelta,
+    'lobby-publicity': string,
+    'lobby-publicity-changed': string,
     'close': void,
     'broadcast': any,
     'error': any

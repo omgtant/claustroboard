@@ -8,7 +8,7 @@ Action `my-move` (delta) -> error, yes: the player makes some moves. Note that a
 	
 Action `come-again` -> \[delta\]
 
-Action `lobby-privacy` (`"private" | "unlisted" | "public"`) -> broadcast `lobby-privacy`
+Action `lobby-publicity` (`"private" | "unlisted" | "public"`) -> broadcast `lobby-publicity-changed`
 
 Upon ending the game, the server broadcasts `close`.
 

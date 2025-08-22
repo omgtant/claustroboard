@@ -6,15 +6,17 @@ import (
 
 	"omgtant/claustroboard/shared/config"
 	"omgtant/claustroboard/shared/dtos"
+	"omgtant/claustroboard/shared/enums"
 	"omgtant/claustroboard/shared/models"
 )
 
 var (
 	inboundHandlers = map[string]func(*wsClient, json.RawMessage){
-		"start":      handleStartGame,
-		"broadcast":  handleBroadcast,
-		"my-move":    handleMove,
-		"come-again": handleBroadcast,
+		"start":         handleStartGame,
+		"broadcast":     handleBroadcast,
+		"my-move":       handleMove,
+		"come-again":    handleBroadcast,
+		"lobby-publicity": handleLobbyPublicity,
 	}
 )
 
@@ -36,6 +38,10 @@ func broadcastPlayerList(gameCode models.GameCode) {
 		Type: "playerlist-changed",
 		Data: players,
 	})
+	broadcastEvent(gameCode, event{
+		Type: "lobby-publicity-changed",
+		Data: board.Publicity,
+	}) // Lazy fix
 }
 
 func handleStartGame(c *wsClient, _ json.RawMessage) {
@@ -49,6 +55,24 @@ func handleStartGame(c *wsClient, _ json.RawMessage) {
 	broadcastEvent(c.gameCode, event{
 		Type: "started",
 		Data: snap,
+	})
+}
+
+func handleLobbyPublicity(c *wsClient, data json.RawMessage) {
+	board, err := models.GetBoard(c.gameCode)
+	if err != nil {
+		c.writeError(err)
+		return
+	}
+	var newPublicity enums.LobbyPublicity
+	if err := json.Unmarshal(data, &newPublicity); err != nil {
+		c.writeError(err)
+		return
+	}
+	board.Publicity = newPublicity
+	broadcastEvent(c.gameCode, event{
+		Type: "lobby-publicity-changed",
+		Data: newPublicity,
 	})
 }
 

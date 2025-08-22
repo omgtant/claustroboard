@@ -153,6 +153,16 @@ function initPrepState() {
         });
     }
 
+    const lobbySwitch = document.getElementById('prep-stage')?.querySelector('.lobby-switch');
+    if (lobbySwitch) {
+        lobbySwitch.addEventListener('change', (e) => {
+            const target = e.target as HTMLInputElement;
+            if (target.name === 'lobby-publicity') {
+                netcode.ws.send('lobby-publicity', target.value);
+            }
+        });
+    }
+
     document.getElementById('start-btn')?.addEventListener('click', () => {
         netcode.ws.send('start', undefined);
     });
@@ -231,4 +241,9 @@ netcode.ws.on('connection:close', () => {
 
 netcode.ws.on('close', () => {
     window.location.reload();
+})
+
+
+netcode.ws.on('lobby-publicity-changed', (newPublicity: string) => {
+    (document.getElementById('prep-stage')?.querySelector(`[value="${newPublicity}"]`) as HTMLInputElement).checked = true;
 })
