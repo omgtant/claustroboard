@@ -8,9 +8,9 @@ Action `my-move` (delta) -> error, yes: the player makes some moves. Note that a
 	
 Action `come-again` -> \[delta\]
 
-Action `lobby-publicity` (`"private" | "unlisted" | "public"`) -> broadcast `lobby-publicity-changed`
+Action `lobby-publicity` (`"private" | "unlisted" | "public"`) -> broadcast `lobby-publicity-changed` (`"private" | "unlisted" | "public"`)
 
-Upon ending the game, the server broadcasts `close`.
+Action `vote-rematch` (true | false) -> broadcast `rematch-votes-changed` (\[votee1nickname, votee2nickname\])
 
 If the environment variable `ENVIRONMENT` is set to `"development"`, the following actions and events are also made available:
 
