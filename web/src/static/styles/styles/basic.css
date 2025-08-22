@@ -14,7 +14,8 @@
 	h2 {
 		@apply text-2xl;
 	}
-	input, textarea {
+	input,
+	textarea {
 		@apply p-2 bg-gray-700 rounded-lg block min-w-24;
 		@apply lighter:bg-gray-600;
 	}
@@ -50,8 +51,8 @@
 
 	footer {
 		@apply lg:fixed lg:bottom-0 lg:left-0 lg:right-0;
-		@apply flex h-20 max-lg:bg-gray-800 flex-col items-center justify-end p-4;
-		@apply lg:flex-row lg:bottom-0 lg:p-2 lg:w-full lg:justify-start lg:gap-8 lg:h-auto;
+		@apply flex h-fit max-lg:bg-gray-800 flex-col items-center lg:items-end justify-end p-4;
+		@apply lg:flex-row lg:bottom-0 lg:p-2 w-full lg:justify-start gap-8 lg:h-auto;
 	}
 }
 

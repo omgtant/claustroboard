@@ -2,6 +2,7 @@
 @import-glob './styles/**/*.css';
 
 @custom-variant lighter (&:where(.lighter, .lighter *));
+@custom-variant bg-animated (&:where(.bg-animated, .bg-animated *));
 
 @source "web/src/**/*";
 
