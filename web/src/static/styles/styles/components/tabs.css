@@ -1,10 +1,10 @@
 .tabs {
     @apply flex;
     > label {
-        @apply flex-1 cursor-pointer block bg-gray-800 p-2 transition-colors;
+        @apply flex-1 cursor-pointer block bg-gray-800 p-2 transition-colors border border-transparent;
         @apply hover:bg-gray-600;
         &:has(input:checked) {
-            @apply bg-gray-700;
+            @apply bg-gray-700 border-gray-500 border-b-transparent z-20;
         }
         > input {
             @apply hidden;
@@ -26,5 +26,5 @@
 }
 
 .tabs-content {
-    @apply bg-gray-700;
+    @apply relative z-10 bg-gray-700 -mt-[1.5px] border border-gray-500;
 }
