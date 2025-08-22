@@ -70,6 +70,7 @@ export function init() {
         Array.from(document.querySelectorAll('.tile-row')).forEach(row => {
             if (!(row instanceof HTMLElement)) return;
             row.dataset.count = '0';
+            updateArrows(row);
             row.querySelector('.count')!.textContent = '0';
         });
     });
@@ -140,8 +141,7 @@ function readConfig(config: Config = loadConfig()) {
         tileConfig.querySelector('.left-btn')!.addEventListener('click', () => {
             tileConfig.dataset.count = Math.max(-1, parseInt(tileConfig.dataset.count!) - 1).toString();
             if (tileConfig.dataset.count === '-1') tileConfig.dataset.count = '?';
-            tileConfig.querySelector<HTMLButtonElement>('.left-btn')!.disabled = tileConfig.dataset.count === '?';
-            tileConfig.querySelector<HTMLButtonElement>('.right-btn')!.disabled = tileConfig.dataset.count === '99';
+            updateArrows(tileConfig);
             count!.textContent = tileConfig.dataset.count;
         });
         tileConfig.querySelector('.right-btn')!.addEventListener('click', () => {
@@ -149,10 +149,10 @@ function readConfig(config: Config = loadConfig()) {
                 tileConfig.dataset.count = '-1';
             }
             tileConfig.dataset.count = Math.min(99, parseInt(tileConfig.dataset.count!) + 1).toString();
-            tileConfig.querySelector<HTMLButtonElement>('.left-btn')!.disabled = tileConfig.dataset.count === '?';
-            tileConfig.querySelector<HTMLButtonElement>('.right-btn')!.disabled = tileConfig.dataset.count === '99';
+            updateArrows(tileConfig);
             count!.textContent = tileConfig.dataset.count;
         });
+        updateArrows(tileConfig);
         count!.addEventListener('focusout', (e) => {
             count!.textContent = count!.textContent!.replace(/[^0-9]/g, "");
             if (parseInt(count!.textContent!) > 99) {
@@ -174,6 +174,11 @@ function readConfig(config: Config = loadConfig()) {
         tileList?.appendChild(tileConfig);
     });
     updatePresetHighlights();
+}
+
+function updateArrows(tileConfig: HTMLElement) {
+    tileConfig.querySelector<HTMLButtonElement>('.left-btn')!.disabled = tileConfig.dataset.count === '?';
+    tileConfig.querySelector<HTMLButtonElement>('.right-btn')!.disabled = tileConfig.dataset.count === '99';
 }
 
 function updatePresetHighlights() {
