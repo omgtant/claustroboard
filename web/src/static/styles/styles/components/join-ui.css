@@ -1,21 +1,22 @@
 .join-ui {
-    @apply flex flex-col;
-    table {
-        @apply w-full border-t border-gray-500;
-    }
-    thead {
-        @apply bg-gray-500 text-left;
-    }
-    th,td {
-        @apply p-1;
-    }
-    input {
-        @apply flex-1 rounded-none outline-none border border-gray-500 border-r-transparent;
-        &:focus-visible {
-            @apply border-orange-500
-        }
-    }
-    button.primary-btn {
-        @apply rounded-none border border-blue-500 border-l-transparent;
-    }
+	@apply flex flex-col;
+	table {
+		@apply w-full border-t border-gray-500;
+	}
+	thead {
+		@apply bg-gray-500 text-left;
+	}
+	th,
+	td {
+		@apply p-1;
+	}
+	input {
+		@apply flex-1 rounded-none outline-none border border-gray-500 border-r-transparent;
+		&:focus-visible {
+			@apply border-orange-500;
+		}
+	}
+	button.primary-btn {
+		@apply rounded-none border border-blue-500 border-l-transparent;
+	}
 }
