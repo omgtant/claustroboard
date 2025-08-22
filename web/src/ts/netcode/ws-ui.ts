@@ -166,6 +166,8 @@ function initPrepState() {
     document.getElementById('start-btn')?.addEventListener('click', () => {
         netcode.ws.send('start', undefined);
     });
+
+    setUpReloadOnClose();
 }
 
 netcode.ws.on('playerlist-changed', (currentPlayers) => {
@@ -235,13 +237,15 @@ function start(data: InitialState) {
 
 }
 
-netcode.ws.on('connection:close', () => {
-    window.location.reload();
-});
+function setUpReloadOnClose() {
+    netcode.ws.on("connection:close", () => {
+		window.location.reload();
+	});
 
-netcode.ws.on('close', () => {
-    window.location.reload();
-})
+	netcode.ws.on("close", () => {
+		window.location.reload();
+	});
+}
 
 
 netcode.ws.on('lobby-publicity-changed', (newPublicity: string) => {
