@@ -31,8 +31,8 @@ export default function init() {
 		const layer = Math.floor(Math.random() * maxLayers);
 		square.dataset.layer = layer.toString();
 		square.style.scale = (
-			1 +
-			((maxLayers - layer) * 1) / maxLayers
+			0.6 +
+			((maxLayers - layer) * 2) / maxLayers
 		).toString();
 
 		const x = Math.random() * 75 + 12.5;
@@ -60,8 +60,8 @@ export default function init() {
 			const baseX = parseFloat(square.dataset.baseX!);
 			const baseY = parseFloat(square.dataset.baseY!);
 
-			const floatX = Math.sin(time * 0.8 + layer) * 3;
-			const floatY = Math.cos(time + layer * 0.7) * 3;
+			const floatX = Math.sin(time * 0.8 + layer + baseX) * 3;
+			const floatY = Math.cos(time + layer * 0.7 + baseY) * 3;
 
 			// Only apply floating if no mouse parallax is active
 			square.style.left = baseX + floatX + "%";
@@ -69,7 +69,7 @@ export default function init() {
 
 			// Rotation
 			square.style.rotate =
-				"1 1 1 " + Math.cos(time * 0.1 + layer * 0.7) * 360 + "deg";
+				"1 1 1 " + Math.cos(time * 0.1 + layer * 0.7 + baseX * 11 + baseY * 6) * 360 + "deg";
 		});
 
 		requestAnimationFrame(floatSquares);
