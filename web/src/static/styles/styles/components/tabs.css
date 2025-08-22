@@ -7,6 +7,7 @@
         @apply transition-colors;
         @apply border border-transparent border-b-0;
         @apply hover:bg-gray-600;
+        @apply text-center;
         &:has(input:checked) {
             @apply bg-gray-700 border-gray-500 border-b-transparent z-20;
         }
