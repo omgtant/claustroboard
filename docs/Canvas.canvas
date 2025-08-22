@@ -5,7 +5,7 @@
 		{"id":"56c67ce852143d95","type":"text","text":"Lobby","x":-340,"y":220,"width":180,"height":60},
 		{"id":"3d130c9452239bab","type":"text","text":"[[Game Logic | Game]]","x":-340,"y":320,"width":180,"height":60},
 		{"id":"a987b0990ae832a0","type":"text","text":"Rematch Vote","x":-340,"y":420,"width":180,"height":60},
-		{"id":"c19c511d697e144d","type":"text","text":"- [ ] Board lobby privacy levels\n\t- Public: displayed in the table, anyone can join\n\t- Unlisted: anyone can join using the code\n\t- Private: no one can join\n- [x] A tech spec file describing these","x":1080,"y":-200,"width":250,"height":350},
+		{"id":"c19c511d697e144d","type":"text","text":"- [x] Board lobby privacy levels\n\t- Public: displayed in the table, anyone can join\n\t- Unlisted: anyone can join using the code\n\t- Private: no one can join\n- [x] A tech spec file describing these","x":1080,"y":-200,"width":250,"height":350,"color":"5"},
 		{"id":"67363f38744c7513","type":"text","text":"- [x] Update the WS protocol to include real time tables","x":635,"y":189,"width":250,"height":133,"color":"5"},
 		{"id":"39f73abfc364e45c","type":"text","text":"- [ ] Public boards real time table","x":935,"y":450,"width":250,"height":70,"color":"2"},
 		{"id":"46da6bb15ba0ccf6","type":"text","text":"- [ ] Setup a feedback discord webhook","x":760,"y":-25,"width":250,"height":60,"color":"2"},
@@ -14,10 +14,10 @@
 		{"id":"d860cf991b900b8d","type":"text","text":"- [ ] Rematch WS spec","x":320,"y":-100,"width":250,"height":60},
 		{"id":"2d5d3c1bd29c1632","type":"text","text":"- [ ] Rematch functionality","x":320,"y":90,"width":250,"height":60},
 		{"id":"5f44a016ef8cb00a","type":"text","text":"- [x] Update WS protocol to allow changing the lobby privacy level mid-lobby phase \n- [x] Add a query parameter for game creation that reflects the lobby privacy level to the spec","x":1440,"y":62,"width":250,"height":260,"color":"5"},
-		{"id":"52f619b26ed713e7","type":"text","text":"- [ ] Implement privacy changes","x":1280,"y":545,"width":250,"height":60},
-		{"id":"436f9b206e0cfca2","x":659,"y":-934,"width":250,"height":60,"type":"text","text":"- [ ] Prometheus"},
-		{"id":"e76e14b35a9b230f","x":1030,"y":-758,"width":250,"height":60,"type":"text","text":"- [ ] api/v1/metrics endpoint"},
-		{"id":"1ab9dba2481a5c9b","x":1030,"y":-633,"width":250,"height":60,"type":"text","text":"- [ ] /api/v1/metrics spec"}
+		{"id":"52f619b26ed713e7","type":"text","text":"- [x] Implement privacy changes","x":1280,"y":545,"width":250,"height":60,"color":"5"},
+		{"id":"436f9b206e0cfca2","type":"text","text":"- [ ] Prometheus","x":659,"y":-934,"width":250,"height":60},
+		{"id":"e76e14b35a9b230f","type":"text","text":"- [ ] api/v1/metrics endpoint","x":1030,"y":-758,"width":250,"height":60},
+		{"id":"1ab9dba2481a5c9b","type":"text","text":"- [ ] /api/v1/metrics spec","x":1030,"y":-633,"width":250,"height":60}
 	],
 	"edges":[
 		{"id":"f13d0bdcae66849a","fromNode":"3ceb4b84ab40c23f","fromSide":"bottom","toNode":"56c67ce852143d95","toSide":"top"},
