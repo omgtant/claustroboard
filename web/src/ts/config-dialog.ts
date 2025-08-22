@@ -208,9 +208,10 @@ function getCurrentConfig() {
 			if (!row.dataset.tileType) return;
 			const tileType = JSON.parse(row.dataset.tileType);
 			try {
+                const count = parseInt(row.dataset.count!);
 				return {
 					tile: tileType,
-					count: parseInt(row.dataset.count!) ?? undefined,
+					count: Number.isNaN(count) ? undefined : count,
 				};
 			} catch (err) {
 				error.textContent = err.message;

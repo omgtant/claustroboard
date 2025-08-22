@@ -37,9 +37,9 @@ export function validateConfig(config: Config): void {
 	validateBoardSizeLimits(config);
 	for (const element of config.deck) {
 		if (element.count !== undefined) {
-			if (!Number.isFinite(element.count) || element.count < 0) {
+			if (Number.isNaN(element.count) || element.count < 0) {
 				throw new Error(
-					"Deck element count must be a non-negative number or undefined."
+					`${element.tile.tile_type} tile count must be a non-negative number or undefined.`
 				);
 			}
 		}
