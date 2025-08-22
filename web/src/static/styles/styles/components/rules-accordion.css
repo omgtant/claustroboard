@@ -1,5 +1,5 @@
 .rules-accordion {
-    @apply w-full lg:w-auto lg:absolute right-full mr-4 bg-gray-800 overflow-hidden;
+    @apply w-full lg:w-auto lg:absolute right-full mr-4 overflow-hidden;
     @apply p-2 rounded-lg z-40 h-full flex flex-col lg:flex-row-reverse;
     > .rules-label {
         @apply cursor-pointer -m-2 z-50 p-2;

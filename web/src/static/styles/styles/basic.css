@@ -31,9 +31,11 @@
 
 	hr {
 		@apply border-t border-gray-600;
+		@apply lighter:border-gray-500;
 	}
 	.vr {
 		@apply border-l border-gray-600;
+		@apply lighter:border-gray-500;
 	}
 
 	dialog {
@@ -68,5 +70,10 @@
 		&:hover {
 			@apply underline;
 		}
+	}
+	.card {
+		@apply bg-gray-800 border border-gray-700 rounded-lg p-4;
+		@apply lighter:bg-gray-700 border-gray-600;
+		@apply block;
 	}
 }
