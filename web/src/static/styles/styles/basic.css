@@ -37,7 +37,7 @@
 	dialog {
 		@apply relative m-auto bg-gray-800 rounded-xl min-w-40 min-h-40 px-4 py-8;
 		.close-dialog-btn {
-			@apply absolute top-2 right-2 p-1 bg-gray-700 hover:bg-gray-600 transition-colors duration-100 rounded-full;
+			@apply absolute top-2 right-2 p-1 bg-gray-700 hover:bg-gray-600 transition-colors duration-100 rounded-full min-w-0;
 		}
 		&::backdrop {
 			@apply bg-black/50;
