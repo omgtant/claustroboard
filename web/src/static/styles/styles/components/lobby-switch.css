@@ -8,15 +8,19 @@
 
 .lobby-switch .switch > label {
     @apply rounded-full size-10 p-2 z-20 transition-[filter] duration-200 ease-in-out;
-
-    &:not(:has(:checked)) {
-        @apply invert-100;
-    }
+    @apply invert-100;
 }
 
 .lobby-switch input {
-    @apply hidden;
+    @apply absolute size-0 opacity-0;
+    &:focus-visible {
+        @apply outline-none;
+    }
 }
+.lobby-switch label:has(:focus-visible) {
+    @apply outline outline-2 outline-offset-2 outline-blue-500;
+}
+
 .lobby-switch p {
     @apply hidden text-center;
 }
@@ -35,6 +39,9 @@
         p:nth-child(1) {
             @apply block;
         }
+        label:nth-child(1) {
+            @apply invert-0;
+        }
     }
     &:has(label:nth-child(2) :checked) {
         .switch::after {
@@ -43,6 +50,9 @@
         p:nth-child(2) {
             @apply block;
         }
+        label:nth-child(2) {
+            @apply invert-0;
+        }
     }
     &:has(label:nth-child(3) :checked) {
         .switch::after {
@@ -50,6 +60,9 @@
         }
         p:nth-child(3) {
             @apply block;
+        }
+        label:nth-child(3) {
+            @apply invert-0;
         }
     }
 }
