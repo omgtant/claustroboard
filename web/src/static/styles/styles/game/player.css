@@ -12,12 +12,26 @@
 			background-position: 0px -28px;
 		}
 		&.player-3 {
+			background-position: 0px -56px;
+		}
+		&.player-4 {
+			background-position: 0px -84px;
+		}
+		&.player-5 {
 			background-position: 0px 0px;
 			filter: hue-rotate(120deg) brightness(110%);
 		}
-		&.player-4 {
+		&.player-6 {
 			background-position: 0px -28px;
 			filter: hue-rotate(180deg) brightness(110%);
+		}
+		&.player-7 {
+			background-position: 0px -56px;
+			filter: hue-rotate(240deg) brightness(110%);
+		}
+		&.player-8 {
+			background-position: 0px -84px;
+			filter: hue-rotate(180deg) saturate(110%) brightness(100%);
 		}
 	}
 
