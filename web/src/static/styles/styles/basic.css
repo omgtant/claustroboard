@@ -18,7 +18,11 @@
 	textarea,
 	button,
 	.button {
-		@apply p-2 bg-gray-700 rounded-lg block min-w-24 lighter:bg-gray-600;
+		@apply p-2 bg-gray-700 rounded-lg block lighter:bg-gray-600;
+	}
+	input, textarea
+	{
+		@apply min-w-24;
 	}
 	button,
 	.button {
