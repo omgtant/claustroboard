@@ -40,7 +40,7 @@ var (
 	GameDurationsTurns = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "game_durations_turns",
 		Help: "Game durations in turns (for X players, 1 full circle is X turns)",
-	}, []string{"game_id"})
+	}, []string{"turns"})
 
 	// Network
 	PageLoads = promauto.NewCounter(prometheus.CounterOpts{
