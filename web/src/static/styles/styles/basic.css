@@ -14,29 +14,39 @@
 	h2 {
 		@apply text-2xl;
 	}
-	input,
+	input[type="text"],
+	input[type="number"],
+	input[type="email"],
 	textarea,
 	button,
 	.button {
 		@apply p-2 bg-gray-700 rounded-lg block lighter:bg-gray-600;
 	}
-	input, textarea
-	{
+	input[type="text"],
+	input[type="number"],
+	input[type="email"],
+	textarea {
 		@apply min-w-24;
 	}
 	button,
 	.button {
 		@apply text-center transition-colors duration-100 cursor-pointer hover:bg-gray-500;
 	}
-	:disabled, .disabled {
+	:disabled,
+	.disabled {
 		@apply opacity-50;
 	}
 
-	hr, .vr {
+	hr,
+	.vr {
 		@apply lighter:border-gray-500 border-gray-600;
 	}
-	hr  { @apply border-t }
-	.vr { @apply border-l }
+	hr {
+		@apply border-t;
+	}
+	.vr {
+		@apply border-l;
+	}
 
 	dialog {
 		@apply relative m-auto bg-gray-800 rounded-xl min-w-40 min-h-40 px-4 py-8;
