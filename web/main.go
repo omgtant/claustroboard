@@ -8,6 +8,8 @@ import (
 	"omgtant/claustroboard/web/middlewares"
 	"omgtant/claustroboard/web/routers"
 	"os"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var (
@@ -15,7 +17,7 @@ var (
 	StaticFiles embed.FS
 )
 
-func GetRouter(projectRoot string) *http.ServeMux {
+func GetRouter(projectRoot string) http.Handler {
 	mux := http.NewServeMux()
 
 	// init templates
@@ -29,6 +31,9 @@ func GetRouter(projectRoot string) *http.ServeMux {
 	// static files
 	mux.Handle("GET /static/", routers.CreateFileServer(projectRoot, StaticFiles))
 
+	// Prometheus /metrics
+	mux.Handle("/metrics", promhttp.Handler())
+
 	// API routes
 	apiMux := http.NewServeMux()
 	apiMux.HandleFunc("POST /feedback", routers.PostFeedback)
@@ -41,7 +46,7 @@ func GetRouter(projectRoot string) *http.ServeMux {
 	}
 	mux.Handle("/api/v1/", middlewares.LoggingMiddleware(http.StripPrefix("/api/v1", apiMux)))
 
-	return mux
+	return middlewares.RequestsTotalMiddleware(mux)
 }
 
 func getPID(w http.ResponseWriter, r *http.Request) {

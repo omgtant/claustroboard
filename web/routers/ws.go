@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"omgtant/claustroboard/shared/metrics"
 	"omgtant/claustroboard/shared/models"
 
 	"github.com/coder/websocket"
@@ -115,6 +116,7 @@ func (c *wsClient) closeAndCleanup() {
 			_ = models.Leave(c.gameCode, c.nickname)
 		}
 		if len(clients) == 0 {
+			metrics.GamesFinished.Inc()
 			delete(gameClients, c.gameCode)
 		}
 	}

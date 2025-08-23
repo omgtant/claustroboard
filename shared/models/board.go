@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"omgtant/claustroboard/shared/dtos"
 	"omgtant/claustroboard/shared/enums"
+	"omgtant/claustroboard/shared/metrics"
 	"omgtant/claustroboard/shared/valueobjects"
 	"slices"
 	"sync"
@@ -80,6 +81,9 @@ func NewGameBoard(players []string, gameConfig dtos.GameConfig) (GameCode, error
 			return "", err
 		}
 	}
+
+	metrics.LobbiesCreated.Inc()
+	metrics.LobbiesActive.Inc()
 	return id, nil
 }
 
@@ -107,6 +111,7 @@ func Join(id GameCode, p string) error {
 	gameBoardsMu.Lock()
 	gameBoards[id] = board
 	gameBoardsMu.Unlock()
+	metrics.PlayersLobbyJoined.Inc()
 	return nil
 }
 
@@ -208,6 +213,8 @@ func StartGame(code GameCode) (*Board, error) {
 	gameBoardsMu.Lock()
 	gameBoards[code] = board
 	gameBoardsMu.Unlock()
+
+	metrics.GamesStarted.Inc()
 	return board, nil
 }
 
@@ -347,6 +354,8 @@ func checkNextForDeadness(b *Board) {
 			}
 		}
 		if activeCount <= 1 {
+			metrics.StartTurnWins.WithLabelValues(fmt.Sprintf("%d", (b.Turn)%uint32(len(b.Players)))).Inc()
+			metrics.GameDurationsTurns.WithLabelValues(fmt.Sprintf("%d", (b.Turn))).Inc()
 			b.Phase = PhaseLobby
 			fmt.Println("Game over, returning to lobby")
 		}
