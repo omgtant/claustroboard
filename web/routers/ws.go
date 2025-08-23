@@ -116,7 +116,8 @@ func (c *wsClient) closeAndCleanup() {
 			_ = models.Leave(c.gameCode, c.nickname)
 		}
 		if len(clients) == 0 {
-			metrics.GamesFinished.Inc()
+			metrics.LobbiesClosed.Inc()
+			metrics.LobbiesActive.Dec()
 			delete(gameClients, c.gameCode)
 		}
 	}
