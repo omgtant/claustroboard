@@ -305,13 +305,15 @@ func (b *Board) Move(move dtos.Move) (*dtos.Delta, error) {
 
 	b.CheckTurn++
 	if from.applyMove(b, toTile) {
-		b.Turn++
-		// Skip dead players' moves
-		for !b.Players[(b.Turn)%uint32(len(b.Players))].IsActive {
-			b.Turn++
+		b.advanceTurn()
+		// Kill the next player now if they can't move
+		var dead bool
+		var err error
+		for dead, err = checkCurrentForDeadness(b); dead && err == nil; {
+			b.advanceTurn()
+			dead, err = checkCurrentForDeadness(b)
 		}
-		// Kill the next player now if it can't move
-		checkNextForDeadness(b)
+		fmt.Printf("Turn of Player %d\n", b.CurPlayer())
 	}
 	return &dtos.Delta{Turn: b.CheckTurn, Move: move}, nil
 }
@@ -336,17 +338,17 @@ func (b *Board) getPlayerAt(p valueobjects.Point) int {
 	return -1
 }
 
-func checkNextForDeadness(b *Board) {
+func checkCurrentForDeadness(b *Board) (bool, error) {
 	nextPlayerPos := b.Players[b.CurPlayer()].Pos
 	nextPlayerTile, err := b.getTileAt(nextPlayerPos)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to get tile at %s: %v", nextPlayerPos.String(), err))
+		return false, err
 	}
 	moves := nextPlayerTile.AvailableMoves(b, b.CurPlayer())
 	length := len(moves)
 	if length == 0 {
 		b.Players[b.CurPlayer()].IsActive = false
-		fmt.Printf("Player %d is out of the game\n", (b.Turn)%uint32(len(b.Players)))
+		fmt.Printf("Player %d is out of the game\n", b.CurPlayer())
 		activeCount := 0
 		for _, player := range b.Players {
 			if player.IsActive {
@@ -354,12 +356,14 @@ func checkNextForDeadness(b *Board) {
 			}
 		}
 		if activeCount <= 1 {
-			metrics.StartTurnWins.WithLabelValues(fmt.Sprintf("%d", (b.Turn)%uint32(len(b.Players)))).Inc()
-			metrics.GameDurationsTurns.WithLabelValues(fmt.Sprintf("%d", (b.Turn))).Inc()
+			metrics.StartTurnWins.WithLabelValues(fmt.Sprintf("%d", b.CurPlayer())).Inc()
+			metrics.GameDurationsTurns.WithLabelValues(fmt.Sprintf("%d", b.Turn)).Inc()
 			b.Phase = PhaseLobby
 			fmt.Println("Game over, returning to lobby")
+			return false, nil
 		}
 	}
+	return length == 0, nil
 }
 
 func (b *Board) dfs(me Tile, player int, energy int, exact bool, visited map[valueobjects.Point]bool) (result []valueobjects.Point) {
@@ -481,4 +485,13 @@ func (b *Board) fillUsingDeck(deck *[]dtos.TileConfig) error {
 		}
 	}
 	return nil
+}
+
+
+func (b *Board) advanceTurn() {
+	b.Turn++
+	// Skip dead players' moves
+	for !b.Players[(b.Turn)%uint32(len(b.Players))].IsActive {
+		b.Turn++
+	}
 }
