@@ -362,66 +362,6 @@ func checkNextForDeadness(b *Board) {
 	}
 }
 
-func (b *Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, exact bool) (*Tile, bool) {
-	println("validate", src.Kind, src.Pos.X, src.Pos.Y, dest.X, dest.Y, distTarget, exact)
-	visited := []Tile{src}
-	queue := []Tile{src}
-	dist := 1
-
-	for dist <= distTarget {
-		queueCopy := make([]Tile, len(queue))
-		copy(queueCopy, queue)
-		queue = []Tile{}
-
-		for _, v := range queueCopy {
-			neighborsMatrix := []valueobjects.Point{}
-			if v.Pos.X+1 < b.Width {
-				neighborsMatrix = append(neighborsMatrix, valueobjects.Point{X: v.Pos.X + 1, Y: v.Pos.Y})
-			}
-			if v.Pos.X > 0 {
-				neighborsMatrix = append(neighborsMatrix, valueobjects.Point{X: v.Pos.X - 1, Y: v.Pos.Y})
-			}
-			if v.Pos.Y+1 < b.Height {
-				neighborsMatrix = append(neighborsMatrix, valueobjects.Point{X: v.Pos.X, Y: v.Pos.Y + 1})
-			}
-			if v.Pos.Y > 0 {
-				neighborsMatrix = append(neighborsMatrix, valueobjects.Point{X: v.Pos.X, Y: v.Pos.Y - 1})
-			}
-
-		browse:
-			for _, p := range neighborsMatrix {
-				println("neigh", p.X, p.Y)
-				for _, v := range visited {
-					if p == v.Pos {
-						continue browse
-					}
-				}
-				candidate, _ := b.getTileAt(p)
-				candidateValid := candidate != nil && candidate.Open
-				candidateIsTarget := dest == candidate.Pos && (!exact || dist == distTarget)
-
-				println("candidate", candidate.Pos.X, candidate.Pos.Y, candidateValid, candidateIsTarget)
-				if !candidateValid {
-					if candidateIsTarget {
-						return nil, false
-					}
-					continue
-				}
-
-				if candidateIsTarget {
-					return candidate, true
-				}
-
-				visited = append(visited, *candidate)
-				queue = append(queue, *candidate)
-			}
-		}
-		dist++
-	}
-
-	return nil, false
-}
-
 func (b *Board) dfs(me Tile, player int, energy int, exact bool, visited map[valueobjects.Point]bool) (result []valueobjects.Point) {
 	if energy == 0 {
 		return []valueobjects.Point{me.Pos}
