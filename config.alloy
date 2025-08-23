@@ -1,0 +1,27 @@
+logging {
+  level  = "info"
+  format = "logfmt"
+}
+
+prometheus.remote_write "metrics_hosted_prometheus" {
+   endpoint {
+      name = "hosted-prometheus"
+      url  = "https://prometheus-prod-24-prod-eu-west-2.grafana.net/api/prom/push"
+  
+      basic_auth {
+        username = "2635605"
+        password = sys.env("GCLOUD_RW_API_KEY")
+      }
+   }
+}
+
+prometheus.scrape "claustroboard" {
+  scrape_interval = "15s"
+  scrape_timeout = "5s"
+
+  targets = [
+    { __address__ = "host.docker.internal:8080" },
+  ]
+
+  forward_to = [prometheus.remote_write.metrics_hosted_prometheus.receiver]
+}
