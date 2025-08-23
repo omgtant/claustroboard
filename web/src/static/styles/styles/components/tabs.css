@@ -12,7 +12,7 @@
             @apply bg-gray-700 border-gray-500 border-b-transparent z-20;
         }
         > input {
-            @apply opacity-0 size-0 pointer-events-none;
+            @apply opacity-0 size-0 pointer-events-none absolute;
             &:focus-visible {
                 @apply outline-none;
             }
