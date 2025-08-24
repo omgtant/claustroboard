@@ -44,11 +44,24 @@ const log = document.getElementById('log');
 function displayRematchOption(callback: (vote: boolean) => void): void {
     const rematchButton = document.createElement('button');
     rematchButton.textContent = 'Rematch';
+    rematchButton.className = 'inline-block primary-btn';
     let state = false;
-    rematchButton.addEventListener('click', () => {
-        callback(!state); state = !state;
-    });
-    log!.appendChild(rematchButton);
+	rematchButton.addEventListener("click", () => {
+		callback(!state);
+		state = !state;
+	});
+
+    const leaveButton = document.createElement('a');
+    leaveButton.textContent = 'Leave';
+    leaveButton.className = 'inline-block button';
+    leaveButton.href = '/';
+
+    const buttonsRow = document.createElement('div');
+    buttonsRow.className = 'space-x-2';
+    buttonsRow.appendChild(rematchButton);
+    buttonsRow.appendChild(leaveButton);
+
+    log!.appendChild(buttonsRow);
 }
 
 let rematchVotes: string[] = [];
