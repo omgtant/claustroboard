@@ -62,6 +62,7 @@
 		@apply lg:fixed lg:bottom-0 lg:left-0 lg:h-auto lg:right-0;
 		@apply flex flex-col items-center lg:flex-row;
 		@apply p-4 lg:p-2 gap-8 max-lg:bg-gray-800;
+		@apply pointer-events-none *:pointer-events-auto;
 	}
 }
 
