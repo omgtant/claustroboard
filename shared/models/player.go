@@ -8,4 +8,5 @@ type Player struct {
 	Deleted     bool
 	Pos         valueobjects.Point
 	RematchVote bool
+	Host bool
 }

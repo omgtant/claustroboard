@@ -43,7 +43,16 @@ func broadcastPlayerList(gameCode models.GameCode) {
 }
 
 func handleStartGame(c *wsClient, _ json.RawMessage) {
-	_, err := models.StartGame(c.gameCode)
+	b, err := models.GetBoard(c.gameCode)
+	if err != nil {
+		c.writeError(err)
+		return
+	}
+	if !b.IsHost(c.nickname) {
+		c.writeError(errors.New("only hosts can start games"))
+		return
+	}
+	_, err = models.StartGame(c.gameCode)
 	if err != nil {
 		c.writeError(err)
 		return
@@ -60,6 +69,10 @@ func handleLobbyPublicity(c *wsClient, data json.RawMessage) {
 	board, err := models.GetBoard(c.gameCode)
 	if err != nil {
 		c.writeError(err)
+		return
+	}
+	if !board.IsHost(c.nickname) {
+		c.writeError(errors.New("only hosts can change lobby publicity"))
 		return
 	}
 	var newPublicity enums.LobbyPublicity

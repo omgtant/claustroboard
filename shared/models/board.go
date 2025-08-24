@@ -42,6 +42,7 @@ var (
 func (b *Board) Lock()   { b.mu.Lock() }
 func (b *Board) Unlock() { b.mu.Unlock() }
 
+// All players accepted by this function are marked as hosts
 func NewGameBoard(players []string, gameConfig dtos.GameConfig) (GameCode, error) {
 	width := uint16(gameConfig.Width)
 	height := uint16(gameConfig.Height)
@@ -83,6 +84,7 @@ func NewGameBoard(players []string, gameConfig dtos.GameConfig) (GameCode, error
 		if err != nil {
 			return "", err
 		}
+		board.Players[len(board.Players)-1].Host = true
 	}
 
 	metrics.LobbiesCreated.Inc()
@@ -169,6 +171,14 @@ func VoteRematch(id GameCode, p string, vote bool) (bool, []string, error) {
 	player.RematchVote = vote
 
 	// Start the game again if all voted for rematch
+	rematch, votedPlayers := tryRematch(board)
+
+	return rematch, votedPlayers, nil
+}
+
+// Tries to get the game ready for rematching if everyone voted for it
+// Returns success and all voted players
+func tryRematch(board *Board) (bool, []string) {
 	votedPlayers := []string{}
 	for _, p := range board.Players {
 		if p.RematchVote {
@@ -183,8 +193,7 @@ func VoteRematch(id GameCode, p string, vote bool) (bool, []string, error) {
 		board.Turn = 0
 		board.CheckTurn = 0
 	}
-
-	return len(votedPlayers) == len(board.Players), votedPlayers, nil
+	return len(votedPlayers) == len(board.Players), votedPlayers
 }
 
 func (b *Board) RemovePlayer(p string) error {
@@ -194,6 +203,20 @@ func (b *Board) RemovePlayer(p string) error {
 			break
 		}
 	}
+
+	// If no hosts left, assign the fisrt player as host
+	hostExists := false
+	for _, player := range b.Players {
+		if player.Host {
+			hostExists = true
+			break
+		}	
+	}
+
+	if !hostExists && len(b.Players) > 0 {
+		b.Players[0].Host = true
+	}
+
 	return nil
 }
 
@@ -217,6 +240,7 @@ func GetBoard(code GameCode) (*Board, error) {
 
 	return nil, fmt.Errorf("board with ID %s not found", code)
 }
+
 
 func StartGame(code GameCode) (*Board, error) {
 	board, err := GetBoard(code)
@@ -304,6 +328,15 @@ func Snapshot(code GameCode) (*dtos.Board, error) {
 		Players: cpPlayers,
 		Tiles:   dtsTiles,
 	}, nil
+}
+
+func (b *Board) IsHost(p string) bool {
+	for _, player := range b.Players {
+		if player.Nickname == p {
+			return player.Host
+		}
+	}
+	return false
 }
 
 func (b *Board) getTileAt(p valueobjects.Point) (t *Tile, internalError error) {

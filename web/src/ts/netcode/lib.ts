@@ -44,6 +44,22 @@ class TypedEventEmitter<T extends Record<string, any>> {
 		this.listeners.get(event)?.delete(listener);
 	}
 
+	// Add: one-time listener to avoid manual cleanup
+	once<K extends keyof T>(event: K, listener: (data: T[K]) => void): void {
+		const onceWrapper = (data: T[K]) => {
+			this.off(event, onceWrapper as any);
+			try {
+				listener(data);
+			} catch (error) {
+				console.error(
+					`Error in once listener for ${String(event)}:`,
+					error
+				);
+			}
+		};
+		this.on(event, onceWrapper as any);
+	}
+
 	emit<K extends keyof T>(event: K, data: T[K]): void {
 		this.listeners.get(event)?.forEach((listener) => {
 			try {
@@ -181,6 +197,102 @@ export class WebSocketManager<
 			this.log(`Queued message: ${String(type)}`, payload);
 			this.messageQueue.push(message);
 		}
+	}
+
+	/**
+	 * Helper: wait for a single event then resolve. Optional timeout.
+	 */
+	waitFor<K extends keyof (TEventMap & SystemEvents)>(
+		event: K,
+		timeoutMs: number = this.config.connectionTimeout
+	): Promise<(TEventMap & SystemEvents)[K]> {
+		return new Promise((resolve, reject) => {
+			let timeoutId: number | null = null;
+
+			const onEvent = (data: (TEventMap & SystemEvents)[K]) => {
+				if (timeoutId) clearTimeout(timeoutId);
+				resolve(data);
+			};
+
+			this.once(event as any, onEvent as any);
+
+			if (timeoutMs > 0) {
+				timeoutId = window.setTimeout(() => {
+					this.off(event as any, onEvent as any);
+					reject(
+						new Error(`Timeout waiting for event: ${String(event)}`)
+					);
+				}, timeoutMs);
+			}
+		});
+	}
+
+	/**
+	 * Helper: send a message and wait for a success or error event.
+	 * Cleans up listeners automatically.
+	 */
+	sendAndWait<
+		SK extends keyof TEventMap,
+		OK extends keyof (TEventMap & SystemEvents),
+		EK extends keyof (TEventMap & SystemEvents) = never
+	>(
+		type: SK,
+		payload: TEventMap[SK],
+		options: {
+			successEvent: OK;
+			errorEvent?: EK;
+			timeoutMs?: number;
+		}
+	): Promise<(TEventMap & SystemEvents)[OK]> {
+		const {
+			successEvent,
+			errorEvent,
+			timeoutMs = this.config.connectionTimeout,
+		} = options;
+
+		return new Promise((resolve, reject) => {
+			let settled = false;
+			let timeoutId: number | null = null;
+
+			const cleanup = () => {
+				this.off(successEvent as any, onSuccess as any);
+				if (errorEvent) this.off(errorEvent as any, onError as any);
+				if (timeoutId) {
+					clearTimeout(timeoutId);
+					timeoutId = null;
+				}
+			};
+
+			const onSuccess = (data: (TEventMap & SystemEvents)[OK]) => {
+				if (settled) return;
+				settled = true;
+				cleanup();
+				resolve(data);
+			};
+
+			const onError = (err: (TEventMap & SystemEvents)[EK]) => {
+				if (settled) return;
+				settled = true;
+				cleanup();
+				reject(
+					new Error(String(err) || "Request failed")
+				);
+			};
+
+			this.once(successEvent as any, onSuccess as any);
+			if (errorEvent) this.once(errorEvent as any, onError as any);
+
+			if (timeoutMs > 0) {
+				timeoutId = window.setTimeout(() => {
+					if (settled) return;
+					settled = true;
+					cleanup();
+					reject(new Error("Request timed out"));
+				}, timeoutMs);
+			}
+
+			this.send(type, payload);
+		});
 	}
 
 	/**
