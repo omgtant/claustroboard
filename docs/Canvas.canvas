@@ -5,7 +5,7 @@
 		{"id":"56c67ce852143d95","type":"text","text":"Lobby","x":-340,"y":220,"width":180,"height":60},
 		{"id":"3d130c9452239bab","type":"text","text":"[[Game Logic | Game]]","x":-340,"y":320,"width":180,"height":60},
 		{"id":"a987b0990ae832a0","type":"text","text":"Rematch Vote","x":-340,"y":420,"width":180,"height":60},
-		{"id":"4a14b711793a147b","type":"text","text":"- [ ] Only-host kick functionality","x":320,"y":-120,"width":250,"height":60,"color":"5"},
+		{"id":"4a14b711793a147b","type":"text","text":"- [x] Only-host kick functionality","x":320,"y":-120,"width":250,"height":60,"color":"5"},
 		{"id":"bccf213849aece56","type":"text","text":"- [x] Only host can start the game\n- [x] Only host can alter publicity","x":160,"y":-611,"width":250,"height":137,"color":"5"},
 		{"id":"67363f38744c7513","type":"text","text":"- [x] Update the WS protocol to include real time tables","x":660,"y":-186,"width":250,"height":133,"color":"5"},
 		{"id":"c19c511d697e144d","type":"text","text":"- [x] Board lobby privacy levels\n\t- Public: displayed in the table, anyone can join\n\t- Unlisted: anyone can join using the code\n\t- Private: no one can join\n- [x] A tech spec file describing these","x":1100,"y":-295,"width":250,"height":350,"color":"5"},
