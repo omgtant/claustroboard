@@ -199,7 +199,7 @@ netcode.ws.on('playerlist-changed', (currentPlayers) => {
     });
 });
 
-netcode.ws.on('started', start);
+netcode.ws.on('started', started);
 
 let turnNumber = 0;
 const afterMyMove = async (pos: Pos) => {
@@ -223,26 +223,43 @@ function voteRematch(vote: boolean) {
     netcode.ws.send('vote-rematch', vote);
 }
 
-function start(data: InitialState) {
+function started(data: InitialState) {
     const gameHandlers = startMultiplayer(readInitialStateIntoGameState(data), undefined, netcode.myNickname, afterMyMove, voteRematch);
     document.getElementById('prep-stage')?.remove();
     
-    netcode.ws.on('they-moved', (moveDelta: MoveDelta) => {
-        console.log('They moved:', moveDelta);
-        gameHandlers.otherMove(moveDelta.move);
-        turnNumber = moveDelta.turn+1;
-    });
-    let curPlayers = [...netcode.players]; // A copy because the other handler might run first
-    netcode.ws.on("playerlist-changed", (newPlayers) => {
-        const leftPlayers = curPlayers.filter(nick => !newPlayers.includes(nick));
-        leftPlayers.forEach(nick => gameHandlers.playerLeft(nick));
-        curPlayers = newPlayers;
-    });
-    
-    netcode.ws.on('rematch-votes-changed', (votedPlayers: string[]) => {
-        gameHandlers.rematchVotesChanged(votedPlayers);
-    });
+    const theyMoved = (moveDelta: MoveDelta) => {
+		console.log("They moved:", moveDelta);
+		gameHandlers.otherMove(moveDelta.move);
+		turnNumber = moveDelta.turn + 1;
+	};
+    netcode.ws.on('they-moved', theyMoved);
 
+    let curPlayers = [...netcode.players]; // A copy because the other handler might run first
+    const playerlistChanged = (newPlayers: string[]) => {
+		const leftPlayers = curPlayers.filter(
+			(nick) => !newPlayers.includes(nick)
+		);
+		leftPlayers.forEach((nick) => gameHandlers.playerLeft(nick));
+		curPlayers = newPlayers;
+	};
+    netcode.ws.on("playerlist-changed", playerlistChanged);
+
+    const rematchVotesChanged = (votedPlayers: string[]) => {
+        gameHandlers.rematchVotesChanged(votedPlayers);
+    };
+    netcode.ws.on('rematch-votes-changed', rematchVotesChanged);
+
+    const cleanup = () => {
+        netcode.ws.off('they-moved', theyMoved);
+        netcode.ws.off('playerlist-changed', playerlistChanged);
+        netcode.ws.off('rematch-votes-changed', rematchVotesChanged);
+        netcode.ws.off('started', cleanup);
+    }
+
+    setTimeout(() => {
+        // Without the timeout, the cleanup function will be called immediately
+        netcode.ws.on('started', cleanup);
+    }, 0);
 }
 
 function setUpReloadOnClose() {
