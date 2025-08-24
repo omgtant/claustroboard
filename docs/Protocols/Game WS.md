@@ -1,6 +1,6 @@
 [[Terminology]]
 ## Actions
-Action `start`: stop accepting joins and set up (create the board, the player turn order)
+Action `start` (host-only): stop accepting joins and set up (create the board, the player turn order)
 	-> broadcast `started`: `{...}`
 
 Action `my-move` (delta) -> error, yes: the player makes some moves. Note that an error means the whole delta was cancelled, atomically.
@@ -8,7 +8,7 @@ Action `my-move` (delta) -> error, yes: the player makes some moves. Note that a
 	
 Action `come-again` -> \[delta\]
 
-Action `lobby-publicity` (`"private" | "unlisted" | "public"`) -> broadcast `lobby-publicity-changed` (`"private" | "unlisted" | "public"`)
+Action `lobby-publicity` (host-only) (`"private" | "unlisted" | "public"`) -> broadcast `lobby-publicity-changed` (`"private" | "unlisted" | "public"`)
 
 Action `vote-rematch` (true | false) -> error or broadcast `rematch-votes-changed` (\[votee1nickname, votee2nickname\])
 
