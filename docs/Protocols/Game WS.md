@@ -54,4 +54,4 @@ deck: [{
 ```
 
 ### Delta:
-`{turn:1,delta:[(x1, y1), (x2, y2), z3, (x4, y4)]}`
+`{turn:1,delta:{x:1, y:1}}`
