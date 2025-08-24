@@ -312,13 +312,6 @@ func (b *Board) Move(move dtos.Move) (*dtos.Delta, error) {
 	b.CheckTurn++
 	if from.applyMove(b, toTile) {
 		b.advanceTurn()
-		// Kill the next player now if they can't move
-		var dead bool
-		var err error
-		for dead, err = checkCurrentForDeadness(b); dead && err == nil; {
-			b.advanceTurn()
-			dead, err = checkCurrentForDeadness(b)
-		}
 		fmt.Printf("Turn of Player %d\n", b.CurPlayer())
 	}
 	return &dtos.Delta{Turn: b.CheckTurn, Move: move}, nil
@@ -497,10 +490,25 @@ func (b *Board) fillUsingDeck(deck *[]dtos.TileConfig) error {
 	return nil
 }
 
+// Will advance turn, marking any dead players as inactive in its way.
+//
+// May switch the board phase to RematchVote if it manages to determine a winner.
 func (b *Board) advanceTurn() {
-	b.Turn++
-	// Skip dead players' moves
-	for !b.Players[(b.Turn)%uint32(len(b.Players))].IsActive {
+	advance := func() {
 		b.Turn++
+		// Skip dead players' moves
+		for !b.Players[(b.Turn)%uint32(len(b.Players))].IsActive {
+			b.Turn++
+		}
+	}
+
+	advance()
+
+	// Kill the next player now if they can't move
+	var dead bool
+	var err error
+	for dead, err = checkCurrentForDeadness(b); dead && err == nil; {
+		advance()
+		dead, err = checkCurrentForDeadness(b)
 	}
 }
