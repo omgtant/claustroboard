@@ -10,7 +10,7 @@ Action `come-again` -> \[delta\]
 
 Action `lobby-publicity` (`"private" | "unlisted" | "public"`) -> broadcast `lobby-publicity-changed` (`"private" | "unlisted" | "public"`)
 
-Action `vote-rematch` (true | false) -> broadcast `rematch-votes-changed` (\[votee1nickname, votee2nickname\])
+Action `vote-rematch` (true | false) -> error or broadcast `rematch-votes-changed` (\[votee1nickname, votee2nickname\])
 
 If the environment variable `ENVIRONMENT` is set to `"development"`, the following actions and events are also made available:
 

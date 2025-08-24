@@ -18,6 +18,7 @@ export type GameState = {
     history: Pos[];
     initialState: InitialState;
     someRenderInterface?: RenderInterface;
+    voteRematch?: (vote: boolean) => void;
 }
 
 export type InitialPlayer = {
@@ -68,7 +69,9 @@ export interface EventMap {
     'lobby-publicity-changed': string,
     'close': void,
     'broadcast': any,
-    'error': any
+    'error': any,
+    'vote-rematch': boolean,
+    'rematch-votes-changed': string[]
 }
 
 export type Netcode = {

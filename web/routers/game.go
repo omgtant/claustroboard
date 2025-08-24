@@ -7,6 +7,7 @@ import (
 	"omgtant/claustroboard/shared/config"
 	"omgtant/claustroboard/shared/dtos"
 	"omgtant/claustroboard/shared/enums"
+	"omgtant/claustroboard/shared/metrics"
 	"omgtant/claustroboard/shared/models"
 )
 
@@ -17,6 +18,7 @@ var (
 		"my-move":         handleMove,
 		"come-again":      handleBroadcast,
 		"lobby-publicity": handleLobbyPublicity,
+		"vote-rematch":    handleRematchVote,
 	}
 )
 
@@ -70,6 +72,37 @@ func handleLobbyPublicity(c *wsClient, data json.RawMessage) {
 		Type: "lobby-publicity-changed",
 		Data: newPublicity,
 	})
+}
+
+func handleRematchVote(c *wsClient, data json.RawMessage) {
+	var payload bool;
+	if err := json.Unmarshal(data, &payload); err != nil {
+		c.writeError(err)
+		return
+	}
+	allVoted, votedPlayers, err := models.VoteRematch(c.gameCode, c.nickname, payload)
+	if err != nil {
+		c.writeError(err)
+		return
+	}
+	broadcastEvent(c.gameCode, event{
+		Type: "rematch-votes-changed",
+		Data: votedPlayers,
+	})
+	if allVoted {
+		metrics.RematchesCount.Inc()
+		// Start the game again
+		_, err := models.StartGame(c.gameCode)
+		if err != nil {
+			c.writeError(err)
+			return
+		}
+		snap, _ := models.Snapshot(c.gameCode)
+		broadcastEvent(c.gameCode, event{
+			Type: "started",
+			Data: snap,
+		})
+	}
 }
 
 func handleBroadcast(c *wsClient, data json.RawMessage) {

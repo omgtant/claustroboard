@@ -31,6 +31,7 @@ type Board struct {
 	CheckTurn  uint32 // Used in netcode to ensure clients are in sync
 	Phase      BoardPhase
 	Publicity  enums.LobbyPublicity
+	Config     dtos.GameConfig
 }
 
 var (
@@ -58,6 +59,7 @@ func NewGameBoard(players []string, gameConfig dtos.GameConfig) (GameCode, error
 		board.Tiles[i] = make([]Tile, width)
 	}
 
+	board.Config = gameConfig
 	board.fillUsingDeck(&gameConfig.Deck)
 
 	id := RandomGameCode()
@@ -142,6 +144,45 @@ func Leave(id GameCode, p string) error {
 	gameBoardsMu.Unlock()
 
 	return nil
+}
+
+// First return value is true if all players voted for rematch, false otherwise
+// Second return value is the nicknames of everyone who voted
+// Third return value is an error, if any
+// This function will prepare the game for restart if all voted
+func VoteRematch(id GameCode, p string, vote bool) (bool, []string, error) {
+	board, err := GetBoard(id)
+	if err != nil {
+		return false, nil, err
+	}
+	if board.Phase != PhaseRematchVote {
+		return false, nil, errors.New("cannot vote in current phase")
+	}
+	player, err := board.GetPlayerByNickname(p)
+	if err != nil {
+		return false, nil, err
+	}
+	if player.Deleted {
+		return false, nil, errors.New("cannot vote after leaving")
+	}
+	// Record the vote
+	player.RematchVote = vote
+
+	// Start the game again if all voted for rematch
+	votedPlayers := []string{}
+	for _, p := range board.Players {
+		if p.RematchVote {
+			votedPlayers = append(votedPlayers, p.Nickname)
+		}
+	}
+	if len(votedPlayers) == len(board.Players) {
+		for i := range board.Players {
+			board.Players[i].IsActive = true
+		}
+		board.fillUsingDeck(&board.Config.Deck)
+	}
+
+	return len(votedPlayers) == len(board.Players), votedPlayers, nil
 }
 
 func (b *Board) RemovePlayer(p string) error {
@@ -338,6 +379,16 @@ func (b *Board) getPlayerAt(p valueobjects.Point) int {
 }
 
 func (b *Board) startRematchVote() {
+	// Filter out all players that are Deleted
+	for i := 0; i < len(b.Players); i++ {
+		if b.Players[i].Deleted {
+			b.Players = append(b.Players[:i], b.Players[i+1:]...)
+			i--
+		} else {
+			b.Players[i].RematchVote = false
+		}
+	}
+
 	b.Phase = PhaseRematchVote
 }
 

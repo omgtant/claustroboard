@@ -11,7 +11,7 @@
 		{"id":"9c61019580f63250","type":"text","text":"- [ ] nginx","x":710,"y":-603,"width":250,"height":60,"color":"2"},
 		{"id":"3273a3106cf59707","type":"text","text":"- [ ] dockerization","x":525,"y":-800,"width":250,"height":60,"color":"2"},
 		{"id":"d860cf991b900b8d","type":"text","text":"- [x] Rematch WS spec","x":320,"y":-100,"width":250,"height":60,"color":"5"},
-		{"id":"2d5d3c1bd29c1632","type":"text","text":"- [ ] Rematch functionality","x":320,"y":90,"width":250,"height":60},
+		{"id":"2d5d3c1bd29c1632","type":"text","text":"- [ ] Rematch functionality","x":320,"y":90,"width":250,"height":60,"color":"5"},
 		{"id":"436f9b206e0cfca2","type":"text","text":"- [x] Prometheus","x":659,"y":-934,"width":250,"height":60,"color":"5"},
 		{"id":"e76e14b35a9b230f","type":"text","text":"- [x] api/v1/metrics endpoint","x":1030,"y":-758,"width":250,"height":60,"color":"5"},
 		{"id":"1ab9dba2481a5c9b","type":"text","text":"- [ ] /api/v1/metrics spec","x":1030,"y":-633,"width":250,"height":60},

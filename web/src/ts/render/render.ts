@@ -34,10 +34,37 @@ export const renderInterface: RenderInterface = {
     highlightOtherActivePlayer,
     suggestMoves,
     playerLost,
+    displayRematchOption,
+    rematchVotesChanged
 }
 
 export const board = document.getElementById('board');
 const log = document.getElementById('log');
+
+function displayRematchOption(callback: (vote: boolean) => void): void {
+    const rematchButton = document.createElement('button');
+    rematchButton.textContent = 'Rematch';
+    let state = false;
+    rematchButton.addEventListener('click', () => {
+        callback(!state); state = !state;
+    });
+    log!.appendChild(rematchButton);
+}
+
+let rematchVotes: string[] = [];
+function rematchVotesChanged(votedPlayers: string[]): void {
+    const diffVoted = votedPlayers.filter(x => !rematchVotes.includes(x));
+    const diffUnvoted = rematchVotes.filter(x => !votedPlayers.includes(x));
+
+    diffVoted.forEach(player => {
+        const el = logMessage(`Player ${player} voted for rematch`);
+        el.classList.add('rematch-vote');
+    });
+    diffUnvoted.forEach(player => {
+        const el = logMessage(`Player ${player} removed their rematch vote`);
+        el.classList.add('rematch-vote');
+    });
+}
 
 function logTurn(turnNumber: number, player: Player, pos: Pos) {
     const el = logMessage(`${turnNumber.toString().padStart(3,'.')}: Player ${player.nickname} moved to (${pos.x}, ${pos.y})`);

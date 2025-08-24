@@ -2,7 +2,7 @@ import { loadConfig } from "../config";
 import { startMultiplayer } from "../game/game";
 import { readInitialStateIntoGameState, validateNickname } from "../helpers/helpers";
 import { hideError, showError } from "../helpers/showError";
-import { logMessage } from "../render/render";
+import { logMessage, renderInterface } from "../render/render";
 import { EventMap, InitialState, MoveDelta, Netcode } from "../types/types";
 import { Pos } from "../types/util";
 import { WebSocketManager } from "./lib";
@@ -219,8 +219,12 @@ const afterMyMove = async (pos: Pos) => {
     });
 }
 
+function voteRematch(vote: boolean) {
+    netcode.ws.send('vote-rematch', vote);
+}
+
 function start(data: InitialState) {
-    const gameHandlers = startMultiplayer(readInitialStateIntoGameState(data), undefined, netcode.myNickname, afterMyMove);
+    const gameHandlers = startMultiplayer(readInitialStateIntoGameState(data), undefined, netcode.myNickname, afterMyMove, voteRematch);
     document.getElementById('prep-stage')?.remove();
     
     netcode.ws.on('they-moved', (moveDelta: MoveDelta) => {
@@ -233,6 +237,10 @@ function start(data: InitialState) {
         const leftPlayers = curPlayers.filter(nick => !newPlayers.includes(nick));
         leftPlayers.forEach(nick => gameHandlers.playerLeft(nick));
         curPlayers = newPlayers;
+    });
+    
+    netcode.ws.on('rematch-votes-changed', (votedPlayers: string[]) => {
+        gameHandlers.rematchVotesChanged(votedPlayers);
     });
 
 }
