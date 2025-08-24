@@ -180,6 +180,8 @@ func VoteRematch(id GameCode, p string, vote bool) (bool, []string, error) {
 			board.Players[i].IsActive = true
 		}
 		board.fillUsingDeck(&board.Config.Deck)
+		board.Turn = 0
+		board.CheckTurn = 0
 	}
 
 	return len(votedPlayers) == len(board.Players), votedPlayers, nil
