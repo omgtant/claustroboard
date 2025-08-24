@@ -15,8 +15,9 @@ import (
 type BoardPhase string
 
 const (
-	PhaseLobby   BoardPhase = "lobby"
-	PhaseStarted BoardPhase = "started"
+	PhaseLobby       BoardPhase = "lobby"
+	PhaseStarted     BoardPhase = "started"
+	PhaseRematchVote BoardPhase = "rematch_vote"
 )
 
 type Board struct {
@@ -121,16 +122,21 @@ func Leave(id GameCode, p string) error {
 		return err
 	}
 
-	if board.Phase == PhaseLobby {
-		board.RemovePlayer(p)
-	} else {
-		player, err := board.GetPlayerByNickname(p)
-		if err != nil {
-			return err
-		}
-		player.Deleted = true
-		player.IsActive = false
+	switch board.Phase {
+		case PhaseLobby, PhaseRematchVote:
+			board.RemovePlayer(p)
+		case PhaseStarted:
+			player, err := board.GetPlayerByNickname(p)
+			if err != nil {
+				return err
+			}
+			player.Deleted = true
+			player.IsActive = false
+			if board.Players[board.CurPlayer()].Nickname == p {
+				board.advanceTurn()
+			} 
 	}
+
 	gameBoardsMu.Lock()
 	gameBoards[id] = board
 	gameBoardsMu.Unlock()
@@ -338,6 +344,10 @@ func (b *Board) getPlayerAt(p valueobjects.Point) int {
 	return -1
 }
 
+func (b *Board) startRematchVote() {
+	b.Phase = PhaseRematchVote
+}
+
 func checkCurrentForDeadness(b *Board) (bool, error) {
 	nextPlayerPos := b.Players[b.CurPlayer()].Pos
 	nextPlayerTile, err := b.getTileAt(nextPlayerPos)
@@ -358,7 +368,7 @@ func checkCurrentForDeadness(b *Board) (bool, error) {
 		if activeCount <= 1 {
 			metrics.StartTurnWins.WithLabelValues(fmt.Sprintf("%d", b.CurPlayer())).Inc()
 			metrics.GameDurationsTurns.WithLabelValues(fmt.Sprintf("%d", b.Turn)).Inc()
-			b.Phase = PhaseLobby
+			b.startRematchVote()
 			fmt.Println("Game over, returning to lobby")
 			return false, nil
 		}
@@ -486,7 +496,6 @@ func (b *Board) fillUsingDeck(deck *[]dtos.TileConfig) error {
 	}
 	return nil
 }
-
 
 func (b *Board) advanceTurn() {
 	b.Turn++
