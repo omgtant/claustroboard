@@ -2,7 +2,7 @@ import { loadConfig } from "../config";
 import { startMultiplayer } from "../game/game";
 import { readInitialStateIntoGameState, validateNickname } from "../helpers/helpers";
 import { hideError, showError } from "../helpers/showError";
-import { logMessage, renderInterface } from "../render/render";
+import { logMessage } from "../render/render";
 import { EventMap, InitialState, MoveDelta, Netcode } from "../types/types";
 import { Pos } from "../types/util";
 import { WebSocketManager } from "./lib";
