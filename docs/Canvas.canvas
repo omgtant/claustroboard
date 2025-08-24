@@ -15,7 +15,7 @@
 		{"id":"436f9b206e0cfca2","type":"text","text":"- [x] Prometheus","x":659,"y":-934,"width":250,"height":60,"color":"5"},
 		{"id":"e76e14b35a9b230f","type":"text","text":"- [x] api/v1/metrics endpoint","x":1030,"y":-758,"width":250,"height":60,"color":"5"},
 		{"id":"1ab9dba2481a5c9b","type":"text","text":"- [ ] /api/v1/metrics spec","x":1030,"y":-633,"width":250,"height":60},
-		{"id":"bccf213849aece56","type":"text","text":"- [ ] Only host can start the game","x":160,"y":-663,"width":250,"height":60},
+		{"id":"bccf213849aece56","type":"text","text":"- [ ] Only host can start the game\n- [ ] Only host can alter publicity","x":160,"y":-740,"width":250,"height":137},
 		{"id":"4a14b711793a147b","type":"text","text":"- [ ] Only-host kick functionality","x":-20,"y":-543,"width":250,"height":60},
 		{"id":"e4c94312b175011b","type":"text","text":"Back to menu buttons\n- [ ] in lobby\n- [ ] after game","x":-90,"y":-149,"width":250,"height":124,"color":"5"}
 	],
