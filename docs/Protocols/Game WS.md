@@ -12,6 +12,8 @@ Action `lobby-publicity` (host-only) (`"private" | "unlisted" | "public"`) -> br
 
 Action `vote-rematch` (true | false) -> error or broadcast `rematch-votes-changed` (\[votee1nickname, votee2nickname\])
 
+Action `kick` (host-only) (nickname): kicks the player with that nickname by closing their ws client connection
+
 If the environment variable `ENVIRONMENT` is set to `"development"`, the following actions and events are also made available:
 
 Action `broadcast` (payload)
