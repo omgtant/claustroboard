@@ -455,6 +455,11 @@ func (b *Board) dfs(me Tile, player int, energy int, exact bool, visited map[val
 
 	visited[me.Pos] = false
 
+	// Don't include the initial tile
+	if b.Players[player].Pos == me.Pos {
+		return result
+	}
+
 	if exact {
 		return result
 	}
