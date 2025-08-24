@@ -115,6 +115,7 @@ async function createGame(nickname: string) {
 			netcode.myNickname = nickname;
 		})
 		.catch((error) => {
+			console.error(error);
 			showError("try again later");
 		});
 }

@@ -7,7 +7,7 @@ const closeBtn = document.getElementById("close-feedback-btn") as HTMLButtonElem
 const feedbackDialog = document.getElementById("feedback-dialog") as HTMLDialogElement;
 const feedbackContact = document.getElementById("feedback-contact") as HTMLInputElement;
 const feedbackFeedback = document.getElementById("feedback-feedback") as HTMLTextAreaElement;
-const feedbackSubmit = document.getElementById("feedback-submit") as HTMLButtonElement;
+const feedbackForm = document.getElementById("feedback-form") as HTMLFormElement;
 //#endregion
 
 export function initFeedbackDialog() {
@@ -20,7 +20,7 @@ export function initFeedbackDialog() {
         feedbackDialog.close();
     });
 
-    feedbackSubmit.addEventListener("click", async (event) => {
+    feedbackForm.addEventListener("submit", (event) => {
         event.preventDefault();
     
         const contact = feedbackContact.value;
@@ -43,6 +43,7 @@ export function initFeedbackDialog() {
         }).catch((error) => {
     		feedbackDialog.close();
     		showError("Failed to submit feedback. Sorry!");
+            console.error(error);
     	});
     });
 }
