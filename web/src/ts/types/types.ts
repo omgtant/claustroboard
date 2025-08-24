@@ -71,7 +71,8 @@ export interface EventMap {
     'broadcast': any,
     'error': any,
     'vote-rematch': boolean,
-    'rematch-votes-changed': string[]
+    'rematch-votes-changed': string[],
+    'kick': string,
 }
 
 export type Netcode = {

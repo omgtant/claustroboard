@@ -260,7 +260,7 @@ netcode.ws.on("playerlist-changed", (currentPlayers) => {
 		console.log("Player element:", playerEl);
 		playerEl.querySelector(".nickname")!.textContent = player;
 		playerEl.querySelector(".kick")!.addEventListener("click", () => {
-			alert(`Kick player ${player} not implemented yet`);
+			netcode.ws.send("kick", player);
 		});
 		playerListEl.appendChild(playerEl);
 	});

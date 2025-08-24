@@ -19,6 +19,7 @@ var (
 		"come-again":      handleBroadcast,
 		"lobby-publicity": handleLobbyPublicity,
 		"vote-rematch":    handleRematchVote,
+		"kick":            handleKick,
 	}
 )
 
@@ -167,4 +168,42 @@ func handleMove(c *wsClient, data json.RawMessage) {
 		Type: "they-moved",
 		Data: delta,
 	})
+}
+
+func handleKick(c *wsClient, data json.RawMessage) {
+	var nickname string
+	if err := json.Unmarshal(data, &nickname); err != nil {
+		c.writeError(err)
+		return
+	}
+	board, err := models.GetBoard(c.gameCode)
+	if err != nil {
+		c.writeError(err)
+		return
+	}
+	if board.Phase != models.PhaseLobby {
+		c.writeError(errors.New("can only kick players in lobby phase"))
+		return
+	}
+	if !board.IsHost(c.nickname) {
+		c.writeError(errors.New("only hosts can kick players"))
+		return
+	}
+	if err := board.RemovePlayer(nickname); err != nil {
+		c.writeError(err)
+		return
+	}
+	
+	broadcastEvent(c.gameCode, event{
+		Type: "player-kicked",
+		Data: nickname,
+	})
+
+	for client := range gameClients[c.gameCode] {
+		if client.nickname == nickname {
+			client.closeAndCleanup()
+		}
+	}
+
+	broadcastPlayerList(c.gameCode)
 }
