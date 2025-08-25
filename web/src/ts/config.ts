@@ -4,8 +4,8 @@ export function getDefaultConfig(): Config {
 	return {
 		version: 2,
 		publicity: LobbyPublicity.Public,
-		width: 4,
-		height: 4,
+		width: 6,
+		height: 6,
 		maxPlayers: 10,
 		deck: getDefaultDeck(),
 	};
