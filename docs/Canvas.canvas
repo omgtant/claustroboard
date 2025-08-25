@@ -5,14 +5,12 @@
 		{"id":"56c67ce852143d95","type":"text","text":"Lobby","x":-340,"y":220,"width":180,"height":60},
 		{"id":"3d130c9452239bab","type":"text","text":"[[Game Logic | Game]]","x":-340,"y":320,"width":180,"height":60},
 		{"id":"a987b0990ae832a0","type":"text","text":"Rematch Vote","x":-340,"y":420,"width":180,"height":60},
-		{"id":"4a14b711793a147b","type":"text","text":"- [x] Only-host kick functionality","x":320,"y":-120,"width":250,"height":60,"color":"5"},
-		{"id":"bccf213849aece56","type":"text","text":"- [x] Only host can start the game\n- [x] Only host can alter publicity","x":160,"y":-611,"width":250,"height":137,"color":"5"},
 		{"id":"67363f38744c7513","type":"text","text":"- [x] Update the WS protocol to include real time tables","x":660,"y":-186,"width":250,"height":133,"color":"5"},
 		{"id":"c19c511d697e144d","type":"text","text":"- [x] Board lobby privacy levels\n\t- Public: displayed in the table, anyone can join\n\t- Unlisted: anyone can join using the code\n\t- Private: no one can join\n- [x] A tech spec file describing these","x":1100,"y":-295,"width":250,"height":350,"color":"5"},
 		{"id":"39f73abfc364e45c","type":"text","text":"- [ ] Public boards real time table","x":685,"y":120,"width":250,"height":70,"color":"2"},
-		{"id":"3273a3106cf59707","type":"text","text":"- [ ] dockerization","x":480,"y":-661,"width":250,"height":61,"color":"2"},
-		{"id":"67f93a245d40ecaf","type":"text","text":"- [ ] attach the Alloy docker image so that it somehow diffeerentiates between prod and dev","x":480,"y":-880,"width":250,"height":165,"color":"5"},
-		{"id":"9c61019580f63250","type":"text","text":"- [ ] nginx","x":480,"y":-534,"width":250,"height":60,"color":"2"}
+		{"id":"67f93a245d40ecaf","type":"text","text":"- [ ] docker compose with alloy, Go binary, and nginx","x":480,"y":-880,"width":250,"height":165},
+		{"id":"9c61019580f63250","type":"text","text":"- [ ] nginx","x":275,"y":-594,"width":250,"height":60,"color":"2"},
+		{"id":"3273a3106cf59707","type":"text","text":"- [ ] docker file","x":685,"y":-594,"width":250,"height":61}
 	],
 	"edges":[
 		{"id":"f13d0bdcae66849a","fromNode":"3ceb4b84ab40c23f","fromSide":"bottom","toNode":"56c67ce852143d95","toSide":"top"},
@@ -23,10 +21,9 @@
 		{"id":"2ba63077f55c1cb6","fromNode":"67363f38744c7513","fromSide":"bottom","toNode":"39f73abfc364e45c","toSide":"top"},
 		{"id":"ab120e5bc3cb5820","fromNode":"9bd0978d04a7f4dd","fromSide":"bottom","toNode":"67363f38744c7513","toSide":"top"},
 		{"id":"2adf79faf765d277","fromNode":"9bd0978d04a7f4dd","fromSide":"top","toNode":"9c61019580f63250","toSide":"bottom"},
-		{"id":"132847a191b29809","fromNode":"9c61019580f63250","fromSide":"top","toNode":"3273a3106cf59707","toSide":"bottom"},
-		{"id":"b1243c3f1271d237","fromNode":"9bd0978d04a7f4dd","fromSide":"left","toNode":"bccf213849aece56","toSide":"bottom"},
 		{"id":"240dbc37928cc527","fromNode":"3273a3106cf59707","fromSide":"top","toNode":"67f93a245d40ecaf","toSide":"bottom"},
-		{"id":"be80d37bcf5da212","fromNode":"9bd0978d04a7f4dd","fromSide":"left","toNode":"4a14b711793a147b","toSide":"top"},
-		{"id":"1a3f6ae5ab609c89","fromNode":"9bd0978d04a7f4dd","fromSide":"right","toNode":"c19c511d697e144d","toSide":"top"}
+		{"id":"1a3f6ae5ab609c89","fromNode":"9bd0978d04a7f4dd","fromSide":"right","toNode":"c19c511d697e144d","toSide":"top"},
+		{"id":"e3a9c1cf12426596","fromNode":"9bd0978d04a7f4dd","fromSide":"top","toNode":"3273a3106cf59707","toSide":"bottom"},
+		{"id":"4a4e379e84ac9c57","fromNode":"9c61019580f63250","fromSide":"top","toNode":"67f93a245d40ecaf","toSide":"bottom"}
 	]
 }
