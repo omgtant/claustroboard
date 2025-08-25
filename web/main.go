@@ -8,6 +8,8 @@ import (
 	"omgtant/claustroboard/web/middlewares"
 	"omgtant/claustroboard/web/routers"
 	"os"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var (
@@ -15,7 +17,7 @@ var (
 	StaticFiles embed.FS
 )
 
-func GetRouter(projectRoot string) *http.ServeMux {
+func GetRouter(projectRoot string) http.Handler {
 	mux := http.NewServeMux()
 
 	// init templates
@@ -24,24 +26,28 @@ func GetRouter(projectRoot string) *http.ServeMux {
 	}
 
 	// template routes
-	mux.HandleFunc("/", routers.TemplateHandler("index.html", defaultTemplateDataFunc))
-	mux.HandleFunc("/demo", routers.TemplateHandler("demo.html", defaultTemplateDataFunc))
+	mux.HandleFunc("GET /{$}", routers.TemplateHandler("index.html", defaultTemplateDataFunc))
 
 	// static files
-	mux.Handle("/static/", routers.CreateFileServer(projectRoot, StaticFiles))
+	mux.Handle("GET /static/", routers.CreateFileServer(projectRoot, StaticFiles))
+
+	// Prometheus /metrics
+	mux.Handle("/metrics", promhttp.Handler())
 
 	// API routes
 	apiMux := http.NewServeMux()
+	apiMux.HandleFunc("POST /feedback", routers.PostFeedback)
 	// websocket routes
 	apiMux.HandleFunc("GET /start-game", routers.StartGameWS)
 	apiMux.HandleFunc("GET /join/{id}", routers.JoinGameWS)
+	apiMux.HandleFunc("GET /public-games", routers.RequestRTTWS)
 	// debug routes
 	if config.Get().ENVIRONMENT == "development" {
 		apiMux.HandleFunc("GET /get-pid", getPID)
 	}
 	mux.Handle("/api/v1/", middlewares.LoggingMiddleware(http.StripPrefix("/api/v1", apiMux)))
 
-	return mux
+	return middlewares.RequestsTotalMiddleware(mux)
 }
 
 func getPID(w http.ResponseWriter, r *http.Request) {

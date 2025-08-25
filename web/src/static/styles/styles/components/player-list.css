@@ -1,0 +1,9 @@
+.player-list {
+    .player-entry {
+        @apply odd:bg-gray-700;
+        @apply text-lg;
+        button {
+            @apply p-1;
+        }
+    }
+}

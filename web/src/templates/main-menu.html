@@ -1,0 +1,106 @@
+<div class="board-overlay" id="board-overlay">
+	<div id="create-join">
+		<div class="flex flex-col gap-4 h-full justify-around">
+			<div>
+				<p class="error" id="nickname-err">&NonBreakingSpace;</p>
+				<label for="nickname" class="text-xl">Nickname</label>
+				<input
+					type="text"
+					name="nickname"
+					id="nickname"
+					class="w-full"
+					required
+				/>
+			</div>
+			<hr />
+			<div class="tabs-control">
+				<nav class="tabs">
+					<label>
+						<input
+							type="radio"
+							name="game-type"
+							value="join"
+							checked
+						/>
+						Join
+					</label>
+					<label>
+						<input
+							type="radio"
+							name="game-type"
+							value="create"
+						/>
+						Create
+					</label>
+					<label>
+						<input
+							type="radio"
+							name="game-type"
+							value="offline"
+						/>
+						Offline
+					</label>
+				</nav>
+				<div class="w-full flex flex-col tabs-content lighter">
+					<div class="show-if-join">{{ template "join.html" }}</div>
+					<div class="show-if-create">
+						{{ template "create.html" }}
+					</div>
+					<div class="show-if-offline">
+						{{ template "offline.html" }}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Goto: prep-stage (player list, kick, start game) -->
+	<!-- The `hidden` class is toggled via js -->
+	<div id="prep-stage" class="hidden flex flex-col gap-2">
+		<div class="flex items-center justify-center w-full gap-2">
+			<a target="_blank" id="game-link" class="can-copy text-xs"></a>
+			<button id="copy-link" class="primary-btn p-0.5 hidden">
+				<img
+					src="/static/assets/img/heroicons/clipboard.svg"
+					class="invert-100 size-6 peer hide-on-copy"
+				/>
+				<img
+					src="/static/assets/img/heroicons/clipboard-ok.svg"
+					class="invert-100 size-6 peer-[:not(.hidden)]:hidden"
+				/>
+			</button>
+		</div>
+		<div class="flex flex-col gap-2 w-full">
+			<div class="w-full">
+				<div class="w-fit mx-auto">
+					{{ template "lobby-switch.html" }}
+				</div>
+			</div>
+			<div class="w-full max-h-screen xl:max-h-[50vh] overflow-y-scroll">
+				<table
+					class="w-full **:[td,th]:p-2 **:[tr_:first-child]:text-left **:[tr_:last-child]:text-right"
+				>
+					<thead>
+						<tr>
+							<th>Nickname</th>
+							<th class="w-12">Actions</th>
+						</tr>
+					</thead>
+					<tbody id="player-list" class="player-list"></tbody>
+				</table>
+			</div>
+			<hr class="my-2" />
+			<div>
+				<button class="w-full h-full primary-btn" id="start-btn">
+					Start
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<template id="player-template">
+	<tr class="player-entry">
+		<td><span class="nickname"></span></td>
+		<td><button class="kick danger-btn inline-block">Kick</button></td>
+	</tr>
+</template>

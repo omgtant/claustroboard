@@ -12,22 +12,23 @@
 npm i
 cp .env.example .env
 ```
+You may also add your own Discord Webhook in `.env`.
 
 ## Running
 
 Frontend and backend with watches & rebuilding:
 ```sh
-npm run dev:all
+npm start
 ```
 
 Build frontend:
 ```sh
-npm run build:frontend
+npm run build
 ```
 
 Texture atlas automatic watching & scaling:
 ```sh
-./scale-pic.sh
+./scale-all.sh
 ```
 
 Killing a stuck Go webserver:

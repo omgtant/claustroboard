@@ -1,4 +1,4 @@
 Summary of the documentation:
 - [Game Logic](./Game%20Logic.md)
 - [Description of Interfaces](./UX.md)
-- [WebSocket Client-Server Protocol for Multiplayer](./WS%20Protocol.md)
+- [Client-Server Protocol for Multiplayer](Network%20Protocol.md)

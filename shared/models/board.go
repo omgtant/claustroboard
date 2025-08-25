@@ -6,16 +6,19 @@ import (
 	"math/rand"
 	"omgtant/claustroboard/shared/dtos"
 	"omgtant/claustroboard/shared/enums"
+	"omgtant/claustroboard/shared/metrics"
 	"omgtant/claustroboard/shared/valueobjects"
 	"slices"
 	"sync"
+	"time"
 )
 
 type BoardPhase string
 
 const (
-	PhaseLobby   BoardPhase = "lobby"
-	PhaseStarted BoardPhase = "started"
+	PhaseLobby       BoardPhase = "lobby"
+	PhaseStarted     BoardPhase = "started"
+	PhaseRematchVote BoardPhase = "rematch_vote"
 )
 
 type Board struct {
@@ -24,12 +27,13 @@ type Board struct {
 	Height     uint16
 	MaxPlayers uint8
 	Tiles      [][]Tile
-	Players    []string
+	Players    []Player
 	Turn       uint32
 	CheckTurn  uint32 // Used in netcode to ensure clients are in sync
-	Pos        []valueobjects.Point
-	IsActive   []bool
 	Phase      BoardPhase
+	Publicity  enums.LobbyPublicity
+	Config     dtos.GameConfig
+	CreatedAt  time.Time
 }
 
 var (
@@ -40,6 +44,7 @@ var (
 func (b *Board) Lock()   { b.mu.Lock() }
 func (b *Board) Unlock() { b.mu.Unlock() }
 
+// All players accepted by this function are marked as hosts
 func NewGameBoard(players []string, gameConfig dtos.GameConfig) (GameCode, error) {
 	width := uint16(gameConfig.Width)
 	height := uint16(gameConfig.Height)
@@ -49,6 +54,8 @@ func NewGameBoard(players []string, gameConfig dtos.GameConfig) (GameCode, error
 		Height:     height,
 		MaxPlayers: uint8(gameConfig.MaxPlayers),
 		Phase:      PhaseLobby,
+		Publicity:  gameConfig.Publicity,
+		CreatedAt:  time.Now(),
 	}
 
 	board.Tiles = make([][]Tile, height)
@@ -56,6 +63,7 @@ func NewGameBoard(players []string, gameConfig dtos.GameConfig) (GameCode, error
 		board.Tiles[i] = make([]Tile, width)
 	}
 
+	board.Config = gameConfig
 	board.fillUsingDeck(&gameConfig.Deck)
 
 	id := RandomGameCode()
@@ -79,7 +87,11 @@ func NewGameBoard(players []string, gameConfig dtos.GameConfig) (GameCode, error
 		if err != nil {
 			return "", err
 		}
+		board.Players[len(board.Players)-1].Host = true
 	}
+
+	metrics.LobbiesCreated.Inc()
+	metrics.LobbiesActive.Inc()
 	return id, nil
 }
 
@@ -88,6 +100,9 @@ func Join(id GameCode, p string) error {
 	if err != nil {
 		return err
 	}
+	if board.Publicity == enums.LobbyPublicityPrivate {
+		return errors.New("cannot join private game")
+	}
 	if board.Phase != PhaseLobby {
 		return errors.New("cannot join game that has already started")
 	}
@@ -95,10 +110,16 @@ func Join(id GameCode, p string) error {
 		return errors.New("game is full") // TODO specific error types so that backend knows what http code to return
 	}
 
-	board.Players = append(board.Players, p)
+	board.Players = append(board.Players, Player{
+		Nickname: p,
+		IsActive: true,
+		Deleted:  false,
+		Pos:      valueobjects.Point{},
+	})
 	gameBoardsMu.Lock()
 	gameBoards[id] = board
 	gameBoardsMu.Unlock()
+	metrics.PlayersLobbyJoined.Inc()
 	return nil
 }
 
@@ -108,10 +129,18 @@ func Leave(id GameCode, p string) error {
 		return err
 	}
 
-	for i, player := range board.Players {
-		if player == p {
-			board.Players = append(board.Players[:i], board.Players[i+1:]...)
-			break
+	switch board.Phase {
+	case PhaseLobby, PhaseRematchVote:
+		board.RemovePlayer(p)
+	case PhaseStarted:
+		player, err := board.GetPlayerByNickname(p)
+		if err != nil {
+			return err
+		}
+		player.Deleted = true
+		player.IsActive = false
+		if board.Players[board.CurPlayer()].Nickname == p {
+			board.advanceTurn()
 		}
 	}
 
@@ -120,6 +149,87 @@ func Leave(id GameCode, p string) error {
 	gameBoardsMu.Unlock()
 
 	return nil
+}
+
+// First return value is true if all players voted for rematch, false otherwise
+// Second return value is the nicknames of everyone who voted
+// Third return value is an error, if any
+// This function will prepare the game for restart if all voted
+func VoteRematch(id GameCode, p string, vote bool) (bool, []string, error) {
+	board, err := GetBoard(id)
+	if err != nil {
+		return false, nil, err
+	}
+	if board.Phase != PhaseRematchVote {
+		return false, nil, errors.New("cannot vote in current phase")
+	}
+	player, err := board.GetPlayerByNickname(p)
+	if err != nil {
+		return false, nil, err
+	}
+	if player.Deleted {
+		return false, nil, errors.New("cannot vote after leaving")
+	}
+	// Record the vote
+	player.RematchVote = vote
+
+	// Start the game again if all voted for rematch
+	rematch, votedPlayers := tryRematch(board)
+
+	return rematch, votedPlayers, nil
+}
+
+// Tries to get the game ready for rematching if everyone voted for it
+// Returns success and all voted players
+func tryRematch(board *Board) (bool, []string) {
+	votedPlayers := []string{}
+	for _, p := range board.Players {
+		if p.RematchVote {
+			votedPlayers = append(votedPlayers, p.Nickname)
+		}
+	}
+	if len(votedPlayers) == len(board.Players) {
+		for i := range board.Players {
+			board.Players[i].IsActive = true
+		}
+		board.fillUsingDeck(&board.Config.Deck)
+		board.Turn = 0
+		board.CheckTurn = 0
+	}
+	return len(votedPlayers) == len(board.Players), votedPlayers
+}
+
+func (b *Board) RemovePlayer(p string) error {
+	for i, player := range b.Players {
+		if player.Nickname == p {
+			b.Players = append(b.Players[:i], b.Players[i+1:]...)
+			break
+		}
+	}
+
+	// If no hosts left, assign the fisrt player as host
+	hostExists := false
+	for _, player := range b.Players {
+		if player.Host {
+			hostExists = true
+			break
+		}
+	}
+
+	if !hostExists && len(b.Players) > 0 {
+		b.Players[0].Host = true
+	}
+
+	return nil
+}
+
+func (b *Board) GetPlayerByNickname(p string) (*Player, error) {
+	for i, player := range b.Players {
+		if player.Nickname == p {
+			return &b.Players[i], nil
+		}
+	}
+	return nil, fmt.Errorf("player %s not found", p)
 }
 
 func GetBoard(code GameCode) (*Board, error) {
@@ -147,8 +257,6 @@ func StartGame(code GameCode) (*Board, error) {
 		return nil, errors.New("not enough tiles for players")
 	}
 
-	used := make(map[valueobjects.Point]bool, len(board.Players))
-	board.Pos = board.Pos[:0]
 	// Find valid starting positions
 	validPositions := []valueobjects.Point{}
 	for y := uint16(0); y < board.Height; y++ {
@@ -165,23 +273,23 @@ func StartGame(code GameCode) (*Board, error) {
 	}
 
 	// Randomly assign positions to players
-	for range board.Players {
+	for i := range board.Players {
 		idx := rand.Intn(len(validPositions))
-		board.Pos = append(board.Pos, validPositions[idx])
-		used[validPositions[idx]] = true
+		board.Players[i].Pos = validPositions[idx]
 		validPositions = append(validPositions[:idx], validPositions[idx+1:]...)
 	}
 
 	// Mark all players as active
-	board.IsActive = make([]bool, len(board.Players))
-	for i := range board.IsActive {
-		board.IsActive[i] = true
+	for i := range board.Players {
+		board.Players[i].IsActive = true
 	}
 
 	board.Phase = PhaseStarted
 	gameBoardsMu.Lock()
 	gameBoards[code] = board
 	gameBoardsMu.Unlock()
+
+	metrics.GamesStarted.Inc()
 	return board, nil
 }
 
@@ -191,10 +299,10 @@ func Snapshot(code GameCode) (*dtos.Board, error) {
 		return nil, err
 	}
 	cpPlayers := make([]dtos.Player, len(b.Players))
-	for i, playerName := range b.Players {
+	for i, player := range b.Players {
 		cpPlayers[i] = dtos.Player{
-			Name: playerName,
-			Pos:  b.Pos[i],
+			Name: player.Nickname,
+			Pos:  player.Pos,
 		}
 	}
 
@@ -224,6 +332,15 @@ func Snapshot(code GameCode) (*dtos.Board, error) {
 	}, nil
 }
 
+func (b *Board) IsHost(p string) bool {
+	for _, player := range b.Players {
+		if player.Nickname == p {
+			return player.Host
+		}
+	}
+	return false
+}
+
 func (b *Board) getTileAt(p valueobjects.Point) (t *Tile, internalError error) {
 	if p.Y >= b.Height || p.X >= b.Width {
 		return nil, errors.New("point out of bounds")
@@ -233,17 +350,17 @@ func (b *Board) getTileAt(p valueobjects.Point) (t *Tile, internalError error) {
 }
 
 func (b *Board) GetCurrent() (t *Tile, index int, internalError error) {
-	if len(b.Pos) <= 0 {
+	if len(b.Players) <= 0 {
 		return nil, 0, errors.New("game has not started")
 	}
-	index = int(b.Turn) % len(b.Pos)
-	player := b.Pos[index]
-	t, internalError = b.getTileAt(player)
+	index = int(b.Turn) % len(b.Players)
+	player := b.Players[index]
+	t, internalError = b.getTileAt(player.Pos)
 	return t, index, internalError
 }
 
 func (b *Board) CurPlayer() int {
-	return int(b.Turn) % len(b.Pos);
+	return int(b.Turn) % len(b.Players)
 }
 
 func (b *Board) Move(move dtos.Move) (*dtos.Delta, error) {
@@ -269,16 +386,11 @@ func (b *Board) Move(move dtos.Move) (*dtos.Delta, error) {
 	if err := b.checkMoveValidity(from, toTile); err != nil {
 		return nil, err
 	}
-	
+
 	b.CheckTurn++
 	if from.applyMove(b, toTile) {
-		b.Turn++
-		// Skip dead players' moves
-		for !b.IsActive[(b.Turn)%uint32(len(b.Pos))] {
-			b.Turn++
-		}
-		// Kill the next player now if it can't move
-		checkNextForDeadness(b)
+		b.advanceTurn()
+		fmt.Printf("Turn of Player %d\n", b.CurPlayer())
 	}
 	return &dtos.Delta{Turn: b.CheckTurn, Move: move}, nil
 }
@@ -295,96 +407,54 @@ func (b *Board) checkMoveValidity(from *Tile, to *Tile) error {
 }
 
 func (b *Board) getPlayerAt(p valueobjects.Point) int {
-	for i, pos := range b.Pos {
-		if pos == p {
+	for i, player := range b.Players {
+		if player.Pos == p {
 			return i
 		}
 	}
 	return -1
 }
 
-func checkNextForDeadness(b *Board) {
-	nextPlayerPos := b.Pos[b.CurPlayer()]
+func (b *Board) startRematchVote() {
+	// Filter out all players that are Deleted
+	for i := 0; i < len(b.Players); i++ {
+		if b.Players[i].Deleted {
+			b.Players = append(b.Players[:i], b.Players[i+1:]...)
+			i--
+		} else {
+			b.Players[i].RematchVote = false
+		}
+	}
+
+	b.Phase = PhaseRematchVote
+}
+
+func checkCurrentForDeadness(b *Board) (bool, error) {
+	nextPlayerPos := b.Players[b.CurPlayer()].Pos
 	nextPlayerTile, err := b.getTileAt(nextPlayerPos)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to get tile at %s: %v", nextPlayerPos.String(), err))
+		return false, err
 	}
 	moves := nextPlayerTile.AvailableMoves(b, b.CurPlayer())
 	length := len(moves)
 	if length == 0 {
-		b.IsActive[(b.Turn)%uint32(len(b.Pos))] = false
-		fmt.Printf("Player %d is out of the game\n", (b.Turn)%uint32(len(b.Pos)))
+		b.Players[b.CurPlayer()].IsActive = false
+		fmt.Printf("Player %d is out of the game\n", b.CurPlayer())
 		activeCount := 0
-		for _, active := range b.IsActive {
-			if active {
+		for _, player := range b.Players {
+			if player.IsActive {
 				activeCount++
 			}
 		}
 		if activeCount <= 1 {
-			b.Phase = PhaseLobby
+			metrics.StartTurnWins.WithLabelValues(fmt.Sprintf("%d", b.CurPlayer())).Inc()
+			metrics.GameDurationsTurns.WithLabelValues(fmt.Sprintf("%d", b.Turn)).Inc()
+			b.startRematchVote()
 			fmt.Println("Game over, returning to lobby")
+			return false, nil
 		}
 	}
-}
-
-func (b *Board) validateDist(src Tile, dest valueobjects.Point, distTarget int, exact bool) (*Tile, bool) {
-	println("validate", src.Kind, src.Pos.X, src.Pos.Y, dest.X, dest.Y, distTarget, exact)
-	visited := []Tile{src}
-	queue := []Tile{src}
-	dist := 1
-
-	for dist <= distTarget {
-		queueCopy := make([]Tile, len(queue))
-		copy(queueCopy, queue)
-		queue = []Tile{}
-
-		for _, v := range queueCopy {
-			neighborsMatrix := []valueobjects.Point{}
-			if v.Pos.X+1 < b.Width {
-				neighborsMatrix = append(neighborsMatrix, valueobjects.Point{X: v.Pos.X + 1, Y: v.Pos.Y})
-			}
-			if v.Pos.X > 0 {
-				neighborsMatrix = append(neighborsMatrix, valueobjects.Point{X: v.Pos.X - 1, Y: v.Pos.Y})
-			}
-			if v.Pos.Y+1 < b.Height {
-				neighborsMatrix = append(neighborsMatrix, valueobjects.Point{X: v.Pos.X, Y: v.Pos.Y + 1})
-			}
-			if v.Pos.Y > 0 {
-				neighborsMatrix = append(neighborsMatrix, valueobjects.Point{X: v.Pos.X, Y: v.Pos.Y - 1})
-			}
-
-		browse:
-			for _, p := range neighborsMatrix {
-				println("neigh", p.X, p.Y)
-				for _, v := range visited {
-					if p == v.Pos {
-						continue browse
-					}
-				}
-				candidate, _ := b.getTileAt(p)
-				candidateValid := candidate != nil && candidate.Open
-				candidateIsTarget := dest == candidate.Pos && (!exact || dist == distTarget)
-
-				println("candidate", candidate.Pos.X, candidate.Pos.Y, candidateValid, candidateIsTarget)
-				if !candidateValid {
-					if candidateIsTarget {
-						return nil, false
-					}
-					continue
-				}
-
-				if candidateIsTarget {
-					return candidate, true
-				}
-
-				visited = append(visited, *candidate)
-				queue = append(queue, *candidate)
-			}
-		}
-		dist++
-	}
-
-	return nil, false
+	return length == 0, nil
 }
 
 func (b *Board) dfs(me Tile, player int, energy int, exact bool, visited map[valueobjects.Point]bool) (result []valueobjects.Point) {
@@ -419,6 +489,11 @@ func (b *Board) dfs(me Tile, player int, energy int, exact bool, visited map[val
 	}
 
 	visited[me.Pos] = false
+
+	// Don't include the initial tile
+	if b.Players[player].Pos == me.Pos {
+		return result
+	}
 
 	if exact {
 		return result
@@ -506,4 +581,78 @@ func (b *Board) fillUsingDeck(deck *[]dtos.TileConfig) error {
 		}
 	}
 	return nil
+}
+
+// Will advance turn, marking any dead players as inactive in its way.
+//
+// May switch the board phase to RematchVote if it manages to determine a winner.
+func (b *Board) advanceTurn() {
+	advance := func() {
+		b.Turn++
+		// Skip dead players' moves
+		for !b.Players[(b.Turn)%uint32(len(b.Players))].IsActive {
+			b.Turn++
+		}
+	}
+
+	advance()
+
+	// Kill the next player now if they can't move
+	var dead bool
+	var err error
+	for dead, err = checkCurrentForDeadness(b); dead && err == nil; {
+		advance()
+		dead, err = checkCurrentForDeadness(b)
+	}
+}
+
+// Returns `count` of boards that are:
+//
+// - Public
+//
+// - Are in Lobby phase
+//
+// - Are not full
+//
+// sorted by creation date (oldest first)
+func GetPublicBoards(count int) []dtos.Game {
+	gameBoardsMu.RLock()
+	defer gameBoardsMu.RUnlock()
+
+	publicBoards := make([]dtos.Game, 0, len(gameBoards))
+	for code, board := range gameBoards {
+		if board.Publicity == enums.LobbyPublicityPublic && board.Phase == PhaseLobby && len(board.Players) < int(board.MaxPlayers) {
+			hostNickname := "unknown"
+			for _, player := range board.Players {
+				if player.Host {
+					hostNickname = player.Nickname
+					break
+				}
+			}
+			publicBoards = append(publicBoards, dtos.Game{
+				Code:         code.String(),
+				Players:      len(board.Players),
+				Config:       board.Config,
+				HostNickname: hostNickname,
+			})
+		}
+	}
+
+	// Sort by creation date (oldest first)
+	slices.SortFunc(publicBoards, func(a, b dtos.Game) int {
+		aDate := gameBoards[GameCode(a.Code)].CreatedAt
+		bDate := gameBoards[GameCode(b.Code)].CreatedAt
+		if aDate.Before(bDate) {
+			return -1
+		} else if aDate.After(bDate) {
+			return 1
+		}
+		return 0
+	})
+
+	if len(publicBoards) > count {
+		publicBoards = publicBoards[:count]
+	}
+
+	return publicBoards
 }

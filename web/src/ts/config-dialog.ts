@@ -1,11 +1,13 @@
 import { getCountFor, getDefaultConfig, loadConfig, saveConfig, generateAllTileSetups, getDefaultCountFor } from "./config";
-import { Config, Tile, TileSetup } from "./types/types";
+import { Config, LobbyPublicity, Tile, TileSetup } from "./types/types";
 import { TileColor } from "./types/util";
 
 //#region DOM Elements
 const dialogEl = document.getElementById('config-dialog') as HTMLDialogElement;
 const closeBtn = document.getElementById('close-config-btn') as HTMLButtonElement;
 const openBtn = document.getElementById('open-config-btn') as HTMLButtonElement;
+const exportBtn = document.getElementById('export-config-btn') as HTMLButtonElement;
+const importBtn = document.getElementById('import-config-input') as HTMLInputElement;
 const resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
 const allZerosBtn = document.getElementById('set-zeros') as HTMLButtonElement;
 const saveBtn = document.getElementById('save-config-btn') as HTMLButtonElement;
@@ -68,29 +70,14 @@ export function init() {
         Array.from(document.querySelectorAll('.tile-row')).forEach(row => {
             if (!(row instanceof HTMLElement)) return;
             row.dataset.count = '0';
+            updateArrows(row);
             row.querySelector('.count')!.textContent = '0';
         });
     });
 
     saveBtn.addEventListener('click', () => {
-        const config = loadConfig();
-        config.width = parseInt(widthInput.value);
-        config.height = parseInt(heightInput.value);
-        config.maxPlayers = parseInt(maxPlayerCountInput.value);
-        config.deck = Array.from(document.querySelectorAll('.tile-row')).map(row => {
-            if (!(row instanceof HTMLElement)) return;
-            if (!(row.dataset.tileType)) return;
-            const tileType = JSON.parse(row.dataset.tileType);
-            try {
-                return {
-                    tile: tileType,
-                    count: parseInt(row.dataset.count!) ?? undefined
-                };
-            } catch (err) {
-                error.textContent = err.message;
-            }
-        }) as { tile: TileSetup, count: number | undefined }[];
         try {
+            const config = getCurrentConfig();
             saveConfig(config);
             error.textContent = '';
             saveBtn.classList.add('success-btn');
@@ -99,6 +86,21 @@ export function init() {
             }, 2000);
         } catch (err) {
             error.textContent = err.message;
+        }
+    });
+
+    exportBtn.addEventListener('click', exportConfig);
+
+    importBtn.addEventListener('change', (event) => {
+        const file = (event.target as HTMLInputElement).files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const config = JSON.parse(e.target?.result as string);
+                readConfig(config);
+                alert("Success! Don't forget to Save.");
+            };
+            reader.readAsText(file);
         }
     });
 
@@ -122,10 +124,12 @@ function readConfig(config: Config = loadConfig()) {
     widthInput.value = config.width.toString();
     heightInput.value = config.height.toString();
     maxPlayerCountInput.value = config.maxPlayers.toString();
+    console.log(config.publicity);
+    (dialogEl.querySelector(`input[value=${config.publicity}]`)! as HTMLInputElement).checked = true
     _getEveryTileType().forEach(tileType => {
         // @ts-ignore
         const tileConfig: HTMLElement = document.getElementById('tile-configuration')!.content.cloneNode(true).querySelector('.tile-row');
-        const count = tileConfig.querySelector('.count');
+        const count: HTMLParagraphElement = tileConfig.querySelector('.count')!;
         tileConfig.dataset.tileType = JSON.stringify(tileType.tileSetup);
         try {
             tileConfig.dataset.count = getCountFor(tileType.tileSetup, config)?.toString() ?? '?';
@@ -137,8 +141,7 @@ function readConfig(config: Config = loadConfig()) {
         tileConfig.querySelector('.left-btn')!.addEventListener('click', () => {
             tileConfig.dataset.count = Math.max(-1, parseInt(tileConfig.dataset.count!) - 1).toString();
             if (tileConfig.dataset.count === '-1') tileConfig.dataset.count = '?';
-            tileConfig.querySelector<HTMLButtonElement>('.left-btn')!.disabled = tileConfig.dataset.count === '?';
-            tileConfig.querySelector<HTMLButtonElement>('.right-btn')!.disabled = tileConfig.dataset.count === '99';
+            updateArrows(tileConfig);
             count!.textContent = tileConfig.dataset.count;
         });
         tileConfig.querySelector('.right-btn')!.addEventListener('click', () => {
@@ -146,25 +149,20 @@ function readConfig(config: Config = loadConfig()) {
                 tileConfig.dataset.count = '-1';
             }
             tileConfig.dataset.count = Math.min(99, parseInt(tileConfig.dataset.count!) + 1).toString();
-            tileConfig.querySelector<HTMLButtonElement>('.left-btn')!.disabled = tileConfig.dataset.count === '?';
-            tileConfig.querySelector<HTMLButtonElement>('.right-btn')!.disabled = tileConfig.dataset.count === '99';
+            updateArrows(tileConfig);
             count!.textContent = tileConfig.dataset.count;
         });
-        count!.addEventListener('input', (e) => {
-            count!.textContent = count!.textContent!.replace(/[^0-9]/g, '');
-            tileConfig.dataset.count = count!.textContent!;
-        });
+        updateArrows(tileConfig);
         count!.addEventListener('focusout', (e) => {
+            count!.textContent = count!.textContent!.replace(/[^0-9]/g, "");
             if (parseInt(count!.textContent!) > 99) {
                 count!.textContent = '99';
             }
-            if (parseInt(count!.textContent!) < 0) {
+            if (count!.textContent === '') {
                 count!.textContent = '?';
             }
-            if (count!.textContent === '') {
-                count!.textContent = '0';
-            }
             tileConfig.dataset.count = count!.textContent!;
+            updateArrows(tileConfig);
         });
         // @ts-ignore
         tileConfig.querySelector('.left-btn')?.firstChild!.classList.add(`tile-${TileColor[tileType.tileSetup.color ?? -1]}`);
@@ -173,6 +171,12 @@ function readConfig(config: Config = loadConfig()) {
 
         tileList?.appendChild(tileConfig);
     });
+    updatePresetHighlights();
+}
+
+function updateArrows(tileConfig: HTMLElement) {
+    tileConfig.querySelector<HTMLButtonElement>('.left-btn')!.disabled = tileConfig.dataset.count === '?';
+    tileConfig.querySelector<HTMLButtonElement>('.right-btn')!.disabled = tileConfig.dataset.count === '99';
 }
 
 function updatePresetHighlights() {
@@ -193,4 +197,41 @@ function updatePresetHighlights() {
     } else {
         preset8x8.classList.remove('highlight');
     }
+}
+
+function getCurrentConfig() {
+    const config = loadConfig();
+	config.width = parseInt(widthInput.value);
+	config.height = parseInt(heightInput.value);
+	config.maxPlayers = parseInt(maxPlayerCountInput.value);
+    config.publicity = (dialogEl.querySelector('input[name="lobby-publicity"]:checked') as HTMLInputElement).value as LobbyPublicity;
+	config.deck = Array.from(document.querySelectorAll(".tile-row")).map(
+		(row) => {
+			if (!(row instanceof HTMLElement)) return;
+			if (!row.dataset.tileType) return;
+			const tileType = JSON.parse(row.dataset.tileType);
+			try {
+                const count = parseInt(row.dataset.count!);
+				return {
+					tile: tileType,
+					count: Number.isNaN(count) ? undefined : count,
+				};
+			} catch (err) {
+				error.textContent = err.message;
+			}
+		}
+	) as { tile: TileSetup; count: number | undefined }[];
+    return config;
+}
+
+function exportConfig() {
+	const config = getCurrentConfig();
+	const json = JSON.stringify(config, null, 2);
+	const blob = new Blob([json], { type: "application/json" });
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement("a");
+	a.href = url;
+	a.download = "config.json";
+	a.click();
+	URL.revokeObjectURL(url);
 }

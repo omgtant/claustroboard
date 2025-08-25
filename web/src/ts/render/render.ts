@@ -1,11 +1,10 @@
-import { rnd } from "../helpers/helpers.ts";
-import { TileHighlightFlags, RenderInterface, PlayerHighlightFlags } from "../types/renderInterface.ts";
-import type { GameState, Player, Tile, ValidMove } from "../types/types.ts";
-import { Pos, TileColor } from "../types/util.ts";
-import { LayoutTile, TeleportTile, WildcardTile, ZeroTile } from "../game/tiles.ts";
-import { transform } from "typescript";
-import { _movePlayer, getPlayerElement } from "./playerMover.ts";
-import { setCurrentSelection } from "./keyboardControl.ts";
+import { rnd } from "../helpers/helpers";
+import { TileHighlightFlags, RenderInterface } from "../types/renderInterface";
+import type { GameState, Player, Tile, ValidMove } from "../types/types";
+import { Pos, TileColor } from "../types/util";
+import { LayoutTile, TeleportTile, WildcardTile, ZeroTile } from "../game/tiles";
+import { _movePlayer, getPlayerElement } from "./playerMover";
+import { setCurrentSelection } from "./keyboardControl";
 
 const callbacks = {
     tryMoveTo: (pos: Pos) : void => {
@@ -35,10 +34,50 @@ export const renderInterface: RenderInterface = {
     highlightOtherActivePlayer,
     suggestMoves,
     playerLost,
+    displayRematchOption,
+    rematchVotesChanged
 }
 
 export const board = document.getElementById('board');
 const log = document.getElementById('log');
+
+function displayRematchOption(callback: (vote: boolean) => void): void {
+    const rematchButton = document.createElement('button');
+    rematchButton.textContent = 'Rematch';
+    rematchButton.className = 'inline-block primary-btn';
+    let state = false;
+	rematchButton.addEventListener("click", () => {
+		callback(!state);
+		state = !state;
+	});
+
+    const leaveButton = document.createElement('a');
+    leaveButton.textContent = 'Leave';
+    leaveButton.className = 'inline-block button';
+    leaveButton.href = '/';
+
+    const buttonsRow = document.createElement('div');
+    buttonsRow.className = 'space-x-2';
+    buttonsRow.appendChild(rematchButton);
+    buttonsRow.appendChild(leaveButton);
+
+    log!.appendChild(buttonsRow);
+}
+
+let rematchVotes: string[] = [];
+function rematchVotesChanged(votedPlayers: string[]): void {
+    const diffVoted = votedPlayers.filter(x => !rematchVotes.includes(x));
+    const diffUnvoted = rematchVotes.filter(x => !votedPlayers.includes(x));
+
+    diffVoted.forEach(player => {
+        const el = logMessage(`Player ${player} voted for rematch`);
+        el.classList.add('rematch-vote');
+    });
+    diffUnvoted.forEach(player => {
+        const el = logMessage(`Player ${player} removed their rematch vote`);
+        el.classList.add('rematch-vote');
+    });
+}
 
 function logTurn(turnNumber: number, player: Player, pos: Pos) {
     const el = logMessage(`${turnNumber.toString().padStart(3,'.')}: Player ${player.nickname} moved to (${pos.x}, ${pos.y})`);

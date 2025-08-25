@@ -18,6 +18,7 @@ export type GameState = {
     history: Pos[];
     initialState: InitialState;
     someRenderInterface?: RenderInterface;
+    voteRematch?: (vote: boolean) => void;
 }
 
 export type InitialPlayer = {
@@ -64,9 +65,14 @@ export interface EventMap {
     'my-move': MoveDelta,
     'they-moved': MoveDelta,
     'come-again': MoveDelta,
+    'lobby-publicity': string,
+    'lobby-publicity-changed': string,
     'close': void,
     'broadcast': any,
-    'error': any
+    'error': any,
+    'vote-rematch': boolean,
+    'rematch-votes-changed': string[],
+    'kick': string,
 }
 
 export type Netcode = {
@@ -86,8 +92,15 @@ export type DeckElement = {
     count?: number
 }
 
+export enum LobbyPublicity {
+    Public  = "public",
+    Private = "private",
+    Unlisted = "unlisted"
+}
+
 export type Config = {
-    version: 1,
+    version: 2,
+    publicity: LobbyPublicity,
     width: number;
     height: number;
     maxPlayers: number;

@@ -1,0 +1,10 @@
+.board-wrapper {
+    @apply relative min-w-xs min-h-48;
+}
+
+.board-overlay {
+    @apply z-40 flex flex-col gap-2 h-full;
+    .error {
+        @apply block text-red-500;
+    }
+}

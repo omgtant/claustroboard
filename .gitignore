@@ -25,8 +25,9 @@ profile.cov
 go.work
 go.work.sum
 
-# env file
-.env
+# env files
+.env*
+!.env.example
 
 # Editor/IDE
 .idea/
@@ -47,3 +48,14 @@ web/out
 # krita cache
 *~
 *.kra
+
+# logs
+*.log
+
+# nginx
+letsencrypt
+keys.json
+
+# secrets
+discord_feedback_webhook_url.txt
+gcloud_rw_api_key.txt

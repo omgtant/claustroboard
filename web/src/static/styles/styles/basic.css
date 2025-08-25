@@ -1,0 +1,90 @@
+@layer base {
+	*,
+	pre {
+		font-family: "Comic Mono", monospace;
+		@apply text-white;
+	}
+	body {
+		image-rendering: pixelated;
+		@apply bg-gray-900 overflow-x-hidden;
+	}
+	h1 {
+		@apply text-3xl text-slate-100;
+	}
+	h2 {
+		@apply text-2xl;
+	}
+	input[type="text"],
+	input[type="number"],
+	input[type="email"],
+	textarea,
+	button,
+	.button {
+		@apply p-2 bg-gray-700 rounded-lg block lighter:bg-gray-600;
+	}
+	input[type="text"],
+	input[type="number"],
+	input[type="email"],
+	textarea {
+		@apply min-w-24;
+	}
+	button,
+	.button {
+		@apply text-center transition-colors duration-100 cursor-pointer hover:bg-gray-500;
+	}
+	:disabled,
+	.disabled {
+		@apply opacity-50;
+	}
+
+	hr,
+	.vr {
+		@apply lighter:border-gray-500 border-gray-600;
+	}
+	hr {
+		@apply border-t;
+	}
+	.vr {
+		@apply border-l;
+	}
+
+	dialog {
+		@apply relative m-auto bg-gray-800 rounded-xl min-w-40 min-h-40 px-4 py-8;
+		.close-dialog-btn {
+			@apply absolute top-2 right-2 p-1 bg-gray-700 hover:bg-gray-600 transition-colors duration-100 rounded-full min-w-0;
+		}
+		&::backdrop {
+			@apply bg-black/50;
+		}
+	}
+
+	footer {
+		@apply lg:fixed lg:bottom-0 lg:left-0 lg:h-auto lg:right-0;
+		@apply flex flex-col items-center lg:flex-row;
+		@apply p-4 lg:p-2 gap-8 max-lg:bg-gray-800;
+		@apply pointer-events-none *:pointer-events-auto;
+	}
+}
+
+@layer components {
+	.primary-btn {
+		@apply bg-blue-500 hover:bg-blue-600;
+	}
+	.danger-btn {
+		@apply bg-red-100 hover:bg-red-200 text-red-500;
+	}
+	.success-btn {
+		@apply bg-green-300 hover:bg-green-200 text-green-600;
+	}
+	.can-copy {
+		@apply cursor-pointer text-slate-500 hover:text-slate-600 transition-colors duration-100;
+		&:hover {
+			@apply underline;
+		}
+	}
+	.card {
+		@apply bg-gray-800 border border-gray-700 rounded-lg p-4;
+		@apply lighter:bg-gray-700 border-gray-600;
+		@apply block;
+	}
+}

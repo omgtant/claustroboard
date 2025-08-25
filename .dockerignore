@@ -1,0 +1,26 @@
+
+# development
+web/src
+*.sh
+
+# internal
+.vscode
+
+# docs
+*.md
+docs
+LICENSE
+
+# webdev
+package-lock.json
+package.json
+node_modules
+tsconfig.json
+postcss.config.mjs
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Environment files
+.env*

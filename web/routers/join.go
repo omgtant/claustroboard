@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"omgtant/claustroboard/shared/dtos"
+	"omgtant/claustroboard/shared/enums"
 	"omgtant/claustroboard/shared/models"
 
 	"github.com/coder/websocket/wsjson"
@@ -39,6 +40,10 @@ func StartGameWS(w http.ResponseWriter, r *http.Request) {
 	}
 
 	client.write("created", map[string]string{"code": code.String()})
+	client.write(string(code), event{
+		Type: "lobby-publicity-changed",
+		Data: gameConfig.Publicity,
+	})
 	broadcastPlayerList(code)
 }
 
@@ -52,14 +57,19 @@ func JoinGameWS(w http.ResponseWriter, r *http.Request) {
 	code := models.GameCode(r.PathValue("id"))
 
 	board, err := models.GetBoard(code)
-	if err != nil {
+	if err != nil || board.Publicity == enums.LobbyPublicityPrivate {
 		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+
+	if len(board.Players) >= int(board.MaxPlayers) {
+		http.Error(w, "game is full", http.StatusConflict)
 		return
 	}
 
 	already := false
 	for _, p := range board.Players {
-		if p == nickname {
+		if p.Nickname == nickname {
 			already = true
 			break
 		}
@@ -92,4 +102,8 @@ func JoinGameWS(w http.ResponseWriter, r *http.Request) {
 	})
 
 	broadcastPlayerList(code)
+	client.write(string(code), event{
+		Type: "lobby-publicity-changed",
+		Data: board.Publicity,
+	})
 }

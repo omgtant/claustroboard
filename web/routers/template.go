@@ -4,6 +4,7 @@ import (
 	"embed"
 	"html/template"
 	"net/http"
+	"omgtant/claustroboard/shared/metrics"
 )
 
 var templates *template.Template
@@ -13,7 +14,7 @@ func InitTemplates(fs embed.FS) error {
 	
 	templates = &template.Template{}
 
-	templates, err = template.New("").Funcs(GetFuncMap()).ParseFS(fs, "out/*.html")
+	templates, err = template.New("").Funcs(GetFuncMap()).ParseFS(fs, "out/*.html", "out/**/*.html")
 	if err != nil {
 		return err
 	}
@@ -36,7 +37,9 @@ func TemplateHandler(name string, dataFunc func(*http.Request) any) http.Handler
 
 		if err := RenderTemplate(w, name, data); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
+		metrics.PageLoads.Inc()
 	}
 }
 

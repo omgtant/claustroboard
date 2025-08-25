@@ -1,0 +1,46 @@
+services:
+    app:
+        build: .
+        environment:
+            - ENVIRONMENT=${ENVIRONMENT:-production}
+        secrets:
+            - app_address
+            - discord_feedback_webhook_url
+        networks:
+            - claustroboard
+
+    alloy:
+        image: grafana/alloy:v1.10.2
+        environment:
+            - ENVIRONMENT=${ENVIRONMENT:-production}
+        secrets:
+            - gcloud_rw_api_key
+        volumes:
+            - ./config.alloy:/etc/alloy/config.alloy:ro
+        networks:
+            - claustroboard
+
+    nginx:
+        image: 'jc21/nginx-proxy-manager:latest'
+        restart: unless-stopped
+        ports:
+            - '80:80'
+            - '81:81'
+            - '443:443'
+        volumes:
+            - ./nginx:/data/nginx
+            - ./letsencrypt:/etc/letsencrypt
+        networks:
+            - claustroboard
+
+networks:
+    claustroboard:
+        driver: bridge
+
+secrets:
+    app_address:
+        environment: APP_ADDRESS
+    discord_feedback_webhook_url:
+        file: discord_feedback_webhook_url.txt
+    gcloud_rw_api_key:
+        file: gcloud_rw_api_key.txt

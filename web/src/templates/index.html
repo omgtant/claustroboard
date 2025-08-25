@@ -8,39 +8,61 @@
     <title>Claustroboard</title>
 </head>
 <body class="relative w-screen min-h-screen">
-    <div class="grid grid-rows-[1fr_6fr_1fr] lg:grid-rows-[1fr_3fr_2fr] h-full w-full">
-        <div></div>
-        <div class="flex flex-col items-center justify-center h-fit">
-            <div class="flex flex-col gap-4 w-full">
+    {{ template "error.html" }}
+    <div class="grid min-h-screen">
+        <div class="flex flex-col place-self-center h-fit">
+            <div class="flex flex-col gap-4 w-full mb-4">
                 <div class="relative flex flex-col items-stretch w-fit mx-auto gap-4 h-full">
                     <!-- Goto: Welcome card -->
-                    <div class="h-full bg-gray-800 p-4 rounded-lg flex flex-col justify-between">
+                    <div class="h-full card flex flex-col justify-between">
                         <h1 class="block w-min">Welcome to Claustroboard!</h1>
                     </div>
-                    <!-- Goto: board wrapper -->
-                    <div class="board-wrapper">
-                        {{ template "board-overlay.html" }}
+                    <!-- Goto: log -->
+                    <div id="log" class="log row-span-2 card">
+                        <h2>The log</h2>
+                        <span>...</span>
+                    </div>
+                    <!-- Goto: board wrapper / main menu -->
+                    <div class="board-wrapper card">
+                        {{ template "main-menu.html" }}
                         <!-- Goto: board game -->
                         <div class="board" id="board">
                         </div>
                     </div>
-                    <div id="log" class="log row-span-2">
-                        <h2>The log</h2>
-                        <span>...</span>
-                    </div>
                     <!-- Goto: rules accordion -->
                     {{ template "rules.html" }}
+                    <!-- Goto: feedback prompt -->
+                    <div class="card flex flex-col gap-1">
+                        <p>
+                            Claustroboard is a rather new project.
+                            <br />
+                            We enjoy making it better.
+                        </p>
+                        <div class="flex gap-1 w-full justify-stretch *:flex-1">
+                            <button id="show-feedback-dialog">Leave feedback</button>
+                            <a class="button" href="https://github.com/omgtant/claustroboard" target="_blank">Look at source</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div></div>
     </div>
-    <!-- Goto: config -->
+    <!-- Goto: config dialog -->
     {{ template "config-dialog.html" }}
+    <!-- Goto: feedback dialog -->
+    {{ template "feedback-dialog.html" }}
     <footer>
-        <a href="https://github.com/omgtant/claustroboard" class="block h-full">
-            <img src="/static/assets/img/github.svg" alt="GitHub" class="h-full lg:size-12" />
+        <a href="https://github.com/omgtant/claustroboard" target="_blank">
+            <img src="/static/assets/img/github.svg" alt="GitHub" class="lg:size-12" />
         </a>
+        <label class="max-md:hidden">
+            <input type="checkbox" id="toggle-bg" checked />
+            Background
+        </label>
+        <div class="ml-auto">
+            By
+            <a href="https://github.com/omgtant"><img src="/static/assets/img/omgtant.png" alt="omgtant" class="inline-block blur-[0.5px]" title="omga, miltant" /></a>
+        </div>
     </footer>
     <script type="module" src="/static/js/main.js"></script>
 </body>

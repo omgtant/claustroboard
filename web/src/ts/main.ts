@@ -1,10 +1,17 @@
-import { startSingleplayer } from './game/game';
-import { init as netcodeInit} from './netcode/ws-ui';
-import { init as configDialogInit } from './config-dialog';
-
-netcodeInit();
-configDialogInit();
-document.getElementById('single-player')?.addEventListener('click', () => {
-    document.getElementById('board-overlay')?.remove();
-    startSingleplayer();
-})
+import { init as netcodeInit } from "./netcode/ws-ui";
+import { init as configDialogInit } from "./config-dialog";
+import { singleplayerInit } from "./game/singleplayer";
+import { showError } from "./helpers/showError";
+import bgInit from "./prettyBg"
+import rttInit from "./realTimeTable"
+import { initFeedbackDialog as feedbackDialogInit } from "./feedback-dialog";
+try {
+	netcodeInit();
+	configDialogInit();
+	feedbackDialogInit();
+	singleplayerInit();
+	bgInit();
+	rttInit();
+} catch (error) {
+	showError(error.message || error);
+}

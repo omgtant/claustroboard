@@ -1,0 +1,48 @@
+.player-parent {
+	@apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30;
+	.player {
+		@apply drop-shadow-xl drop-shadow-black;
+		background-image: var(--atlas-url);
+		width: 28px;
+		height: 28px;
+		&.player-1 {
+			background-position: 0px 0px;
+		}
+		&.player-2 {
+			background-position: 0px -28px;
+		}
+		&.player-3 {
+			background-position: 0px -56px;
+		}
+		&.player-4 {
+			background-position: 0px -84px;
+		}
+		&.player-5 {
+			background-position: 0px 0px;
+			filter: hue-rotate(120deg) brightness(110%);
+		}
+		&.player-6 {
+			background-position: 0px -28px;
+			filter: hue-rotate(180deg) brightness(110%);
+		}
+		&.player-7 {
+			background-position: 0px -56px;
+			filter: hue-rotate(240deg) brightness(110%);
+		}
+		&.player-8 {
+			background-position: 0px -84px;
+			filter: hue-rotate(180deg) saturate(110%) brightness(100%);
+		}
+	}
+
+	&.player-lost {
+		@apply saturate-0;
+	}
+
+	&.player-won {
+		@apply animate-bounce;
+	}
+	&.player-highlight {
+		@apply animate-bounce;
+	}
+}

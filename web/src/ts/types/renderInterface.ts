@@ -31,4 +31,6 @@ export interface RenderInterface {
     highlightWinner(player: t.Player, flags: PlayerHighlightFlags): void;
     highlightOtherActivePlayer(player: t.Player): void;
     playerLost(player: t.Player): void;
+    displayRematchOption(callback: (vote: boolean) => void): void;
+    rematchVotesChanged(votedPlayers: string[]): void;
 }

@@ -1,0 +1,31 @@
+<div class="join-ui p-1">
+	<div class="flex flex-col lg:flex-row w-full">
+		<input
+			type="text"
+			name="game-code"
+			id="game-code"
+			placeholder="abcd1234"
+			size="1"
+			title="Game code"
+		/>
+		<button id="join" class="primary-btn">Join</button>
+	</div>
+	<table title="Public games" id="real-time-table">
+		<thead>
+			<tr>
+				<th>Host</th>
+				<th>Players</th>
+				<th>Board</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody class="bg-gray-600 **:[td:nth-child(4)]:w-min">
+			<tr>
+				<td colspan="4" class="text-center italic text-gray-400 h-24">Loading...</td>
+			</tr>
+		</tbody>
+	</table>
+	<template id="join-btn-template">
+		<button class="join-btn-table p-1"><img src="/static/assets/img/heroicons/enter.svg" class="invert-100 size-6" /></button>
+	</template>
+</div>
