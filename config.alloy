@@ -20,7 +20,7 @@ prometheus.scrape "claustroboard" {
   scrape_timeout = "5s"
 
   targets = [
-    { __address__ = "host.docker.internal:8080" },
+    { __address__ = "app:8080" },
   ]
 
   forward_to = [prometheus.remote_write.metrics_hosted_prometheus.receiver]

@@ -10,7 +10,7 @@
 		{"id":"39f73abfc364e45c","type":"text","text":"- [ ] Public boards real time table","x":685,"y":120,"width":250,"height":70,"color":"2"},
 		{"id":"67f93a245d40ecaf","type":"text","text":"- [ ] docker compose with alloy, Go binary, and nginx","x":480,"y":-880,"width":250,"height":165},
 		{"id":"9c61019580f63250","type":"text","text":"- [ ] nginx","x":275,"y":-594,"width":250,"height":60,"color":"2"},
-		{"id":"3273a3106cf59707","type":"text","text":"- [ ] docker file","x":685,"y":-594,"width":250,"height":61}
+		{"id":"3273a3106cf59707","type":"text","text":"- [x] docker file","x":685,"y":-594,"width":250,"height":61}
 	],
 	"edges":[
 		{"id":"f13d0bdcae66849a","fromNode":"3ceb4b84ab40c23f","fromSide":"bottom","toNode":"56c67ce852143d95","toSide":"top"},
