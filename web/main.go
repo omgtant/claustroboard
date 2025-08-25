@@ -40,6 +40,7 @@ func GetRouter(projectRoot string) http.Handler {
 	// websocket routes
 	apiMux.HandleFunc("GET /start-game", routers.StartGameWS)
 	apiMux.HandleFunc("GET /join/{id}", routers.JoinGameWS)
+	apiMux.HandleFunc("GET /public-games", routers.RequestRTTWS)
 	// debug routes
 	if config.Get().ENVIRONMENT == "development" {
 		apiMux.HandleFunc("GET /get-pid", getPID)

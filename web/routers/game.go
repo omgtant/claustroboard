@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	inboundHandlers = map[string]func(*wsClient, json.RawMessage){
+	inboundHandlers = map[string]func(*gameWsClient, json.RawMessage){
 		"start":           handleStartGame,
 		"broadcast":       handleBroadcast,
 		"my-move":         handleMove,
@@ -43,7 +43,7 @@ func broadcastPlayerList(gameCode models.GameCode) {
 	})
 }
 
-func handleStartGame(c *wsClient, _ json.RawMessage) {
+func handleStartGame(c *gameWsClient, _ json.RawMessage) {
 	b, err := models.GetBoard(c.gameCode)
 	if err != nil {
 		c.writeError(err)
@@ -66,7 +66,7 @@ func handleStartGame(c *wsClient, _ json.RawMessage) {
 	})
 }
 
-func handleLobbyPublicity(c *wsClient, data json.RawMessage) {
+func handleLobbyPublicity(c *gameWsClient, data json.RawMessage) {
 	board, err := models.GetBoard(c.gameCode)
 	if err != nil {
 		c.writeError(err)
@@ -88,8 +88,8 @@ func handleLobbyPublicity(c *wsClient, data json.RawMessage) {
 	})
 }
 
-func handleRematchVote(c *wsClient, data json.RawMessage) {
-	var payload bool;
+func handleRematchVote(c *gameWsClient, data json.RawMessage) {
+	var payload bool
 	if err := json.Unmarshal(data, &payload); err != nil {
 		c.writeError(err)
 		return
@@ -119,7 +119,7 @@ func handleRematchVote(c *wsClient, data json.RawMessage) {
 	}
 }
 
-func handleBroadcast(c *wsClient, data json.RawMessage) {
+func handleBroadcast(c *gameWsClient, data json.RawMessage) {
 	if config.Get().ENVIRONMENT != "development" {
 		return
 	}
@@ -129,7 +129,7 @@ func handleBroadcast(c *wsClient, data json.RawMessage) {
 	})
 }
 
-func handleMove(c *wsClient, data json.RawMessage) {
+func handleMove(c *gameWsClient, data json.RawMessage) {
 	board, err := models.GetBoard(c.gameCode)
 	if err != nil {
 		c.writeError(err)
@@ -170,7 +170,7 @@ func handleMove(c *wsClient, data json.RawMessage) {
 	})
 }
 
-func handleKick(c *wsClient, data json.RawMessage) {
+func handleKick(c *gameWsClient, data json.RawMessage) {
 	var nickname string
 	if err := json.Unmarshal(data, &nickname); err != nil {
 		c.writeError(err)
@@ -193,7 +193,7 @@ func handleKick(c *wsClient, data json.RawMessage) {
 		c.writeError(err)
 		return
 	}
-	
+
 	broadcastEvent(c.gameCode, event{
 		Type: "player-kicked",
 		Data: nickname,

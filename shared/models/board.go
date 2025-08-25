@@ -10,6 +10,7 @@ import (
 	"omgtant/claustroboard/shared/valueobjects"
 	"slices"
 	"sync"
+	"time"
 )
 
 type BoardPhase string
@@ -32,6 +33,7 @@ type Board struct {
 	Phase      BoardPhase
 	Publicity  enums.LobbyPublicity
 	Config     dtos.GameConfig
+	CreatedAt  time.Time
 }
 
 var (
@@ -53,6 +55,7 @@ func NewGameBoard(players []string, gameConfig dtos.GameConfig) (GameCode, error
 		MaxPlayers: uint8(gameConfig.MaxPlayers),
 		Phase:      PhaseLobby,
 		Publicity:  gameConfig.Publicity,
+		CreatedAt:  time.Now(),
 	}
 
 	board.Tiles = make([][]Tile, height)
@@ -127,18 +130,18 @@ func Leave(id GameCode, p string) error {
 	}
 
 	switch board.Phase {
-		case PhaseLobby, PhaseRematchVote:
-			board.RemovePlayer(p)
-		case PhaseStarted:
-			player, err := board.GetPlayerByNickname(p)
-			if err != nil {
-				return err
-			}
-			player.Deleted = true
-			player.IsActive = false
-			if board.Players[board.CurPlayer()].Nickname == p {
-				board.advanceTurn()
-			} 
+	case PhaseLobby, PhaseRematchVote:
+		board.RemovePlayer(p)
+	case PhaseStarted:
+		player, err := board.GetPlayerByNickname(p)
+		if err != nil {
+			return err
+		}
+		player.Deleted = true
+		player.IsActive = false
+		if board.Players[board.CurPlayer()].Nickname == p {
+			board.advanceTurn()
+		}
 	}
 
 	gameBoardsMu.Lock()
@@ -210,7 +213,7 @@ func (b *Board) RemovePlayer(p string) error {
 		if player.Host {
 			hostExists = true
 			break
-		}	
+		}
 	}
 
 	if !hostExists && len(b.Players) > 0 {
@@ -240,7 +243,6 @@ func GetBoard(code GameCode) (*Board, error) {
 
 	return nil, fmt.Errorf("board with ID %s not found", code)
 }
-
 
 func StartGame(code GameCode) (*Board, error) {
 	board, err := GetBoard(code)
@@ -602,4 +604,55 @@ func (b *Board) advanceTurn() {
 		advance()
 		dead, err = checkCurrentForDeadness(b)
 	}
+}
+
+// Returns `count` of boards that are:
+//
+// - Public
+//
+// - Are in Lobby phase
+//
+// - Are not full
+//
+// sorted by creation date (oldest first)
+func GetPublicBoards(count int) []dtos.Game {
+	gameBoardsMu.RLock()
+	defer gameBoardsMu.RUnlock()
+
+	publicBoards := make([]dtos.Game, 0, len(gameBoards))
+	for code, board := range gameBoards {
+		if board.Publicity == enums.LobbyPublicityPublic && board.Phase == PhaseLobby && len(board.Players) < int(board.MaxPlayers) {
+			hostNickname := "unknown"
+			for _, player := range board.Players {
+				if player.Host {
+					hostNickname = player.Nickname
+					break
+				}
+			}
+			publicBoards = append(publicBoards, dtos.Game{
+				Code:         code.String(),
+				Players:      len(board.Players),
+				Config:       board.Config,
+				HostNickname: hostNickname,
+			})
+		}
+	}
+
+	// Sort by creation date (oldest first)
+	slices.SortFunc(publicBoards, func(a, b dtos.Game) int {
+		aDate := gameBoards[GameCode(a.Code)].CreatedAt
+		bDate := gameBoards[GameCode(b.Code)].CreatedAt
+		if aDate.Before(bDate) {
+			return -1
+		} else if aDate.After(bDate) {
+			return 1
+		}
+		return 0
+	})
+
+	if len(publicBoards) > count {
+		publicBoards = publicBoards[:count]
+	}
+
+	return publicBoards
 }

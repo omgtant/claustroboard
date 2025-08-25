@@ -7,13 +7,14 @@ type Game = {
     code: string;
     players: number;
     config: Config;
+    host: string;
 }
 
 interface RTTEventMap {
     'update': Game[];
 }
 
-const realTimeTable = document.getElementById("real-time-table") as HTMLTableElement;
+const realTimeTableBody = document.getElementById("real-time-table")?.querySelector('tbody')!;
 const joinBtnTemplate = document.getElementById("join-btn-template") as HTMLTemplateElement;
 
 const rttwsManager = new WebSocketManager<RTTEventMap>({
@@ -35,31 +36,71 @@ function connect() {
     });
 }
 
+let oldGameCodes: string[] = [];
 function updateTable(games: Game[] | null) {
-    // Clear the existing table rows
-    realTimeTable.querySelector('tbody')!.innerHTML = '';
+	if (!games || games.length === 0) {
+		// If no games are available, clear body and show message
+		realTimeTableBody.innerHTML = "";
 
-    if (!games) {
-        // If no games are available, show a message or handle accordingly
-        const row = realTimeTable.insertRow();
-        const cell = row.insertCell(0);
-        cell.className = 'text-center text-gray-200 h-24';
-        cell.colSpan = 4;
-        cell.innerText = "No public games available";
-        return;
-    }
+		const row = realTimeTableBody.insertRow();
+		const cell = row.insertCell(0);
+		cell.className = "text-center text-gray-200 h-24";
+		cell.colSpan = 4;
+		cell.innerText = "No public games available";
+		return;
+	}
 
-    // Populate the table with the updated game data
-    games.forEach(game => {
-        const row = realTimeTable.insertRow();
-        row.insertCell(0).innerText = game.code;
-        row.insertCell(1).innerText = game.players.toString();
-        row.insertCell(2).innerText = JSON.stringify(game.config);
-        const cell = row.insertCell(3);
-        const joinBtn = (joinBtnTemplate.content.cloneNode(true) as HTMLElement).querySelector('button')!;
-        cell.appendChild(joinBtn);
-        joinBtn.addEventListener('click', () => {
-            joinGame(game.code);
-        });
-    });
+	// Remove all elements that don't have data-code set
+	const withoutCode = Array.from(
+		realTimeTableBody.querySelectorAll("tr")
+	).filter((row) => !row.dataset.code);
+	withoutCode.forEach((row) => {
+		row.remove();
+	});
+
+
+	// Remove deleted games
+	const toDelete = oldGameCodes.filter(
+		(code) => !games.some((game) => game.code === code)
+	);
+	toDelete.forEach((code) => {
+		const row: HTMLTableRowElement | null = realTimeTableBody.querySelector(
+			`tr[data-code="${code}"]`
+		);
+		if (row) {
+			row.remove();
+		}
+	});
+
+	// Add new games and update existing
+	games.forEach((game) => {
+		if (oldGameCodes.includes(game.code)) {
+            const row: HTMLTableRowElement | null = realTimeTableBody.querySelector(
+                `tr[data-code="${game.code}"]`
+            );
+            if (row) {
+                row.deleteCell(1);
+                row.insertCell(1).innerText = `${game.players}/${game.config.maxPlayers}`;
+            }
+            return;
+        }
+
+		oldGameCodes.push(game.code);
+
+		const row = realTimeTableBody.insertRow();
+		row.dataset.code = game.code;
+		row.insertCell(0).innerText = game.host;
+		row.insertCell(1).innerText = `${game.players}/${game.config.maxPlayers}`;
+		row.insertCell(
+			2
+		).innerText = `${game.config.width}x${game.config.height}`;
+		const cell = row.insertCell(3);
+		const joinBtn = (
+			joinBtnTemplate.content.cloneNode(true) as HTMLElement
+		).querySelector("button")!;
+		cell.appendChild(joinBtn);
+		joinBtn.addEventListener("click", () => {
+			joinGame(game.code);
+		});
+	});
 }
