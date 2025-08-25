@@ -61,6 +61,7 @@ func (sl *SecretLoader) Load(c *config) error {
 	c.APP_ADDRESS = getSecret("app_address")
 	c.ENVIRONMENT = getSecret("environment")
 	c.DATABASE_CONNECTION_STRING = getSecret("database_connection_string")
+	c.DISCORD_FEEDBACK_WEBHOOK_URL = getSecret("discord_feedback_webhook_url")
 
 	return loadErr
 }

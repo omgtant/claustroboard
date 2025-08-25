@@ -1,20 +1,20 @@
 services:
     app:
         build: .
-        ports:
-            - "8080:8080"
         networks:
             - claustroboard
+        env_file:
+            - ./.env.prod
+
     alloy:
         image: grafana/alloy:v1.10.2
-        ports:
-            - "12345:12345"
         env_file:
             - ./.env
         volumes:
             - ./config.alloy:/etc/alloy/config.alloy:ro
         networks:
             - claustroboard
+
     nginx:
         image: 'jc21/nginx-proxy-manager:latest'
         restart: unless-stopped
@@ -27,6 +27,7 @@ services:
             - ./letsencrypt:/etc/letsencrypt
         networks:
             - claustroboard
+
 networks:
     claustroboard:
         driver: bridge

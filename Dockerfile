@@ -19,7 +19,6 @@ FROM scratch AS final
 WORKDIR /app
 
 COPY --from=build /app/claustroboard .
-COPY .env .
 
 EXPOSE 8080
 

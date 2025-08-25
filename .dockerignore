@@ -21,3 +21,6 @@ postcss.config.mjs
 # Docker
 Dockerfile
 .dockerignore
+
+# Environment files
+.env*
