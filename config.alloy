@@ -10,7 +10,7 @@ prometheus.remote_write "metrics_hosted_prometheus" {
 
       basic_auth {
         username = "2635605"
-        password = sys.env("GCLOUD_RW_API_KEY")
+        password = local.file.api_key_file.content
       }
    }
 }
@@ -36,3 +36,7 @@ prometheus.scrape "claustroboard" {
   forward_to = [prometheus.relabel.claustroboard.receiver]
 }
 
+local.file "api_key_file" {
+  filename = "/run/secrets/gcloud_rw_api_key"
+  is_secret = true
+}

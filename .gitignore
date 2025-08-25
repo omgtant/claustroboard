@@ -55,3 +55,7 @@ web/out
 # nginx
 letsencrypt
 keys.json
+
+# secrets
+discord_feedback_webhook_url.txt
+gcloud_rw_api_key.txt
