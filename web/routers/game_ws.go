@@ -66,6 +66,7 @@ func (c *gameWsClient) readLoop() {
 		if err := json.Unmarshal(data, &ie); err != nil {
 			continue
 		}
+		metrics.WSActionsTotal.Inc()
 		if h, ok := inboundHandlers[ie.Type]; ok {
 			h(c, ie.Data)
 		}

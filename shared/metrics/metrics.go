@@ -51,4 +51,8 @@ var (
 		Name: "requests_total",
 		Help: "Total number of requests received",
 	})
+	WSActionsTotal = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "ws_actions_total",
+		Help: "Total number of WebSocket actions received",
+	})
 )
