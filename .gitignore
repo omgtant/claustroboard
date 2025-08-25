@@ -54,3 +54,4 @@ web/out
 
 # nginx
 letsencrypt
+keys.json
