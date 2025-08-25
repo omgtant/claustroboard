@@ -15,6 +15,16 @@ prometheus.remote_write "metrics_hosted_prometheus" {
    }
 }
 
+prometheus.relabel "claustroboard" {
+  forward_to = [prometheus.remote_write.metrics_hosted_prometheus.receiver]
+
+  rule {
+    action       = "replace"
+    target_label = "environment"
+    replacement  = sys.env("ENVIRONMENT")
+  }
+}
+
 prometheus.scrape "claustroboard" {
   scrape_interval = "15s"
   scrape_timeout = "5s"
@@ -23,5 +33,6 @@ prometheus.scrape "claustroboard" {
     { __address__ = "app:8080" },
   ]
 
-  forward_to = [prometheus.remote_write.metrics_hosted_prometheus.receiver]
+  forward_to = [prometheus.relabel.claustroboard.receiver]
 }
+
