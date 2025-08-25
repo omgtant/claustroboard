@@ -5,7 +5,6 @@ import "errors"
 type config struct {
 	APP_ADDRESS                  string
 	ENVIRONMENT                  string
-	DATABASE_CONNECTION_STRING   string
 	DISCORD_FEEDBACK_WEBHOOK_URL string
 }
 
