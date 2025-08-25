@@ -92,7 +92,7 @@ function newGameBtn() {
 	const plData = getNickname();
 	if (!plData) return;
 
-	(document.getElementById('new-game') as HTMLButtonElement).disabled = true;
+	(document.getElementById("new-game") as HTMLButtonElement).disabled = true;
 
 	createGame(plData.nickname);
 }
@@ -136,6 +136,19 @@ export async function joinGame(gameCode: string) {
 	if (!plData) return;
 	const { nickname } = plData;
 
+	// Fetch to see if there are any errors other than 426
+	fetch(`/api/v1/join/${encodeURIComponent(gameCode)}?nickname=${encodeURIComponent(nickname)}`, {
+		method: "GET",
+	}).then(async (response) => {
+		if (response.status === 426) {
+			connect(gameCode, nickname);
+		} else {
+			showError(await response.text());
+		}
+	});
+}
+
+function connect(gameCode: string, nickname: string) {
 	netcode.ws
 		.connect(
 			`/api/v1/join/${encodeURIComponent(
@@ -150,7 +163,7 @@ export async function joinGame(gameCode: string) {
 		})
 		.catch((error) => {
 			console.log(error);
-			showError("game not found");
+			showError(error.message);
 		});
 }
 

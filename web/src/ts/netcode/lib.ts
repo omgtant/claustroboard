@@ -141,6 +141,7 @@ export class WebSocketManager<
 
 			const onError = (error: Event) => {
 				cleanup();
+				console.log(error);
 				reject(new Error("WebSocket connection failed"));
 			};
 
