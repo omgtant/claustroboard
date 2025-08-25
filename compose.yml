@@ -3,13 +3,14 @@ services:
         build: .
         networks:
             - claustroboard
-        env_file:
-            - ./.env.prod
+        secrets:
+            - app_address
+            - discord_feedback_webhook_url
 
     alloy:
         image: grafana/alloy:v1.10.2
-        env_file:
-            - ./.env
+        environment:
+            - GCLOUD_RW_API_KEY
         volumes:
             - ./config.alloy:/etc/alloy/config.alloy:ro
         networks:
@@ -23,7 +24,7 @@ services:
             - '81:81'
             - '443:443'
         volumes:
-            - ./data:/data
+            - ./nginx:/data/nginx
             - ./letsencrypt:/etc/letsencrypt
         networks:
             - claustroboard
@@ -31,3 +32,9 @@ services:
 networks:
     claustroboard:
         driver: bridge
+
+secrets:
+    app_address:
+        environment: APP_ADDRESS
+    discord_feedback_webhook_url:
+        file: discord_feedback_webhook_url.txt

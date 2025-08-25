@@ -51,3 +51,6 @@ web/out
 
 # logs
 *.log
+
+# nginx
+letsencrypt
