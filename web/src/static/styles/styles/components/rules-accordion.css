@@ -20,6 +20,7 @@
 		@apply w-full;
 		@apply lg:peer-checked/checkbox:w-64 lg:peer-focus-visible/label:w-64 lg:w-0;
         @apply lg:overflow-hidden lg:overflow-y-scroll lg:transition-[width] lg:duration-100;
+        /* Left-side scrollbar */
         direction: rtl;
         > * {
             direction: ltr;
