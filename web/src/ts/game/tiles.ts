@@ -206,7 +206,7 @@ export class TeleportTile extends Tile {
 				return (
 					!(tile instanceof TeleportTile) &&
 					isTileReasonableToLandOn(tile, state, player) &&
-					tile.color === this.color
+					(this.color === TileColor.COLORLESS || tile.color === this.color)
 				);
 			})
 		) {
