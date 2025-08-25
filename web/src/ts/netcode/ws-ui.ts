@@ -92,6 +92,8 @@ function newGameBtn() {
 	const plData = getNickname();
 	if (!plData) return;
 
+	(document.getElementById('new-game') as HTMLButtonElement).disabled = true;
+
 	createGame(plData.nickname);
 }
 
