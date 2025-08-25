@@ -47,3 +47,6 @@ web/out
 # krita cache
 *~
 *.kra
+
+# logs
+*.log
