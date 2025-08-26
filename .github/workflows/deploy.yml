@@ -28,6 +28,8 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository_owner }}/claustroboard:latest
             ghcr.io/${{ github.repository_owner }}/claustroboard:${{ github.sha }}
+          secrets: |
+            npmrc=printf "@username:registry=https://npm.pkg.github.com/\n//npm.pkg.github.com/:_authToken=${{ secrets.GH_PACKAGES_TOKEN }}\n"
 
   deploy:
     runs-on: ubuntu-latest
