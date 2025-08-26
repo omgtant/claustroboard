@@ -1,6 +1,6 @@
 services:
     app:
-        image: claustroboard:latest
+        image: ghcr.io/omgtant/claustroboard:latest
         environment:
             - ENVIRONMENT=production
         secrets:
