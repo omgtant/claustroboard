@@ -7,6 +7,7 @@ RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \
     npm ci
 
 COPY web/ web/
+COPY postcss.config.mjs tsconfig.json ./
 
 RUN npm run build
 
