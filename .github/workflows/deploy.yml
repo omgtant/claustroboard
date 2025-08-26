@@ -57,6 +57,8 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             cd ${{ secrets.DEPLOY_PATH }}
+            echo "${{ secrets.DISCORD_FEEDBACK_WEBHOOK_URL }}" > discord_feedback_webhook_url.txt
+            echo "${{ secrets.GCLOUD_RW_API_KEY }}" > gcloud_rw_api_key.txt
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker pull ghcr.io/${{ github.repository_owner }}/claustroboard:latest
             docker compose down
