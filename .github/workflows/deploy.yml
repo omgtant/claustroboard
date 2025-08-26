@@ -6,20 +6,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Build Docker image
-        run: docker build . -t claustroboard:latest -t claustroboard:${{ github.sha }} -t claustroboard:$(date +%Y%m%d-%H%M%S)
-
-  push:
-    runs-on: ubuntu-latest
-    needs: build
     permissions:
       contents: read
       packages: write
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3.5.0
         with:
@@ -27,15 +20,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push Docker image.
-        run: |
-          docker tag claustroboard ghcr.io/${{ github.repository_owner }}/claustroboard:latest
-          docker push ghcr.io/${{ github.repository_owner }}/claustroboard:latest
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6.18.0
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/claustroboard:latest
+            ghcr.io/${{ github.repository_owner }}/claustroboard:${{ github.sha }}
 
   deploy:
     runs-on: ubuntu-latest
-    needs: push
+    needs: build
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
       - name: Copy compose file to server
         uses: appleboy/scp-action@v1.0.0
         with:
