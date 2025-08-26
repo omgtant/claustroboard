@@ -26,7 +26,8 @@ func PostFeedback(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	if err := sendFeedbackToDiscord(feedback); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		fmt.Printf("Error sending feedback to Discord: %v\n", err)
+		http.Error(w, "Failed to send feedback", http.StatusInternalServerError)
 		return
 	}
 
