@@ -1,6 +1,5 @@
-
 # development
-web/src
+node_modules
 *.sh
 
 # internal
@@ -10,13 +9,6 @@ web/src
 *.md
 docs
 LICENSE
-
-# webdev
-package-lock.json
-package.json
-node_modules
-tsconfig.json
-postcss.config.mjs
 
 # Docker
 Dockerfile
