@@ -2,8 +2,8 @@
 
 ## Requirements
 
-- Node.js v12+
-- npm 
+- Node.js v20.18.3+
+- npm
 - Go 1.24+
 
 ## Setup
