@@ -46,7 +46,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          source: "compose.yml,config.alloy"
+          source: "compose.yml,config.alloy,nginx"
           target: ${{ secrets.DEPLOY_PATH }}
 
       - name: Connect through SSH and deploy
