@@ -27,5 +27,8 @@
     "serve": "go run .",
     "godev": "wgo run -file=out/ -file=src/ .",
     "start": "concurrently -k -n assets,server \"npm:dev\" \"npm:godev\""
+  },
+  "engines": {
+    "node": ">=20.18.3"
   }
 }
