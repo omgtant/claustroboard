@@ -1,0 +1,51 @@
+name: Deploy
+
+on:
+  - workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Build Docker image
+        run: docker build . -t claustroboard
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3.5.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push Docker image.
+        run: |
+          docker tag claustroboard ghcr.io/${{ github.repository_owner }}/claustroboard:latest
+          docker push ghcr.io/${{ github.repository_owner }}/claustroboard:latest
+
+      - name: Copy compose file to server
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          source: compose.yml
+          target: ${{ secrets.DEPLOY_PATH }}
+
+      - name: Connect through SSH and deploy
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            cd ${{ secrets.DEPLOY_PATH }}
+            docker pull ghcr.io/${{ github.repository_owner }}/claustroboard:latest
+            docker compose down
+            docker compose up -d
