@@ -46,9 +46,6 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           source: compose.yml
           target: ${{ secrets.DEPLOY_PATH }}
-      
-      - name: Docker Login
-        
 
       - name: Connect through SSH and deploy
         uses: appleboy/ssh-action@v1.2.2
