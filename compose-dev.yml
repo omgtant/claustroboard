@@ -1,8 +1,8 @@
 services:
     app:
-        image: claustroboard:latest
+        build: .
         environment:
-            - ENVIRONMENT=production
+            - ENVIRONMENT=development
         secrets:
             - app_address
             - discord_feedback_webhook_url
@@ -12,7 +12,7 @@ services:
     alloy:
         image: grafana/alloy:v1.10.2
         environment:
-            - ENVIRONMENT=production
+            - ENVIRONMENT=development
         secrets:
             - gcloud_rw_api_key
         volumes:
