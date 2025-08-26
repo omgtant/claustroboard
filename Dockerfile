@@ -30,6 +30,8 @@ FROM scratch AS final
 
 WORKDIR /app
 
+ENV APP_ADDRESS=0.0.0.0:8080
+
 COPY --from=build /app/claustroboard .
 
 EXPOSE 8080
