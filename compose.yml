@@ -4,7 +4,6 @@ services:
         environment:
             - ENVIRONMENT=production
         secrets:
-            - app_address
             - discord_feedback_webhook_url
         networks:
             - claustroboard
@@ -38,8 +37,6 @@ networks:
         driver: bridge
 
 secrets:
-    app_address:
-        environment: APP_ADDRESS
     discord_feedback_webhook_url:
         file: discord_feedback_webhook_url.txt
     gcloud_rw_api_key:
