@@ -10,7 +10,7 @@ import {
 } from "../game/tiles";
 import { _movePlayer, getPlayerElement } from "./playerMover";
 import { setCurrentSelection } from "./keyboardControl";
-import { addArrow, deleteArrow } from "./arrowCanvas";
+import { addArrow, deleteArrow, resizeCanvas } from "./arrowCanvas";
 
 const callbacks = {
 	tryMoveTo: (pos: Pos): void => {
@@ -339,6 +339,8 @@ function renderState(state: GameState) {
 			_createPlayerElement(player, index)
 		);
 	});
+	
+	resizeCanvas();
 }
 
 function highlightWinner(player: Player) {

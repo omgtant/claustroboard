@@ -1,11 +1,19 @@
 let _ctx: CanvasRenderingContext2D | null = null;
+let canvas: HTMLCanvasElement;
 
 function animationsEnabled() {
 	return (document.getElementById("toggle-anims") as HTMLInputElement).checked;
 }
 
+export function resizeCanvas() {
+	if (!_ctx) return;
+	const rect = canvas.getBoundingClientRect();
+	_ctx.canvas.width = rect.width;
+	_ctx.canvas.height = rect.height;
+}
+
 export function arrowCanvasInit() {
-	const canvas = document.getElementById(
+	canvas = document.getElementById(
 		"move-arrow-canvas"
 	) as HTMLCanvasElement;
 	if (!canvas) {
@@ -14,15 +22,9 @@ export function arrowCanvasInit() {
 	_ctx = canvas.getContext("2d");
 
 	// resize the canvas every second
-	function resizeCanvas() {
-		if (!_ctx) return;
-		const rect = canvas.getBoundingClientRect();
-		_ctx.canvas.width = rect.width;
-		_ctx.canvas.height = rect.height;
-	}
 	setInterval(() => {
 		resizeCanvas();
-	}, 500);
+	}, 1000);
 	resizeCanvas();
 
 	requestAnimationFrame(draw);
