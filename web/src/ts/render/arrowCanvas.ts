@@ -1,62 +1,61 @@
-
-
 let _ctx: CanvasRenderingContext2D | null = null;
 
 export function arrowCanvasInit() {
-    const canvas = document.getElementById('move-arrow-canvas') as HTMLCanvasElement;
-    if (!canvas) {
-        throw new Error('Canvas element not found');
-    }
-    _ctx = canvas.getContext("2d");
+	const canvas = document.getElementById(
+		"move-arrow-canvas"
+	) as HTMLCanvasElement;
+	if (!canvas) {
+		throw new Error("Canvas element not found");
+	}
+	_ctx = canvas.getContext("2d");
 
-    // resize the canvas every second
-    function resizeCanvas() {
-        if (!_ctx) return;
+	// resize the canvas every second
+	function resizeCanvas() {
+		if (!_ctx) return;
 		const rect = canvas.getBoundingClientRect();
 		_ctx.canvas.width = rect.width;
 		_ctx.canvas.height = rect.height;
-    }
-    setInterval(() => {
-        resizeCanvas();
-    }, 500);
-    resizeCanvas();
+	}
+	setInterval(() => {
+		resizeCanvas();
+	}, 500);
+	resizeCanvas();
 
-    requestAnimationFrame(draw);
+	requestAnimationFrame(draw);
 }
 
 export type ArrowArgs = {
-    path: { x: number; y: number }[];
-    thickness: number;
-    color: string;
+	path: { x: number; y: number }[];
+	thickness: number;
+	color: string;
 };
 
 type Arrow = ArrowArgs & { id: string };
 
 type State = {
-    arrows: Arrow[];
+	arrows: Arrow[];
 };
 
 let state: State = {
-    arrows: [],
+	arrows: [],
 };
 
 function draw(time: number) {
-    if (!_ctx) return;
+	if (!_ctx) return;
 
-    _ctx.clearRect(0, 0, _ctx.canvas.width, _ctx.canvas.height);
+	_ctx.clearRect(0, 0, _ctx.canvas.width, _ctx.canvas.height);
 
-    for (const arrow of state.arrows) {
-        drawArrow(arrow, time);
-    }
+	for (const arrow of state.arrows) {
+		drawArrow(arrow, time);
+	}
 
-    requestAnimationFrame(draw);
+	requestAnimationFrame(draw);
 }
 
-
 function smoothPath(source: { x: number; y: number }[]) {
-    if (!source) return [];
-    if (source.length < 3) return source;
-    const path = [source[0]];
+	if (!source) return [];
+	if (source.length < 3) return source;
+	const path = [source[0]];
 	// Replace nodes in path with two lerped points to each side of that node
 	// For smoother corners
 	const lerpFactor = 0.85;
@@ -76,28 +75,58 @@ function smoothPath(source: { x: number; y: number }[]) {
 		path.push(lerpedPoint1, lerpedPoint2);
 	}
 	path.push(source[source.length - 1]);
-    return path;
+	return path;
 }
 
+/** Makes sure the last point is a bit closer
+ * to the penultimate point
+ */
+function shortenLastPoint(source: {x: number, y:number}[]) {	
+	if (!source) return [];
+	if (source.length < 2) return source;
+	if (!_ctx) return source;
+
+	const w = _ctx.canvas.width;
+	const h = _ctx.canvas.height;
+
+    const shortenPx = 15;
+
+	const p1 = source[source.length-2];
+	const p2 = source[source.length-1];
+
+	const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+
+
+	const p = {
+		x: (p2.x*w - shortenPx * Math.cos(angle)) / w,
+		y: (p2.y*h - shortenPx * Math.sin(angle)) / h,
+	}
+
+	source[source.length-1] = p;
+	return source;
+}
+
+const initialOffset = 15;
 function drawArrow(arrow: ArrowArgs, time: number) {
-    if (!_ctx) return;
+	if (!_ctx) return;
 
-    const w = _ctx.canvas.width;
-    const h = _ctx.canvas.height;
+	const w = _ctx.canvas.width;
+	const h = _ctx.canvas.height;
 
-    const t = time / 1000;
+	const t = time / 1000;
 
-    _ctx.beginPath();
-    _ctx.moveTo(arrow.path[0].x * w, arrow.path[0].y * h);
-    for (const point of arrow.path) {
-        const sections = 3;
-        _ctx.lineTo(point.x * w, point.y * h);
-    }
-    _ctx.lineWidth = arrow.thickness;
-    _ctx.strokeStyle = arrow.color;
-    _ctx.stroke();
+	_ctx.beginPath();
+	_ctx.moveTo(arrow.path[0].x * w, arrow.path[0].y * h);
+	for (const point of arrow.path) {
+		const sections = 3;
+		_ctx.lineTo(point.x * w, point.y * h);
+	}
+	_ctx.lineWidth = arrow.thickness;
+	_ctx.strokeStyle = arrow.color;
+	_ctx.stroke();
 
-    drawAnim(arrow, time);
+	if (document.body.classList.contains("no-animations")) return;
+	drawAnim(arrow, time);
 }
 
 function drawAnim(arrow: ArrowArgs, time: number) {
@@ -109,30 +138,33 @@ function drawAnim(arrow: ArrowArgs, time: number) {
 	const t = time / 1000;
 
 	const speed = 200; // pixels per second
-    const between = 100; // pixels between arrows
+	const between = 75; // pixels between arrows
+	const headThickness = 3;
+	const headOffset = (arrow.thickness * headThickness) / 1.41;
 
-	let lengthUntilNow = (t * speed) % between;
-    let sumOfPastLengths = 0;
+	let lengthUntilNow = ((t * speed + headOffset) % between) + initialOffset;
+	let sumOfPastLengths = 0;
 	for (let i = 0; i < arrow.path.length - 1; i++) {
 		const p1 = arrow.path[i];
 		const p2 = arrow.path[i + 1];
 
 		const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
 		const length = Math.hypot((p2.x - p1.x) * w, (p2.y - p1.y) * h);
-		
-        while (lengthUntilNow < sumOfPastLengths + length) {
-            const offset = lengthUntilNow - sumOfPastLengths;
-            if (offset >= 0 && offset <= length) {
-                drawArrowHead(offset);
-            }
-            lengthUntilNow += between;
-        }
-        sumOfPastLengths += length;
 
-        function drawArrowHead(offset: number) {
-            if (!_ctx) return;
-            const thickness = arrow.thickness * 3;
+		while (lengthUntilNow < sumOfPastLengths + length + headOffset) {
+			const offset = lengthUntilNow - sumOfPastLengths;
+            drawArrowHead(offset);
+			lengthUntilNow += between;
+		}
+		sumOfPastLengths += length;
 
+		if (i === arrow.path.length - 2) {
+			drawArrowHead(length + headOffset);
+		}
+
+		function drawArrowHead(offset: number) {
+			if (!_ctx) return;
+			const thickness = arrow.thickness * headThickness;
 			_ctx.save();
 			_ctx.translate(p1.x * w, p1.y * h);
 			_ctx.rotate(angle);
@@ -146,30 +178,31 @@ function drawAnim(arrow: ArrowArgs, time: number) {
 			_ctx.fill();
 
 			_ctx.restore();
-        }
+		}
 	}
 }
 
 export function addArrow(arrow: ArrowArgs): Arrow {
-    const newArrow: Arrow = { ...arrow, id: generateId() };
-    state.arrows.push(newArrow);
-    newArrow.path = smoothPath(newArrow.path);
-    return newArrow;
+	const newArrow: Arrow = { ...arrow, id: generateId() };
+	state.arrows.push(newArrow);
+	newArrow.path = smoothPath(newArrow.path);
+	newArrow.path = shortenLastPoint(newArrow.path);
+	return newArrow;
 }
 
 export function deleteArrow(id: string): boolean {
-    const index = state.arrows.findIndex(arrow => arrow.id === id);
-    if (index !== -1) {
-        state.arrows.splice(index, 1);
-        return true;
-    }
-    return false;
+	const index = state.arrows.findIndex((arrow) => arrow.id === id);
+	if (index !== -1) {
+		state.arrows.splice(index, 1);
+		return true;
+	}
+	return false;
 }
 
 export function clearArrows(): void {
-    state.arrows = [];
+	state.arrows = [];
 }
 
 function generateId(): string {
-    return 'arrow-' + Math.random().toString(36).substring(2, 9);
+	return "arrow-" + Math.random().toString(36).substring(2, 9);
 }
