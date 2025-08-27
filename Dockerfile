@@ -1,6 +1,3 @@
-LABEL org.opencontainers.image.description Claustroboard is a fun multiplayer, browser-based board game.
-LABEL org.opencontainers.image.source https://github.com/omgtant/claustroboard
-
 FROM node:24-slim AS frontend
 
 WORKDIR /app
@@ -32,6 +29,8 @@ COPY --from=frontend /app/web/out ./web/out
 RUN go build -o claustroboard .
 
 FROM scratch AS final
+LABEL org.opencontainers.image.description Claustroboard is a fun multiplayer, browser-based board game.
+LABEL org.opencontainers.image.source https://github.com/omgtant/claustroboard
 
 WORKDIR /app
 
