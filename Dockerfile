@@ -3,9 +3,11 @@ FROM node:24-slim AS frontend
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \
+    npm ci
 
 COPY web/ web/
+COPY postcss.config.mjs tsconfig.json ./
 
 RUN npm run build
 
@@ -27,8 +29,12 @@ COPY --from=frontend /app/web/out ./web/out
 RUN go build -o claustroboard .
 
 FROM scratch AS final
+LABEL org.opencontainers.image.description Claustroboard is a fun multiplayer, browser-based board game.
+LABEL org.opencontainers.image.source https://github.com/omgtant/claustroboard
 
 WORKDIR /app
+
+ENV APP_ADDRESS=0.0.0.0:8080
 
 COPY --from=build /app/claustroboard .
 
