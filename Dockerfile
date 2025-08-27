@@ -6,9 +6,11 @@ FROM node:24-slim AS frontend
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \
+    npm ci
 
 COPY web/ web/
+COPY postcss.config.mjs tsconfig.json ./
 
 RUN npm run build
 
@@ -32,6 +34,8 @@ RUN go build -o claustroboard .
 FROM scratch AS final
 
 WORKDIR /app
+
+ENV APP_ADDRESS=0.0.0.0:8080
 
 COPY --from=build /app/claustroboard .
 

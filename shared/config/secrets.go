@@ -58,7 +58,7 @@ func (sl *SecretLoader) Load(c *config) error {
 	// 	return boolValue
 	// }
 
-	c.APP_ADDRESS = getSecret("app_address")
+	c.APP_ADDRESS = "0.0.0.0:8080"
 	c.ENVIRONMENT = "production"
 	c.DISCORD_FEEDBACK_WEBHOOK_URL = getSecret("discord_feedback_webhook_url")
 

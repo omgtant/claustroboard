@@ -30,7 +30,7 @@ export default function init() {
 }
 
 function connect() {
-    rttwsManager.connect(`ws://${window.location.host}/api/v1/public-games`).catch(err => {
+    rttwsManager.connect(`/api/v1/public-games`).catch(err => {
         showError("couldn't show the public games");
         updateTable(null);
     });
