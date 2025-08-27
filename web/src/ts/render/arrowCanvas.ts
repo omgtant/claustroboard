@@ -1,5 +1,9 @@
 let _ctx: CanvasRenderingContext2D | null = null;
 
+function animationsEnabled() {
+	return (document.getElementById("toggle-anims") as HTMLInputElement).checked;
+}
+
 export function arrowCanvasInit() {
 	const canvas = document.getElementById(
 		"move-arrow-canvas"
@@ -81,7 +85,7 @@ function smoothPath(source: { x: number; y: number }[]) {
 /** Makes sure the last point is a bit closer
  * to the penultimate point
  */
-function shortenLastPoint(source: {x: number, y:number}[]) {	
+function shortenLastPoint(source: { x: number; y: number }[]) {
 	if (!source) return [];
 	if (source.length < 2) return source;
 	if (!_ctx) return source;
@@ -89,20 +93,19 @@ function shortenLastPoint(source: {x: number, y:number}[]) {
 	const w = _ctx.canvas.width;
 	const h = _ctx.canvas.height;
 
-    const shortenPx = 15;
+	const shortenPx = 15;
 
-	const p1 = source[source.length-2];
-	const p2 = source[source.length-1];
+	const p1 = source[source.length - 2];
+	const p2 = source[source.length - 1];
 
 	const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
 
-
 	const p = {
-		x: (p2.x*w - shortenPx * Math.cos(angle)) / w,
-		y: (p2.y*h - shortenPx * Math.sin(angle)) / h,
-	}
+		x: (p2.x * w - shortenPx * Math.cos(angle)) / w,
+		y: (p2.y * h - shortenPx * Math.sin(angle)) / h,
+	};
 
-	source[source.length-1] = p;
+	source[source.length - 1] = p;
 	return source;
 }
 
@@ -125,7 +128,6 @@ function drawArrow(arrow: ArrowArgs, time: number) {
 	_ctx.strokeStyle = arrow.color;
 	_ctx.stroke();
 
-	if (document.body.classList.contains("no-animations")) return;
 	drawAnim(arrow, time);
 }
 
@@ -153,7 +155,9 @@ function drawAnim(arrow: ArrowArgs, time: number) {
 
 		while (lengthUntilNow < sumOfPastLengths + length + headOffset) {
 			const offset = lengthUntilNow - sumOfPastLengths;
-            drawArrowHead(offset);
+			if (animationsEnabled()) {
+				drawArrowHead(offset);
+			}
 			lengthUntilNow += between;
 		}
 		sumOfPastLengths += length;
