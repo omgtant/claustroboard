@@ -185,7 +185,7 @@ function drawAnim(arrow: ArrowArgs, time: number) {
 export function addArrow(arrow: ArrowArgs): Arrow {
 	const newArrow: Arrow = { ...arrow, id: generateId() };
 	state.arrows.push(newArrow);
-	newArrow.path = smoothPath(newArrow.path);
+	newArrow.path = smoothPath([...newArrow.path]);
 	newArrow.path = shortenLastPoint(newArrow.path);
 	return newArrow;
 }
