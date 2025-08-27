@@ -5,6 +5,7 @@ import { Pos, TileColor } from "../types/util";
 import { LayoutTile, TeleportTile, WildcardTile, ZeroTile } from "../game/tiles";
 import { _movePlayer, getPlayerElement } from "./playerMover";
 import { setCurrentSelection } from "./keyboardControl";
+import { addArrow, deleteArrow } from "./arrowCanvas";
 
 const callbacks = {
     tryMoveTo: (pos: Pos) : void => {
@@ -347,14 +348,14 @@ function playerLost(player: Player) {
     logMessage(`Player ${player.nickname} has lost the game!`);
 }
 
+const cleanupArrows: (() => void)[] = [];
+
 function clearAllArrows() {
-    const arrows = board!.querySelectorAll('.move-arrow');
-    arrows.forEach(arrow => {
-        arrow.remove();
-    });
+    cleanupArrows.forEach(fn => fn());
+    cleanupArrows.length = 0;
 }
 
-function getCenterOfTileElementPercentRelToBoard(pos: Pos): {xPercent: number, yPercent: number} {
+function getCenterOfTileRatio(pos: Pos): {xPercent: number, yPercent: number} {
     const tileElement = getElementByPos(pos);
     if (!tileElement) throw new Error('Tile element not found');
     
@@ -363,8 +364,8 @@ function getCenterOfTileElementPercentRelToBoard(pos: Pos): {xPercent: number, y
     if (!boardRect) throw new Error('Board element not found');
 
     return {
-        xPercent: ((rect.left - boardRect.left) + rect.width / 2) / boardRect.width * 100,
-        yPercent: ((rect.top - boardRect.top) + rect.height / 2) / boardRect.height * 100
+        xPercent: ((rect.left - boardRect.left) + rect.width / 2) / boardRect.width,
+        yPercent: ((rect.top - boardRect.top) + rect.height / 2) / boardRect.height
     };
 }
 
@@ -374,74 +375,34 @@ function arrowOnHover(move: ValidMove) {
     const tileElement = getElementByPos(move.to);
     if (!tileElement) throw new Error('Tile element not found');
 
-    const arrowElement = document.createElement('div');
-    arrowElement.classList.add('move-arrow');
-    arrowElement.dataset.tileId = `${move.to.x}-${move.to.y}`;
-    board?.appendChild(arrowElement);
     const pathPoints = move.path.map(pos => {
-        const {xPercent, yPercent} = getCenterOfTileElementPercentRelToBoard(pos);
+        const {xPercent, yPercent} = getCenterOfTileRatio(pos);
         return {x: xPercent, y: yPercent};
     });
 
-    const lineWidth = 2; // percentage width of the line
-    const polygonPoints: string[] = [];
+    let arrowId: string | null = null;
 
-    // Create perpendicular offsets for each segment
-    for (let i = 0; i < pathPoints.length; i++) {
-        const current = pathPoints[i];
-        let direction = {x: 0, y: 0};
+    const spawnArrow = () => {
+		if (!arrowId) {
+			arrowId = addArrow({
+				path: pathPoints,
+				thickness: 6,
+				color: "cyan",
+			}).id;
+		}
+	};
+    const killArrow = () => {
+		if (arrowId) {
+			deleteArrow(arrowId);
+			arrowId = null;
+		}
+	};
+    cleanupArrows.push(() => {
+        killArrow();
+		tileElement.removeEventListener('mouseover', spawnArrow);
+		tileElement.removeEventListener('mouseout', killArrow);
+	});
 
-        if (i === 0 && pathPoints.length > 1) {
-            // First point: use direction to next point
-            const next = pathPoints[i + 1];
-            direction = {x: next.x - current.x, y: next.y - current.y};
-        } else if (i === pathPoints.length - 1) {
-            // Last point: use direction from previous point
-            const prev = pathPoints[i - 1];
-            direction = {x: current.x - prev.x, y: current.y - prev.y};
-        } else {
-            // Middle points: average direction of adjacent segments
-            const prev = pathPoints[i - 1];
-            const next = pathPoints[i + 1];
-            const dirToPrev = {x: current.x - prev.x, y: current.y - prev.y};
-            const dirToNext = {x: next.x - current.x, y: next.y - current.y};
-            direction = {
-                x: (dirToPrev.x + dirToNext.x) / 2,
-                y: (dirToPrev.y + dirToNext.y) / 2
-            };
-        }
-
-        // Normalize direction and create perpendicular
-        const length = Math.sqrt(direction.x * direction.x + direction.y * direction.y);
-        if (length > 0) {
-            direction.x /= length;
-            direction.y /= length;
-        }
-
-        // Perpendicular vector (rotate 90 degrees)
-        const perpendicular = {x: -direction.y * lineWidth / 2, y: direction.x * lineWidth / 2};
-
-        // Add points for both sides of the line
-        const leftPoint = {x: current.x + perpendicular.x, y: current.y + perpendicular.y};
-        const rightPoint = {x: current.x - perpendicular.x, y: current.y - perpendicular.y};
-
-        if (i === 0) {
-            polygonPoints.push(`${leftPoint.x}% ${leftPoint.y}%`);
-            polygonPoints.unshift(`${rightPoint.x}% ${rightPoint.y}%`);
-        } else {
-            polygonPoints.unshift(`${rightPoint.x}% ${rightPoint.y}%`);
-            polygonPoints.push(`${leftPoint.x}% ${leftPoint.y}%`);
-        }
-    }
-
-    const points = polygonPoints.join(', ');
-
-    arrowElement.style.clipPath = `polygon(${points})`;
-
-    tileElement.addEventListener('mouseover', () => {
-        arrowElement.classList.add('move-arrow-hover');
-    });
-    tileElement.addEventListener('mouseout', () => {
-        arrowElement.classList.remove('move-arrow-hover');
-    });
+    tileElement.addEventListener('mouseover', spawnArrow);
+    tileElement.addEventListener('mouseout', killArrow);
 }

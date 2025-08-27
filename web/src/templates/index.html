@@ -26,8 +26,12 @@
                     <div class="board-wrapper card">
                         {{ template "main-menu.html" }}
                         <!-- Goto: board game -->
-                        <div class="board" id="board">
+                        <div class="relative">
+                            <div class="board" id="board">
+                            </div>
+                            <canvas id="move-arrow-canvas" class="move-arrow-canvas"></canvas>
                         </div>
+
                     </div>
                     <!-- Goto: rules accordion -->
                     {{ template "rules.html" }}

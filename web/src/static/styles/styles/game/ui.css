@@ -1,3 +1,8 @@
+.board {
+    @apply relative grid grid-cols-6 w-fit p-2 *:-ml-1 *:-mt-1;
+    @apply max-sm:scale-90 max-sm:-mx-8 max-sm:-my-2;
+}
+
 .selection {
     @apply absolute z-40 opacity-0 pointer-events-none;
     background-image: var(--atlas-url);
@@ -10,6 +15,10 @@
     @apply max-md:hidden;
 }
 
+.move-arrow-canvas {
+    @apply absolute top-0 left-0 w-full h-full z-20;
+    @apply pointer-events-none;
+}
 .move-arrow {
     @apply bg-blue-500 absolute top-0 left-0 w-full h-full pointer-events-none;
     @apply hidden;
