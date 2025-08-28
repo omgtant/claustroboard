@@ -30,22 +30,45 @@
 }
 
 .tile {
-	background-image: var(--atlas-url);
-	width: 68px;
-	height: 68px;
+	@apply bg-(image:--atlas-url) h-[68px] w-[68px];
 	@apply transform-3d transition-[translate,opacity,rotate,transform] duration-500 ease-in-out relative perspective-distant;
 
 	&::before {
-		content: "";
-		background-image: var(--atlas-url);
+		@apply content-[''] block bg-(image:--atlas-url) h-[68px] w-[68px];
+		@apply absolute rotate-x-180 -translate-z-1 delay-[170ms] transform-3d;
 		background-position: -184px 0px;
-		width: 68px;
-		height: 68px;
-		@apply absolute block rotate-x-180 -translate-z-1 delay-[170ms] transform-3d;
 		backface-visibility: hidden;
 	}
-	&::after {
+
+	&[class*=' tile-layout']::after,
+	&.tile-wildcard::after,
+	&.tile-teleport::after,
+	&.tile-zero::after {
+		@apply content-[''] block bg-(image:--atlas-url) h-[68px] w-[68px];
 		@apply transition-[filter] duration-100;
+		background-position-y: calc((-1) * var(--tile-col-y) * 72px);
+		background-position-x: calc((-1) * var(--tile-col-x) * 72px - 40px);
+
+		--tile-col-y: 2;
+	}
+	&[class*=' tile-layout']::after {
+		--tile-col-y: 1;
+	}
+	
+	&.tile-layout-1::after,
+	&.tile-wildcard::after {
+		--tile-col-x: 0;
+	}
+	&.tile-layout-2::after,
+	&.tile-teleport::after {
+		--tile-col-x: 1;
+	}
+	&.tile-layout-3::after,
+	&.tile-zero::after {
+		--tile-col-x: 2;
+	}
+	&.tile-layout-4::after {
+		--tile-col-x: 3;
 	}
 
 	&.tile-type-1 {

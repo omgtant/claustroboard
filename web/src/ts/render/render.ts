@@ -98,7 +98,7 @@ function logTurn(turnNumber: number, player: Player, pos: Pos) {
 export function logMessage(message: string): HTMLSpanElement {
 	if (!log) throw new Error("Log element not found");
 
-	const logEntry = document.createElement("span");
+	const logEntry = document.createElement("div");
 	logEntry.textContent = message;
 	log.appendChild(logEntry);
 	log.scrollTop = log.scrollHeight; // Scroll to the bottom
