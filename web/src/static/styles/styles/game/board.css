@@ -1,6 +1,0 @@
-@layer components {
-	.board {
-		@apply relative grid grid-cols-6 w-fit p-2 *:-ml-1 *:-mt-1;
-		@apply max-sm:scale-90 max-sm:-mx-8 max-sm:-my-2;
-	}
-}

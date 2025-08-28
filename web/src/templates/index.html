@@ -26,8 +26,12 @@
                     <div class="board-wrapper card">
                         {{ template "main-menu.html" }}
                         <!-- Goto: board game -->
-                        <div class="board" id="board">
+                        <div class="relative">
+                            <div class="board" id="board">
+                            </div>
+                            <canvas id="move-arrow-canvas" class="move-arrow-canvas"></canvas>
                         </div>
+
                     </div>
                     <!-- Goto: rules accordion -->
                     {{ template "rules.html" }}
@@ -55,6 +59,10 @@
         <a href="https://github.com/omgtant/claustroboard" target="_blank">
             <img src="/static/assets/img/github.svg" alt="GitHub" class="lg:size-12" />
         </a>
+        <label>
+            <input type="checkbox" id="toggle-anims" checked />
+            Animations
+        </label>
         <label class="max-md:hidden">
             <input type="checkbox" id="toggle-bg" checked />
             Background

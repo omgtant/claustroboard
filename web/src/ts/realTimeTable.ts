@@ -20,7 +20,7 @@ const joinBtnTemplate = document.getElementById("join-btn-template") as HTMLTemp
 const rttwsManager = new WebSocketManager<RTTEventMap>({
     heartbeatInterval: 10000,
     connectionTimeout: 60000,
-    enableLogging: true,
+    enableLogging: false,
     maxReconnectAttempts: 3
 });
 

@@ -5,6 +5,7 @@ import { showError } from "./helpers/showError";
 import bgInit from "./prettyBg"
 import rttInit from "./realTimeTable"
 import { initFeedbackDialog as feedbackDialogInit } from "./feedback-dialog";
+import { arrowCanvasInit } from "./render/arrowCanvas";
 try {
 	netcodeInit();
 	configDialogInit();
@@ -12,6 +13,7 @@ try {
 	singleplayerInit();
 	bgInit();
 	rttInit();
+	arrowCanvasInit();
 } catch (error) {
 	showError(error.message || error);
 }
